@@ -37,7 +37,6 @@ export default function SignIn() {
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values.password)
     try {
       const result = await signIn('credentials', {
         redirect: false,
@@ -50,7 +49,7 @@ export default function SignIn() {
         return false
       }
       //Login successful
-      router.push('/profile')
+      router.push('/dashboard')
     } catch (error) {
       console.log('error', error)
     }
@@ -77,7 +76,7 @@ export default function SignIn() {
 
   return (
     <>
-      <div className="flex h-screen items-center justify-center bg-slate-400">
+      <div className="flex h-screen items-center justify-center bg-slate-100">
         <div className="w-[400px] mx-auto p-8 bg-white rounded-lg shadow-lg">
           <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
             Login

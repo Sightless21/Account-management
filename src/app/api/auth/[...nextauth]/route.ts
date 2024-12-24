@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/prefer-as-const */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
@@ -41,7 +42,7 @@ export const authOptions = {
   ],
   adapter: PrismaAdapter(prisma),
   session: {
-    strategy: 'jwt',
+    strategy: 'jwt' as 'jwt',
   },
   callbacks: {
     jwt: async ({ token, user }: { token: any, user?: any }) => {

@@ -1,27 +1,25 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import jwt from 'jsonwebtoken';
+import { getToken } from 'next-auth/jwt'
+import { NextRequest, NextResponse } from 'next/server'
 
-export function middleware(req: NextRequest) {
-    const token = req.cookies.get('token')?.value;
+export async function middleware(request: NextRequest) {
+    const user = await getToken({
+        req: request,
+        secret: process.env.NEXTAUTH_SECRET,
+    })
 
-    if (!token) {
-        return NextResponse.redirect(new URL('/', req.url));
+    console.log('user', user)
+
+    // Get the pathname of the request
+    const { pathname } = request.nextUrl
+
+    // If the pathname starts with /protected and the user is not an admin, redirect to the home page
+    if (
+        pathname.startsWith('/protected') &&
+        (!user || user.role !== 'admin')
+    ) {
+        return NextResponse.redirect(new URL('/', request.url))
     }
 
-    try {
-        const secret = process.env.JWT_SECRET;
-        if (!secret) {
-            throw new Error('JWT_SECRET is not defined');
-        }
-        jwt.verify(token, secret);
-        return NextResponse.next();
-    } catch (err) {
-        return NextResponse.redirect(new URL('/', req.url));
-    }
+    // Continue with the request if the user is an admin or the route is not protected
+    return NextResponse.next()
 }
-
-export const config = {
-    matcher: ['/dashboard', '/profile'],
-};

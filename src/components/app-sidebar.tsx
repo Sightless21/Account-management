@@ -2,6 +2,8 @@
 
 import { useSession } from "next-auth/react"
 
+import Image from 'next/image'
+
 import * as React from "react"
 import {
   AudioWaveform,
@@ -168,8 +170,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+      <SidebarHeader className="flex items-center">
+        {/* <TeamSwitcher teams={data.teams} /> */}
+        <Image src={""} alt={"Loading"} width={100} height={50} />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />

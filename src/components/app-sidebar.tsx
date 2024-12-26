@@ -1,19 +1,15 @@
 "use client"
 
 // react + next
-import { useSession } from "next-auth/react"
 import Image from 'next/image'
 import * as React from "react"
 
 // icons
 import {
-  BookOpen,
-  Bot,
   Briefcase,
-  Frame,
-  Map,
-  PieChart,
   Settings2,
+  UserSearch,
+  CircleDollarSign,
 } from "lucide-react"
 
 //nav components
@@ -31,62 +27,61 @@ import {
 // mui components
 import Divider from '@mui/joy/Divider';
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { data: session } = useSession()
 
   const data = {
     user: {
-      name: session?.user?.name ?? "John Doe",
-      email: session?.user?.email ?? "m@example.com",
-      avatar: session?.user?.image ?? "",
+      name: "John Doe",
+      email: "m@example.com",
+      avatar: "",
     },
     navMain: [
       {
         title: "Wokrspace",
-        url: "#",
+        url: "/dashboard",
         icon: Briefcase,
         isActive: true,
         items: [
           {
             title: "Applicant",
-            url: "#",
+            url: "/Applicant",
           },
           {
-            title: "Kanban",
-            url: "#",
+            title: "Kanban Board",
+            url: "/KanBanBoard",
           },
           {
             title: "Meeting room",
-            url: "#",
+            url: "/MeetingRoom",
           },
           {
             title : "Leave of absence",
-            url: "#"
+            url: "/LeaveOfAbsence",
           },
           {
             title : "Reserve a car",
-            url: "#"
+            url: "/ReserveACar",
           },
           {
-            title : "claim expenses",
-            url: "#"
+            title : "Claim expenses",
+            url: "/ClaimExpenses",
           },
         ],
       },
       {
         title: "Customer service",
-        url: "#",
-        icon: Bot,
+        url: "/dashboard",
+        icon: UserSearch,
         items: [
           {
             title: "Customer list",
-            url: "#",
+            url: "/CustomerList",
           },
         ],
       },
       {
         title: "Financial System",
-        url: "#",
-        icon: BookOpen,
+        url: "*",
+        icon: CircleDollarSign,
         items: [
           {
             title: "Introduction",

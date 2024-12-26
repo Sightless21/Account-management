@@ -1,8 +1,9 @@
 'use client'
 
-import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
+// Components
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -21,6 +22,10 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 
 export default function SignIn() {
+
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+
   const router = useRouter()
 
   const formSchema = z.object({
@@ -37,21 +42,11 @@ export default function SignIn() {
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      const result = await signIn('credentials', {
-        redirect: false,
-        email: values.username,
-        password: values.password,
-      })
+    setEmail(values.username)
+    setPassword(values.password)
 
-      if (result && result.error) {
-        console.log('error', result.error)
-        return false
-      }
-      //Login successful
+    if(email === "John@test.com"&& password === "123456"){
       router.push('/dashboard')
-    } catch (error) {
-      console.log('error', error)
     }
   }
 

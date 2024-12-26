@@ -1,15 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 
+// react + next
+import { useRouter } from "next/navigation"
+
+// icons
 import {
-  BadgeCheck,
-  Bell,
   ChevronsUpDown,
-  CreditCard,
   LogOut,
-  Sparkles,
 } from "lucide-react"
 
+// components
 import {
   Avatar,
   AvatarFallback,
@@ -31,7 +32,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 
-import { signOut } from "next-auth/react"
 
 export function NavUser({
   user,
@@ -51,7 +51,9 @@ export function NavUser({
     const initials = names.map(name => name[0].toUpperCase()).join(''); // Take the first letter of each name
     return initials;
   }
+
   const initials = getInitials(fullName);
+  const router = useRouter()
 
   return (
     <SidebarMenu>
@@ -92,11 +94,9 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <button className="flex" onClick={() => signOut({ callbackUrl: "/" })}>
-                <LogOut className=" mr-5" />
-                Log out
-              </button>
+            <DropdownMenuItem onClick={() => router.push("/")}>
+              <LogOut className=" mr-5" />
+              <span>Logout</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

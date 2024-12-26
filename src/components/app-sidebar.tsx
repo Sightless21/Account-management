@@ -1,27 +1,25 @@
 "use client"
 
+// react + next
 import { useSession } from "next-auth/react"
-
 import Image from 'next/image'
-
 import * as React from "react"
+
+// icons
 import {
-  AudioWaveform,
   BookOpen,
   Bot,
-  Command,
+  Briefcase,
   Frame,
-  GalleryVerticalEnd,
   Map,
   PieChart,
   Settings2,
-  SquareTerminal,
 } from "lucide-react"
 
+//nav components
 import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
+// sidebar components
 import {
   Sidebar,
   SidebarContent,
@@ -30,81 +28,63 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
-// import { getServerSession } from "next-auth";
-// import { authOptions } from "../app/api/auth/[...nextauth]/route";
-
-// const session = await getServerSession(authOptions)
-// This is sample data.
-
-
+// mui components
+import Divider from '@mui/joy/Divider';
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { data: session} = useSession()
+  const { data: session } = useSession()
 
   const data = {
     user: {
       name: session?.user?.name ?? "John Doe",
       email: session?.user?.email ?? "m@example.com",
-      avatar: session?.user?.image ?? "/avatars/shadcn.jpg",
+      avatar: session?.user?.image ?? "",
     },
-    teams: [
-      {
-        name: "Acme Inc",
-        logo: GalleryVerticalEnd,
-        plan: "Enterprise",
-      },
-      {
-        name: "Acme Corp.",
-        logo: AudioWaveform,
-        plan: "Startup",
-      },
-      {
-        name: "Evil Corp.",
-        logo: Command,
-        plan: "Free",
-      },
-    ],
     navMain: [
       {
-        title: "Playground",
+        title: "Wokrspace",
         url: "#",
-        icon: SquareTerminal,
+        icon: Briefcase,
         isActive: true,
         items: [
           {
-            title: "History",
+            title: "Applicant",
             url: "#",
           },
           {
-            title: "Starred",
+            title: "Kanban",
             url: "#",
           },
           {
-            title: "Settings",
+            title: "Meeting room",
             url: "#",
+          },
+          {
+            title : "Leave of absence",
+            url: "#"
+          },
+          {
+            title : "Reserve a car",
+            url: "#"
+          },
+          {
+            title : "claim expenses",
+            url: "#"
           },
         ],
       },
       {
-        title: "Models",
+        title: "Customer service",
         url: "#",
         icon: Bot,
         items: [
           {
-            title: "Genesis",
-            url: "#",
-          },
-          {
-            title: "Explorer",
-            url: "#",
-          },
-          {
-            title: "Quantum",
+            title: "Customer list",
             url: "#",
           },
         ],
       },
       {
-        title: "Documentation",
+        title: "Financial System",
         url: "#",
         icon: BookOpen,
         items: [
@@ -114,14 +94,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           },
           {
             title: "Get Started",
-            url: "#",
-          },
-          {
-            title: "Tutorials",
-            url: "#",
-          },
-          {
-            title: "Changelog",
             url: "#",
           },
         ],
@@ -135,51 +107,27 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             title: "General",
             url: "#",
           },
-          {
-            title: "Team",
-            url: "#",
-          },
-          {
-            title: "Billing",
-            url: "#",
-          },
-          {
-            title: "Limits",
-            url: "#",
-          },
         ],
-      },
-    ],
-    projects: [
-      {
-        name: "Design Engineering",
-        url: "#",
-        icon: Frame,
-      },
-      {
-        name: "Sales & Marketing",
-        url: "#",
-        icon: PieChart,
-      },
-      {
-        name: "Travel",
-        url: "#",
-        icon: Map,
       },
     ],
   }
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader className="flex items-center">
-        {/* <TeamSwitcher teams={data.teams} /> */}
-        <Image src={""} alt={"Loading"} width={100} height={50} />
+
+        <Image src="/img/Logo.png" alt="Loading" width={100} height={50} />
+        <Divider />
+
       </SidebarHeader>
       <SidebarContent>
+
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+
       </SidebarContent>
       <SidebarFooter>
+
         <NavUser user={data.user} />
+
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

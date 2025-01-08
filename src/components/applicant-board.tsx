@@ -9,6 +9,9 @@ import React, {
 import { FiPlus, FiTrash } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { FaFire } from "react-icons/fa";
+import { MdDragIndicator } from "react-icons/md";
+import { IoPersonSharp } from "react-icons/io5";
+import { Button } from "./ui/button";
 
 export const ApplicantBoard = () => {
   return (
@@ -22,12 +25,12 @@ const Board = () => {
   const [cards, setCards] = useState(DEFAULT_CARDS); // Array
 
   return (
-    <div className="flex gap-5 overflow-scroll px-12 ">
+    <div className="flex gap-5 overflow-scroll ">
       <Column
         title="Applicant"
         column="todo"
         headingBgColor="bg-yellow-200/25"
-        headingColor="text-yellow-300"
+        headingColor="text-yellow-600 uppercase"
         cards={cards}
         setCards={setCards}
       />
@@ -35,7 +38,7 @@ const Board = () => {
         title="In progress interview"
         column="doing"
         headingBgColor="bg-blue-200/25"
-        headingColor="text-blue-200"
+        headingColor="text-blue-600 uppercase"
         cards={cards}
         setCards={setCards}
       />
@@ -43,7 +46,7 @@ const Board = () => {
         title="Interview pass"
         column="done"
         headingBgColor="bg-emerald-200/25"
-        headingColor="text-emerald-200"
+        headingColor="text-emerald-600 uppercase"
         cards={cards}
         setCards={setCards}
       />
@@ -204,7 +207,7 @@ type CardProps = CardType & {
   handleDragStart: (e: DragEvent, card: CardType) => void;
 };
 
-const Card = ({ title, id, column, handleDragStart }: CardProps) => {
+const Card = ({ title, id, column, jobTitle, handleDragStart }: CardProps) => {
   return (
     <>
       <DropIndicator beforeId={id} column={column} />
@@ -212,11 +215,23 @@ const Card = ({ title, id, column, handleDragStart }: CardProps) => {
         layout
         layoutId={id}
         draggable="true"
-        onDragStart={(e) => handleDragStart(e as unknown as DragEvent, { title, id, column })}
-        className="box cursor-grab rounded border border-neutral-700 bg-neutral-800 p-3 active:cursor-grabbing"
+        onDragStart={(e) => handleDragStart(e as unknown as DragEvent, { title, id, column, jobTitle })}
+        className="flex items-start flex-col justify-between cursor-grab rounded border border-neutral-700 bg-white active:cursor-grabbing hover:bg-neutral-300"
         whileTap={{ scale: 1.04 }}
+        whileHover={{ scale: 1.04 }}
       >
-        <p className="text-sm text-neutral-100  text-ellipsis overflow-hidden">{title}</p>
+        <div className="flex items-center justify-between gap-x-9 mb-2 bg-neutral-800 w-full p-2">
+          <div className="flex items-start gap-2">
+            <IoPersonSharp color="white" />
+            <p className="text-sm text-neutral-100 overflow-hidden">{title}</p>
+          </div>
+          <div className="flex items-end">
+            <MdDragIndicator height={25} width={25} color="white" />
+          </div>
+        </div>
+        <div>
+          <Button className="mb-2" variant="ghost" size={'sm'}>More info</Button>
+        </div>
       </motion.div>
     </>
   );
@@ -341,8 +356,6 @@ const AddCard = ({ column, setCards }: AddCardProps) => {
   );
 };
 
-
-
 // card example
 type ColumnType = "todo" | "doing" | "done";
 
@@ -350,41 +363,48 @@ type CardType = {
   title: string;
   id: string;
   column: ColumnType;
+  jobTitle: string
 };
 
 const DEFAULT_CARDS: CardType[] = [
   // TODO
   {
-    title: "Research DB options for new microservice",
-    id: "5",
+    title: "Mr. John Doe",
+    id: "1",
     column: "todo",
+    jobTitle: "QA engineer"
   },
   {
-    title: "Postmortem for outage",
-    id: "6",
-    column: "todo"
+    title: "Mr. John Doe",
+    id: "2",
+    column: "todo",
+    jobTitle: "Bissiness analyst"
   },
   {
-    title: "Sync with product on Q3 roadmap",
-    id: "7",
-    column: "todo"
+    title: "Mrs. Jane Doe",
+    id: "3",
+    column: "todo",
+    jobTitle: "frontend developer"
   },
 
   // DOING
   {
-    title: "Refactor context providers to use Zustand",
-    id: "8",
+    title: "Mrs. Jane Doe",
+    id: "4",
     column: "doing",
+    jobTitle: "backend developer"
   },
   {
-    title: "Add logging to daily CRON",
-    id: "9",
-    column: "doing"
+    title: "Mr. John Doe",
+    id: "5",
+    column: "doing",
+    jobTitle: "DevSecOps"
   },
   // DONE
   {
-    title: "Set up DD dashboards for Lambda listener",
-    id: "10",
+    title: "นาย ภานุพงศ์ สุวรรณพงศ์",
+    id: "6",
     column: "done",
+    jobTitle: "fullstack developer"
   },
 ];

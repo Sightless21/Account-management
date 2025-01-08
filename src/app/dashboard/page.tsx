@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import  { BoxChart1, BoxChart2, BoxChart3 } from "@/components/box-chart"
 
 export default function Page() {
-  const [checked, setChecked] = useState(true) // true is loading
+  const [checked, setChecked] = useState(false) // true is loading
 
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">

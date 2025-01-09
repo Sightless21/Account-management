@@ -1,47 +1,42 @@
 "use client"
-import { BoxChart1, BoxChart2, BoxChart3 } from '@/components/box-chart';
-import React from 'react';
-import { Suspense } from 'react';
+
+import * as React from "react"
+import { format } from "date-fns"
+import { Calendar as CalendarIcon } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 export default function Page() {
-    function RenderData() {
-        const [data, setData] = React.useState<string | null>(null);
-
-        React.useEffect(() => {
-            const fetchData = async () => {
-                await new Promise((resolve) =>
-                    setTimeout(() => resolve(setData('Data Loaded: John Doe')), 800)
-                );
-            };
-            fetchData();
-        }, []);
-
-        if (!data) {
-            return (
-                <div className='flex justify-center items-center'>
-                    <span className="loading loading-dots loading-lg" />
-                </div>
-            )
-        }
-
-        return (
-            <div className='flex flex-1 flex-col gap-4 p-4 pt-0'>
-                <div className='grid auto-rows-min gap-4 md:grid-cols-3'>
-                    <BoxChart1 />
-                    <BoxChart2 />
-                    <BoxChart3 />
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <div>
-            <h1>Claim Expenses Dashboar</h1>
-            <Suspense>
-                {/* ส่วนนี้จะถูกแสดงหลังจากโหลดเสร็จ */}
-                <RenderData />
-            </Suspense>
-        </div>
-    );
+  const [date, setDate] = React.useState<Date>()
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          variant={"outline"}
+          className={cn(
+            "w-[280px] justify-start text-left font-normal",
+            !date && "text-muted-foreground"
+          )}
+        >
+          <CalendarIcon className="mr-2 h-4 w-4" />
+          {date ? format(date, "PPP") : <span>Pick a date</span>}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0">
+        <Calendar
+          mode="single"
+          selected={date}
+          onSelect={setDate}
+          initialFocus
+        />
+      </PopoverContent>
+    </Popover>
+  );
 }

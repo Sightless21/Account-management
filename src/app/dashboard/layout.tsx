@@ -4,6 +4,7 @@ import {
     SidebarInset,
     SidebarProvider,
 } from "@/components/ui/sidebar"
+import { Toaster } from "@/components/ui/toaster"
 
 export default function DashboardLayout({
     children,
@@ -24,6 +25,7 @@ export default function DashboardLayout({
                     </div>
                     <div className="mt-2">
                         {children}
+                        <Toaster />
                     </div>
                 </SidebarInset>
             </SidebarProvider>

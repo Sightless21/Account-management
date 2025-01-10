@@ -10,8 +10,8 @@ import { FiPlus, FiTrash } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { FaFire } from "react-icons/fa";
 import { MdDragIndicator } from "react-icons/md";
-import { Button } from "./ui/button";
-import { TiCancel, TiTick } from "react-icons/ti";
+import { Badge } from "@/components/ui/badge"
+
 export const KanBanBoard = () => {
     return (
         <div>
@@ -204,7 +204,7 @@ type CardProps = CardType & {
     handleDragStart: (e: DragEvent, card: CardType) => void;
 };
 
-const Card = ({ title, id, column, description, handleDragStart }: CardProps) => {
+const Card = ({ title, id, column, description , priority, handleDragStart }: CardProps) => {
     return (
         <>
             <DropIndicator beforeId={id} column={column} />
@@ -212,7 +212,7 @@ const Card = ({ title, id, column, description, handleDragStart }: CardProps) =>
                 layout
                 layoutId={id}
                 draggable="true"
-                onDragStart={(e) => handleDragStart(e as unknown as DragEvent, { title, id, column, description })}
+                onDragStart={(e) => handleDragStart(e as unknown as DragEvent, { title, id, column, description, priority })}
                 className="flex items-start flex-col justify-between cursor-grab rounded border border-neutral-700 bg-white active:cursor-grabbing hover:bg-neutral-300 snap-center"
                 whileTap={{ scale: 1.04 }}
                 whileHover={{ scale: 1.04 }}
@@ -232,8 +232,9 @@ const Card = ({ title, id, column, description, handleDragStart }: CardProps) =>
                 <div className="flex gap-2 items-center py-1 px-2 w-full">
                     <p className="flex text-sm text-muted-foreground items-end">{description}</p>
                 </div>
-                <div className="flex flex-row-reverse">
+                <div className="flex w-full justify-end items-center gap-2 p-2">
                     {/* Badge */}
+                    <Badge variant="secondary">{priority}</Badge>
                 </div>
             </motion.div>
         </>
@@ -312,7 +313,8 @@ const AddCard = ({ column, setCards }: AddCardProps) => {
             column,
             title: text.trim(),
             id: Math.random().toString(),
-            description: "full-stack developer"
+            description: "full-stack developer",
+            priority : "high"
         };
 
         setCards((pv) => [...pv, newCard]);
@@ -368,6 +370,7 @@ type CardType = {
     id: string;
     column: ColumnType;
     description: string;
+    priority: string;
 };
 
 const DEFAULT_CARDS: CardType[] = [
@@ -376,19 +379,22 @@ const DEFAULT_CARDS: CardType[] = [
         title: "Test User",
         id: "1",
         column: "todo",
-        description: "Donec nec justo eget felis facilisis fermentum. Aliquam porttitor mauris sit amet orci. Aenean dignissim pellentesque felis."
+        description: "Donec nec justo eget felis facilisis fermentum. Aliquam porttitor mauris sit amet orci. Aenean dignissim pellentesque felis.",
+        priority: "high"
     },
     {
         title: "Test email",
         id: "2",
         column: "todo",
-        description: "Donec nec justo eget felis facilisis fermentum. Aliquam porttitor mauris sit amet orci. Aenean dignissim pellentesque felis."
+        description: "Donec nec justo eget felis facilisis fermentum. Aliquam porttitor mauris sit amet orci. Aenean dignissim pellentesque felis.",
+        priority: "medium"
     },
     {
         title: "Test password",
         id: "3",
         column: "todo",
-        description: "Donec nec justo eget felis facilisis fermentum. Aliquam porttitor mauris sit amet orci. Aenean dignissim pellentesque felis."
+        description: "Donec nec justo eget felis facilisis fermentum. Aliquam porttitor mauris sit amet orci. Aenean dignissim pellentesque felis.",
+        priority: "low"
     },
 
     // DOING
@@ -396,37 +402,43 @@ const DEFAULT_CARDS: CardType[] = [
         title: "Refactor code",
         id: "4",
         column: "doing",
-        description: "Donec nec justo eget felis facilisis fermentum. Aliquam porttitor mauris sit amet orci. Aenean dignissim pellentesque felis."
+        description: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna nibh viverra non semper suscipit posuere a pede.",
+        priority: "high"
     },
     {
         title: "Debug code",
         id: "5",
         column: "doing",
-        description: "Donec nec justo eget felis facilisis fermentum. Aliquam porttitor mauris sit amet orci. Aenean dignissim pellentesque felis."
+        description: "Donec nec justo eget felis facilisis fermentum. Aliquam porttitor mauris sit amet orci. Aenean dignissim pellentesque felis.",
+        priority: "medium"
     },
     {
         title: "Debug code",
         id: "7",
         column: "doing",
-        description: "Donec nec justo eget felis facilisis fermentum. Aliquam porttitor mauris sit amet orci. Aenean dignissim pellentesque felis."
+        description: "Donec nec justo eget felis facilisis fermentum. Aliquam porttitor mauris sit amet orci. Aenean dignissim pellentesque felis.",
+        priority: "low"
     },
     {
         title: "Debug code",
         id: "8",
         column: "doing",
-        description: "Donec nec justo eget felis facilisis fermentum. Aliquam porttitor mauris sit amet orci. Aenean dignissim pellentesque felis."
+        description: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna nibh viverra non semper suscipit posuere a pede.",
+        priority: "low"
     },
     {
         title: "Debug code",
         id: "9",
         column: "doing",
-        description: "Donec nec justo eget felis facilisis fermentum. Aliquam porttitor mauris sit amet orci. Aenean dignissim pellentesque felis."
+        description: "Donec nec justo eget felis facilisis fermentum. Aliquam porttitor mauris sit amet orci. Aenean dignissim pellentesque felis.",
+        priority: "low"
     },
     // DONE
     {
         title: "Deploy to production",
         id: "6",
         column: "done",
-        description: "Donec nec justo eget felis facilisis fermentum. Aliquam porttitor mauris sit amet orci. Aenean dignissim pellentesque felis."
+        description: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna nibh viverra non semper suscipit posuere a pede.",
+        priority: "low"
     },
 ];

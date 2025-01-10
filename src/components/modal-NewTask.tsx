@@ -61,7 +61,7 @@ export default function ModalNewTask() {
     }
     return (
         <Dialog>
-            <DialogTrigger>
+            <DialogTrigger asChild>
                 <Button variant="default">New Task</Button>
             </DialogTrigger>
             <DialogContent className="sm:w-[700px] min-h-28 ">

@@ -20,7 +20,7 @@ export default function ModalNewApplicant() {
             <DialogTrigger asChild>
                 <Button variant="default">New Applicant</Button>
             </DialogTrigger>
-            <DialogContent className="sm:w-[1200px] min-h-28 overflow-y-auto">
+            <DialogContent className="sm:w-[1200px] min-h-28 ">
                 <DialogHeader>
                     <DialogTitle>New Applicant</DialogTitle>
                     <DialogDescription>

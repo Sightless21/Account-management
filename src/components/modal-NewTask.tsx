@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 import React, { useState } from "react";
 import {
@@ -19,8 +20,10 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-
+import { Textarea } from "@/components/ui/textarea"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { TiCancel , TiTick } from "react-icons/ti";
+
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
@@ -38,17 +41,17 @@ const formSchema = z.object({
 
 
 export default function ModalNewTask() {
-    
+
     const [projectName, setProjectName] = useState("")
     const [taskName, setTaskName] = useState("")
     const [description, setDescription] = useState("")
-    
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            projectName : "",
-            taskName : "",
-            description : "",
+            projectName: "",
+            taskName: "",
+            description: "",
         },
     })
     async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -61,7 +64,7 @@ export default function ModalNewTask() {
             <DialogTrigger>
                 <Button variant="default">New Task</Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="sm:w-[700px] min-h-28 ">
                 <DialogHeader>
                     <DialogTitle>New Task</DialogTitle>
                     <DialogDescription>
@@ -76,11 +79,8 @@ export default function ModalNewTask() {
                                     <FormItem>
                                         <FormLabel>Project Name</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="shadcn" {...field} />
+                                            <Input placeholder="new-project" {...field} />
                                         </FormControl>
-                                        <FormDescription>
-                                            This is your public display name.
-                                        </FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -92,11 +92,8 @@ export default function ModalNewTask() {
                                     <FormItem>
                                         <FormLabel>Task Name</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="shadcn" {...field} />
+                                            <Input placeholder="new-task" {...field} />
                                         </FormControl>
-                                        <FormDescription>
-                                            This is your public display name.
-                                        </FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -107,17 +104,17 @@ export default function ModalNewTask() {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Description</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="shadcn" {...field} />
+                                        <FormControl className="text-start">
+                                            <Textarea placeholder="Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna nibh viverra non semper suscipit posuere a pede." {...field} />
                                         </FormControl>
-                                        <FormDescription>
-                                            This is your public display name.
-                                        </FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
-                            <Button type="submit">Submit</Button>
+                            <div className="flex flex-row justify-end gap-2">
+                                <Button type="submit"> <TiTick /> Submit</Button>
+                                <Button type="button" variant={"destructive"} className="bg-red-600"> <TiCancel /> Cancel</Button>
+                            </div>
                         </form>
                     </Form>
                 </DialogHeader>

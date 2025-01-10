@@ -11,11 +11,12 @@ import { motion } from "framer-motion";
 import { FaFire } from "react-icons/fa";
 import { MdDragIndicator } from "react-icons/md";
 import { Button } from "./ui/button";
-import { Checkbox } from "./ui/checkbox";
+import { TiCancel, TiTick } from "react-icons/ti";
 export const KanBanBoard = () => {
     return (
         <div>
             <Board />
+            <p className="text-sm text-muted-foreground">Loading ... & Saved Status</p>
         </div>
     );
 }
@@ -216,17 +217,23 @@ const Card = ({ title, id, column, description, handleDragStart }: CardProps) =>
                 whileTap={{ scale: 1.04 }}
                 whileHover={{ scale: 1.04 }}
             >
+                {/* Card */}
                 <div className="flex items-center justify-between gap-x-9 mb-2 bg-neutral-800 w-full p-2">
+                    {/* Title */}
                     <div className="flex items-start gap-2">
                         <p className="text-sm text-neutral-100 overflow-hidden">{title}</p>
                     </div>
+                    {/* Drag indicator */}
                     <div className="flex items-end">
                         <MdDragIndicator height={25} width={25} color="white" />
                     </div>
                 </div>
+                {/* Description */}
                 <div className="flex gap-2 items-center py-1 px-2 w-full">
                     <p className="flex text-sm text-muted-foreground items-end">{description}</p>
-                    {/* <Button className="mb-1" variant="link" size={'sm'}>More info</Button> */}
+                </div>
+                <div className="flex flex-row-reverse">
+                    {/* Badge */}
                 </div>
             </motion.div>
         </>

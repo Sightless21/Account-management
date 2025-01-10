@@ -13,7 +13,7 @@ export default function DashboardLayout({
 }) {
     return (
         <section>
-            <SidebarProvider defaultOpen open>
+            <SidebarProvider defaultOpen={true} open={true}>
                 <AppSidebar collapsible="icon" variant="inset" />
                 <SidebarInset>
                     <div className="flex items-center gap-2 px-4 mt-4">

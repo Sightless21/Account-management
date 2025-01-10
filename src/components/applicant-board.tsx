@@ -26,7 +26,7 @@ const Board = () => {
   const [cards, setCards] = useState(DEFAULT_CARDS); // Array
 
   return (
-    <div className="flex gap-5 overflow-scroll ">
+    <div className="flex gap-5 overflow-scroll">
       <Column
         title="Applicant"
         column="todo"
@@ -62,7 +62,6 @@ type ColumnProps = {
   headingColor: string;
   cards: CardType[];
   column: ColumnType;
-
   setCards: Dispatch<SetStateAction<CardType[]>>;
 };
 

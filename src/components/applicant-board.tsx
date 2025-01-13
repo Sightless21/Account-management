@@ -17,7 +17,9 @@ export const ApplicantBoard = () => {
   return (
     <div>
       <Board />
+
       <p className="text-sm text-muted-foreground">Loading ... & Saved Status</p>
+
     </div>
   );
 };
@@ -26,6 +28,7 @@ const Board = () => {
   const [cards, setCards] = useState(DEFAULT_CARDS); // Array
 
   return (
+
     <div className="flex gap-5 overflow-scroll">
       <Column
         title="Applicant"
@@ -38,6 +41,7 @@ const Board = () => {
       <Column
         title="In progress interview"
         column="doing"
+
         headingBgColor="bg-yellow-200/25 border border-yellow-600"
         headingColor="text-yellow-600 uppercase"
         cards={cards}
@@ -46,6 +50,7 @@ const Board = () => {
       <Column
         title="Interview pass"
         column="done"
+
         headingBgColor="bg-emerald-200/25 border border-emerald-600"
         headingColor="text-emerald-600 uppercase"
         cards={cards}
@@ -62,6 +67,8 @@ type ColumnProps = {
   headingColor: string;
   cards: CardType[];
   column: ColumnType;
+
+
   setCards: Dispatch<SetStateAction<CardType[]>>;
 };
 
@@ -181,6 +188,7 @@ const Column = ({
   return (
     <div className={`w-72 h-[500px] shrink-0 border-4 rounded py-x-2 ${headingBgColor}`}>
       <div className={`mb-3 flex items-center justify-between overflow-y-auto p-2`}>
+
         <h3 className={`font-medium decoration-4 ${headingColor}`}>{title}</h3>
         <span className="rounded text-sm text-neutral-400">
           Total : {filteredCards.length}
@@ -190,6 +198,7 @@ const Column = ({
         onDrop={handleDragEnd}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
+
         className={`h-[435px] w-full transition-colors p-4 ease-in-out snap-x border-t-4 border-black border-dotted ${active ? "bg-neutral-800/20" : "bg-neutral-800/0"} overflow-y-auto`}
       >
         {filteredCards.map((c) => {
@@ -206,6 +215,7 @@ type CardProps = CardType & {
   handleDragStart: (e: DragEvent, card: CardType) => void;
 };
 
+
 const Card = ({ title, id, column, jobRole, handleDragStart }: CardProps) => {
   return (
     <>
@@ -214,6 +224,7 @@ const Card = ({ title, id, column, jobRole, handleDragStart }: CardProps) => {
         layout
         layoutId={id}
         draggable="true"
+
         onDragStart={(e) => handleDragStart(e as unknown as DragEvent, { title, id, column, jobRole })}
         className="flex items-start flex-col justify-between cursor-grab rounded border border-neutral-700 bg-white active:cursor-grabbing hover:bg-neutral-300 snap-center"
         whileTap={{ scale: 1.04 }}
@@ -228,6 +239,7 @@ const Card = ({ title, id, column, jobRole, handleDragStart }: CardProps) => {
             <MdDragIndicator height={25} width={25} color="white" />
           </div>
         </div>
+
         <div className="flex gap-2 items-center py-1 px-2 w-full">
           <p className="flex text-sm text-muted-foreground items-end">{jobRole}</p>
             <Button className="mb-1" variant="link" size={'sm'}>More info</Button>
@@ -309,6 +321,7 @@ const AddCard = ({ column, setCards }: AddCardProps) => {
       column,
       title: text.trim(),
       id: Math.random().toString(),
+
       jobRole: "full-stack developer"
     };
 
@@ -364,6 +377,7 @@ type CardType = {
   title: string;
   id: string;
   column: ColumnType;
+
   jobRole: string;
 };
 
@@ -373,18 +387,21 @@ const DEFAULT_CARDS: CardType[] = [
     title: "Mr. John Doe",
     id: "1",
     column: "todo",
+
     jobRole: "full-stack developer"
   },
   {
     title: "Mr. John Doe",
     id: "2",
     column: "todo",
+
     jobRole: "full-stack developer"
   },
   {
     title: "Mrs. Jane Doe",
     id: "3",
     column: "todo",
+
     jobRole: "full-stack developer"
   },
 
@@ -393,12 +410,14 @@ const DEFAULT_CARDS: CardType[] = [
     title: "Mrs. Jane Doe",
     id: "4",
     column: "doing",
+
     jobRole: "full-stack developer"
   },
   {
     title: "Mr. John Doe",
     id: "5",
     column: "doing",
+
     jobRole: "full-stack developer"
   },
   // DONE
@@ -406,6 +425,7 @@ const DEFAULT_CARDS: CardType[] = [
     title: "นาย ภานุพงศ์ สุวรรณพงศ์",
     id: "6",
     column: "done",
+
     jobRole: "full-stack developer"
   },
 ];

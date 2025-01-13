@@ -100,7 +100,7 @@ export default function SignIn() {
                     <FormLabel>Password</FormLabel>
                     <FormMessage />
                     <FormControl>
-                      <Input placeholder="Password validation is at least 6 character" {...field} />
+                      <Input type="password" placeholder="Password validation is at least 6 character" {...field} />
                     </FormControl>
                   </FormItem>
                 )}

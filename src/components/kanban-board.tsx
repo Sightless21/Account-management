@@ -205,6 +205,19 @@ type CardProps = CardType & {
 };
 
 const Card = ({ title, id, column, description , priority, handleDragStart }: CardProps) => {
+
+    function getPriorityColor(priority: string) {
+        switch (priority) {
+            case "high":
+                return <p className="text-red-600">High</p>
+            case "medium":
+                return <p className="text-yellow-600">Medium</p>
+            case "low":
+                return <p className="text-green-600">Low</p>
+            default:
+                return <p className="text-gray-600">None</p>
+        }
+    }
     return (
         <>
             <DropIndicator beforeId={id} column={column} />
@@ -234,7 +247,7 @@ const Card = ({ title, id, column, description , priority, handleDragStart }: Ca
                 </div>
                 <div className="flex w-full justify-end items-center gap-2 p-2">
                     {/* Badge */}
-                    <Badge variant="secondary">{priority}</Badge>
+                    <Badge variant="secondary">{getPriorityColor(priority)}</Badge>
                 </div>
             </motion.div>
         </>

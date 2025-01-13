@@ -17,6 +17,9 @@ export const ApplicantBoard = () => {
   return (
     <div>
       <Board />
+
+      <p className="text-sm text-muted-foreground">Loading ... & Saved Status</p>
+
     </div>
   );
 };
@@ -25,27 +28,30 @@ const Board = () => {
   const [cards, setCards] = useState(DEFAULT_CARDS); // Array
 
   return (
-    <div className="flex gap-5 overflow-scroll ">
+
+    <div className="flex gap-5 overflow-scroll">
       <Column
         title="Applicant"
         column="todo"
-        headingBgColor="bg-yellow-200/25"
-        headingColor="text-yellow-600 uppercase"
+        headingBgColor="bg-blue-200/25 border border-blue-600"
+        headingColor="text-blue-600 uppercase"
         cards={cards}
         setCards={setCards}
       />
       <Column
         title="In progress interview"
         column="doing"
-        headingBgColor="bg-blue-200/25"
-        headingColor="text-blue-600 uppercase"
+
+        headingBgColor="bg-yellow-200/25 border border-yellow-600"
+        headingColor="text-yellow-600 uppercase"
         cards={cards}
         setCards={setCards}
       />
       <Column
         title="Interview pass"
         column="done"
-        headingBgColor="bg-emerald-200/25"
+
+        headingBgColor="bg-emerald-200/25 border border-emerald-600"
         headingColor="text-emerald-600 uppercase"
         cards={cards}
         setCards={setCards}
@@ -61,6 +67,7 @@ type ColumnProps = {
   headingColor: string;
   cards: CardType[];
   column: ColumnType;
+
 
   setCards: Dispatch<SetStateAction<CardType[]>>;
 };
@@ -181,17 +188,18 @@ const Column = ({
   return (
     <div className={`w-72 h-[500px] shrink-0 border-4 rounded py-x-2 ${headingBgColor}`}>
       <div className={`mb-3 flex items-center justify-between overflow-y-auto p-2`}>
-        <h3 className={`font-medium underline decoration-4 ${headingColor}`}>{title}</h3>
+
+        <h3 className={`font-medium decoration-4 ${headingColor}`}>{title}</h3>
         <span className="rounded text-sm text-neutral-400">
-          total {filteredCards.length}
+          Total : {filteredCards.length}
         </span>
       </div>
       <div
         onDrop={handleDragEnd}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        className={`h-[435px] w-full transition-colors p-4 ${active ? "bg-neutral-800/50" : "bg-neutral-800/0"
-          } overflow-y-auto`}
+
+        className={`h-[435px] w-full transition-colors p-4 ease-in-out snap-x border-t-4 border-black border-dotted ${active ? "bg-neutral-800/20" : "bg-neutral-800/0"} overflow-y-auto`}
       >
         {filteredCards.map((c) => {
           return <Card key={c.id} {...c} handleDragStart={handleDragStart} />;
@@ -207,7 +215,8 @@ type CardProps = CardType & {
   handleDragStart: (e: DragEvent, card: CardType) => void;
 };
 
-const Card = ({ title, id, column, jobTitle, handleDragStart }: CardProps) => {
+
+const Card = ({ title, id, column, jobRole, handleDragStart }: CardProps) => {
   return (
     <>
       <DropIndicator beforeId={id} column={column} />
@@ -215,8 +224,9 @@ const Card = ({ title, id, column, jobTitle, handleDragStart }: CardProps) => {
         layout
         layoutId={id}
         draggable="true"
-        onDragStart={(e) => handleDragStart(e as unknown as DragEvent, { title, id, column, jobTitle })}
-        className="flex items-start flex-col justify-between cursor-grab rounded border border-neutral-700 bg-white active:cursor-grabbing hover:bg-neutral-300"
+
+        onDragStart={(e) => handleDragStart(e as unknown as DragEvent, { title, id, column, jobRole })}
+        className="flex items-start flex-col justify-between cursor-grab rounded border border-neutral-700 bg-white active:cursor-grabbing hover:bg-neutral-300 snap-center"
         whileTap={{ scale: 1.04 }}
         whileHover={{ scale: 1.04 }}
       >
@@ -229,8 +239,10 @@ const Card = ({ title, id, column, jobTitle, handleDragStart }: CardProps) => {
             <MdDragIndicator height={25} width={25} color="white" />
           </div>
         </div>
-        <div>
-          <Button className="mb-2" variant="ghost" size={'sm'}>More info</Button>
+
+        <div className="flex gap-2 items-center py-1 px-2 w-full">
+          <p className="flex text-sm text-muted-foreground items-end">{jobRole}</p>
+            <Button className="mb-1" variant="link" size={'sm'}>More info</Button>
         </div>
       </motion.div>
     </>
@@ -309,6 +321,8 @@ const AddCard = ({ column, setCards }: AddCardProps) => {
       column,
       title: text.trim(),
       id: Math.random().toString(),
+
+      jobRole: "full-stack developer"
     };
 
     setCards((pv) => [...pv, newCard]);
@@ -363,7 +377,8 @@ type CardType = {
   title: string;
   id: string;
   column: ColumnType;
-  jobTitle: string
+
+  jobRole: string;
 };
 
 const DEFAULT_CARDS: CardType[] = [
@@ -372,19 +387,22 @@ const DEFAULT_CARDS: CardType[] = [
     title: "Mr. John Doe",
     id: "1",
     column: "todo",
-    jobTitle: "QA engineer"
+
+    jobRole: "full-stack developer"
   },
   {
     title: "Mr. John Doe",
     id: "2",
     column: "todo",
-    jobTitle: "Bissiness analyst"
+
+    jobRole: "full-stack developer"
   },
   {
     title: "Mrs. Jane Doe",
     id: "3",
     column: "todo",
-    jobTitle: "frontend developer"
+
+    jobRole: "full-stack developer"
   },
 
   // DOING
@@ -392,19 +410,22 @@ const DEFAULT_CARDS: CardType[] = [
     title: "Mrs. Jane Doe",
     id: "4",
     column: "doing",
-    jobTitle: "backend developer"
+
+    jobRole: "full-stack developer"
   },
   {
     title: "Mr. John Doe",
     id: "5",
     column: "doing",
-    jobTitle: "DevSecOps"
+
+    jobRole: "full-stack developer"
   },
   // DONE
   {
     title: "นาย ภานุพงศ์ สุวรรณพงศ์",
     id: "6",
     column: "done",
-    jobTitle: "fullstack developer"
+
+    jobRole: "full-stack developer"
   },
 ];

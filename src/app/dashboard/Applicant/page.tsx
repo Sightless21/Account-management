@@ -1,24 +1,25 @@
 'use client'
-import React from "react";
-import { ApplicantBoard } from '@/components/applicant-board'
-import { Button } from "@/components/ui/button";
-
+import { ApplicantBoard } from "@/components/applicant-board";
+import { Button } from "@/components/ui/button"
 import { useRouter } from 'next/navigation'
+import * as React from "react"
+import ModalNewApplicant from "@/components/modal-Newapplicant"
 
 export default function Page() {
-
     const router = useRouter();
 
-    function handleClick() {
-        router.push('/dashboard/Applicant/Probation');
+    function handleProbationPage() {
+        router.push("/dashboard/Applicant/Probation");
     }
+
     return (
-        <div className="flex flex-1 flex-col gap-4  pt-0 justify-center items-start pl-4">
-            <div className="flex justify-center items-center mb-6 gap-4">
-
-                <Button className="bg-emerald-400 hover:bg-emerald-600 ">New Applicant</Button>
-                <Button onClick={handleClick} className="bg-teal-400 hover:bg-teal-600">Probation</Button>
-
+        <div className="flex flex-col gap-4 ml-3 mr-3">
+            <div className="flex items-center justify-between scroll-m-20 border-b pb-2 mr-3 text-3xl font-semibold tracking-tight first:mt-0">
+                Applicant Board
+                <div className="flex ml-4 gap-3">
+                    <ModalNewApplicant />
+                    <Button onClick={handleProbationPage}>Probation</Button>
+                </div>
             </div>
             <ApplicantBoard />
         </div>

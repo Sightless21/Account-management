@@ -94,7 +94,7 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => router.push("/")}>
+            <DropdownMenuItem onClick={() => router.push("/")} className="cursor-pointer">
               <LogOut className=" mr-5" />
               <span>Logout</span>
             </DropdownMenuItem>

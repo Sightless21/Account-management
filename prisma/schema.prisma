@@ -7,13 +7,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model Employee {
   id             String        @id @default(auto()) @map("_id") @db.ObjectId
-  name           String?
+  firstName      String
+  lastName       String
   email          String        @unique
-  hashedPassword String?
-  image          String?
+  phoneNumber    String
+  hashedPassword String
   role           Role          @default(EMPLOYEE)
+  dateOfBirth    DateTime?
+  address        String?
+  position       String?
+  nationality    String?
+  ethnicity      String?
+  religion       String?
+  militaryStatus String?
+  maritalStatus  String?
+  dwelling       String?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   Leave          Leave[]
@@ -30,23 +40,24 @@ enum Role {
 }
 
 model Applicantion {
-  id             String            @id @default(auto()) @map("_id") @db.ObjectId
-  name           String
-  email          String
-  dateOfBirth    DateTime
-  address        String?
-  position       String
-  expectSalary   Int
-  nationality    String
-  ethnicity      String
-  religion       String
-  militaryStatus String
-  maritalStatus  String
-  dwelling       String
-  status         ApplicationStatus @default(NEW)
-  ducuments      Document[]
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
+  id              String            @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  email           String
+  dateOfBirth     DateTime
+  address         String?
+  position        String
+  expectSalary    Int
+  nationality     String
+  ethnicity       String
+  religion        String
+  militaryStatus  String
+  maritalStatus   String
+  dwelling        String
+  probationStatus Boolean
+  status          ApplicationStatus @default(NEW)
+  ducuments       Document[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
 }
 
 model Document {
@@ -69,7 +80,7 @@ model KanbanTask {
   description  String
   status       TaskStatus @default(TODO)
   priority     Priority   @default(LOW)
-  assignedTo   User?      @relation(fields: [assignedToId], references: [id], name: "UserAssignedTasks")
+  assignedTo   Employee?  @relation(fields: [assignedToId], references: [id], name: "UserAssignedTasks")
   assignedToId String?    @db.ObjectId
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
@@ -89,7 +100,7 @@ enum Priority {
 
 model Leave {
   id        String      @id @default(auto()) @map("_id") @db.ObjectId
-  user      User        @relation(fields: [userId], references: [id])
+  user      Employee    @relation(fields: [userId], references: [id])
   userId    String      @db.ObjectId
   startDate DateTime
   endDate   DateTime
@@ -107,7 +118,7 @@ enum LeaveStatus {
 
 model RoomBooking {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  user      User     @relation(fields: [userId], references: [id])
+  user      Employee @relation(fields: [userId], references: [id])
   userId    String   @db.ObjectId
   room      String
   startTime DateTime
@@ -118,7 +129,7 @@ model RoomBooking {
 
 model CarBooking {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  user      User     @relation(fields: [userId], references: [id])
+  user      Employee @relation(fields: [userId], references: [id])
   userId    String   @db.ObjectId
   car       String
   startTime DateTime
@@ -130,7 +141,7 @@ model CarBooking {
 // เบิกค่าใช้จ่าย
 model Expense {
   id          String        @id @default(auto()) @map("_id") @db.ObjectId
-  user        User          @relation(fields: [userId], references: [id])
+  user        Employee      @relation(fields: [userId], references: [id])
   userId      String        @db.ObjectId
   amount      Float
   description String
@@ -146,11 +157,12 @@ enum ExpenseStatus {
 }
 
 model Client {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  email     String
-  phone     String
-  address   String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  firstName      String
+  lastName       String
+  hashedPassword String
+  email          String   @unique
+  phone          String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }

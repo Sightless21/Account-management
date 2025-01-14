@@ -118,7 +118,7 @@ export default function ModalNewApplicant() {
                         </CardContent>
                     </Card>
                     <div className="grid grid-cols-3 gap-4">
-                        <Card className="max-h-[200px]">
+                        <Card className="max-h-[300px]">
                             <CardHeader>
                                 <CardTitle>Documents</CardTitle>
                                 <CardDescription>เอกสารสำหรับสมัครงาน</CardDescription>
@@ -137,13 +137,13 @@ export default function ModalNewApplicant() {
                                         <Checkbox id="Diploma" />
                                         <Label htmlFor="terms">สำเนาประกาศนียบัตร</Label>
                                     </div>
-                                    <div className="flex items-center space-x-2  gap-2">
-                                        <Checkbox id="bookBank" />
-                                        <Label htmlFor="terms">สำเนาหน้าสมุดธนาคารกสิกร</Label>
-                                    </div>
-                                    <div className="flex items-center space-x-2  gap-2">
+                                    <div className="flex items-center space-x-2 gap-2">
                                         <Checkbox id="other" />
                                         <Label htmlFor="terms">อื่นๆ (ถ้ามี) </Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2 gap-2">
+                                        <Checkbox id="bookBank" />
+                                        <Label htmlFor="terms">สำเนาหน้าสมุดธนาคารกสิกร</Label>
                                     </div>
                                 </div>
                             </CardContent>

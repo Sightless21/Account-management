@@ -7,9 +7,9 @@ import * as React from "react"
 // icons
 import {
   Briefcase,
-  Settings2,
   UserSearch,
   CircleDollarSign,
+  ServerCog,
 } from "lucide-react"
 
 //nav components
@@ -98,13 +98,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ],
       },
       {
-        title: "Settings",
-        url: "#",
-        icon: Settings2,
+        title: "Service",
+        url: "/dashboard",
+        icon: ServerCog,
         items: [
           {
-            title: "General",
-            url: "#",
+            title: "New user",
+            url: "/newUser",
           },
         ],
       },

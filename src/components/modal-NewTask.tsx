@@ -51,7 +51,7 @@ const formSchema = z.object({
 
 
 export default function ModalNewTask() {
-
+    
     const [projectName, setProjectName] = useState("")
     const [taskName, setTaskName] = useState("")
     const [description, setDescription] = useState("")

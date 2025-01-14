@@ -2,7 +2,6 @@
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-
 // Components
 import { Button } from "@/components/ui/button"
 import {
@@ -29,22 +28,22 @@ export default function SignIn() {
   const router = useRouter()
 
   const formSchema = z.object({
-    username: z.string().min(3).max(30),
+    email: z.string().email().min(3).max(30),
     password: z.string().min(6).max(30),
   })
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setEmail(values.username)
+    setEmail(values.email)
     setPassword(values.password)
-
+    
     if(email === "John@test.com"&& password === "123456"){
       router.push('/dashboard')
     }
@@ -81,10 +80,10 @@ export default function SignIn() {
               <FormDescription>Japan System Login form</FormDescription>
               <FormField
                 control={form.control}
-                name="username"
+                name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Username</FormLabel>
+                    <FormLabel>Email</FormLabel>
                     <FormMessage />
                     <FormControl>
                       <Input placeholder="JohnDoe@gmail.com" {...field} />

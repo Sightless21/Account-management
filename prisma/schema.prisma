@@ -29,21 +29,31 @@ enum Role {
   EMPLOYEE
 }
 
-model Permission {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  role      Role
-  feature   String
-  canAccess Boolean
+model Applicantion {
+  id             String            @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  email          String
+  dateOfBirth    DateTime
+  address        String?
+  position       String
+  expectSalary   Int
+  nationality    String
+  ethnicity      String
+  religion       String
+  militaryStatus String
+  maritalStatus  String
+  dwelling       String
+  status         ApplicationStatus @default(NEW)
+  ducuments      Document[]
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
 }
 
-model JobApplication {
-  id        String            @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  email     String
-  resume    String
-  status    ApplicationStatus @default(NEW)
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
+model Document {
+  id             String        @id @default(uuid()) @map("_id")
+  name           String //nameDocuents
+  applicant      Applicantion? @relation(fields: [applicantionId], references: [id])
+  applicantionId String?       @db.ObjectId
 }
 
 enum ApplicationStatus {
@@ -54,9 +64,11 @@ enum ApplicationStatus {
 
 model KanbanTask {
   id           String     @id @default(auto()) @map("_id") @db.ObjectId
-  title        String
+  projectName  String
+  taskName     String
   description  String
   status       TaskStatus @default(TODO)
+  priority     Priority   @default(LOW)
   assignedTo   User?      @relation(fields: [assignedToId], references: [id], name: "UserAssignedTasks")
   assignedToId String?    @db.ObjectId
   createdAt    DateTime   @default(now())
@@ -65,8 +77,14 @@ model KanbanTask {
 
 enum TaskStatus {
   TODO
-  IN_PROGRESS
+  DOING
   DONE
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
 }
 
 model Leave {
@@ -109,6 +127,7 @@ model CarBooking {
   updatedAt DateTime @updatedAt
 }
 
+// เบิกค่าใช้จ่าย
 model Expense {
   id          String        @id @default(auto()) @map("_id") @db.ObjectId
   user        User          @relation(fields: [userId], references: [id])

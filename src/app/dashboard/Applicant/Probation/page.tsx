@@ -3,9 +3,13 @@ import React from "react";
 import { Applicant, columns } from "./columns"
 import { DataTable } from "./data-table"
 async function getData(): Promise<Applicant[]> {
-    const res = await fetch('https://678481d91ec630ca33a49940.mockapi.io/api/users/users')
-    const data = await res.json()
-    return data
+    try {
+        const res = await fetch('https://678481d91ec630ca33a49940.mockapi.io/api/users/users')
+        const data = await res.json()
+        return data
+    } catch (error) {
+        throw error
+    }
 }
 
 export default async function Page() {

@@ -19,10 +19,20 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuLabel,
+    DropdownMenuRadioGroup,
+    DropdownMenuRadioItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { TiCancel , TiTick } from "react-icons/ti";
+import { TiCancel, TiTick } from "react-icons/ti";
 
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -45,6 +55,7 @@ export default function ModalNewTask() {
     const [projectName, setProjectName] = useState("")
     const [taskName, setTaskName] = useState("")
     const [description, setDescription] = useState("")
+    const [priority, setPriority] = useState("Low")
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -72,6 +83,7 @@ export default function ModalNewTask() {
                     </DialogDescription>
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                            {/* Form */}
                             <FormField
                                 control={form.control}
                                 name="projectName"
@@ -85,6 +97,7 @@ export default function ModalNewTask() {
                                     </FormItem>
                                 )}
                             />
+                            {/* TaskName */}
                             <FormField
                                 control={form.control}
                                 name="taskName"
@@ -98,6 +111,7 @@ export default function ModalNewTask() {
                                     </FormItem>
                                 )}
                             />
+                            {/* Description */}
                             <FormField
                                 control={form.control}
                                 name="description"
@@ -111,8 +125,23 @@ export default function ModalNewTask() {
                                     </FormItem>
                                 )}
                             />
+                            {/* DropDown */}
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline">{priority}</Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-56">
+                                    <DropdownMenuLabel>Panel Priority</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuRadioGroup value={priority} onValueChange={setPriority}>
+                                        <DropdownMenuRadioItem value="LOW" className="text-green-600">Low</DropdownMenuRadioItem>
+                                        <DropdownMenuRadioItem value="MEDIUM" className="text-yellow-600">Medium</DropdownMenuRadioItem>
+                                        <DropdownMenuRadioItem value="HIGH" className="text-red-600">High</DropdownMenuRadioItem>
+                                    </DropdownMenuRadioGroup>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                             <div className="flex flex-row justify-end gap-2">
-                                <Button type="submit"> <TiTick /> Submit</Button>
+                                <Button type="submit"> <TiTick/>Submit</Button>
                                 <Button type="button" variant={"destructive"} className="bg-red-600"> <TiCancel /> Cancel</Button>
                             </div>
                         </form>

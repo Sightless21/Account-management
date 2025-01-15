@@ -104,7 +104,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         items: [
           {
             title: "New user",
-            url: "/newUser",
+            url: "/NewUser",
           },
         ],
       },

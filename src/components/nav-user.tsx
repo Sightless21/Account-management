@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 
+import axios from "axios";
 // react + next
 import { useRouter } from "next/navigation"
 
@@ -52,6 +53,17 @@ export function NavUser({
     return initials;
   }
 
+  function handleLogout() {
+    try {
+      const response = axios.post("/api/auth/logout").then((res) => {
+        return window.location.href = "/";;
+      })
+      return response
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   const initials = getInitials(fullName);
   const router = useRouter()
 
@@ -94,7 +106,7 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => router.push("/")} className="cursor-pointer">
+            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
               <LogOut className=" mr-5" />
               <span>Logout</span>
             </DropdownMenuItem>

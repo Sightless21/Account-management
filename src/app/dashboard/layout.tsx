@@ -1,5 +1,5 @@
+"use client"
 import { AppSidebar } from "@/components/app-sidebar"
-
 import {
     SidebarInset,
     SidebarProvider,
@@ -19,7 +19,7 @@ export default function DashboardLayout({
                         <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
                             Hello :
                         </h3><p className="text-xl text-muted-foreground">
-                            {"John Doe"}
+                            {'John Doe'}
                         </p>
                     </div>
                     <div className="mt-2">

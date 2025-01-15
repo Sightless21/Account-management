@@ -26,6 +26,7 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+
 import { prisma } from "@/lib/prisma"
 
 
@@ -57,31 +58,17 @@ export const NewUser = () => {
     // 2. Define a submit handler.
     async function onSubmit(values: z.infer<typeof formSchema>) {
         // Do something with the form values.
-        // console.log(values)
-        try {
-            const user = await prisma.client.findUnique({
-                where: {
-                    email: values.email,
-                },
-            })
-            if (user) {
-                alert("User already exist")
-                return
-            } else {
-                const sendData = {
-                    firstName: values.firstname,
-                    lastName: values.lastname,
-                    email: values.email,
-                    phone: values.phone,
-                    password: values.password,
-                    confirmpassword: values.confirmpassword
-                }
-                await createUser(sendData)
-            }
-        } catch (error) {
-            console.log(error)
+        console.log(values)
+        const sendData = {
+            firstName: values.firstname,
+            lastName: values.lastname,
+            email: values.email,
+            phone: values.phone,
+            password: values.password,
+            confirmpassword: values.confirmpassword
         }
-        form.reset()
+        await createUser(sendData)
+        await form.reset()
     }
     return (
         <>

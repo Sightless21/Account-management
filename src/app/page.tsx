@@ -1,9 +1,7 @@
 'use client'
-
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
 // Components
 import { Button } from "@/components/ui/button"
+import axios from "axios"
 import {
   Form,
   FormControl,
@@ -21,17 +19,10 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 
 export default function SignIn() {
-
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-
-  const router = useRouter()
-
   const formSchema = z.object({
     email: z.string().email().min(3).max(30),
     password: z.string().min(6).max(30),
   })
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -39,35 +30,20 @@ export default function SignIn() {
       password: "",
     },
   })
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setEmail(values.email)
-    setPassword(values.password)
-    
-    if(email === "John@test.com"&& password === "123456"){
-      router.push('/dashboard')
+    try {
+      const response = await axios.post("/api/auth/login", {
+        email: values.email,
+        password: values.password,
+      });
+      const { token } = response.data;
+      localStorage.setItem('token', token);
+      console.log("Login successful:", response);
+      window.location.href = "/dashboard"; // Redirect หลังจาก Login สำเร็จ
+    } catch (error) {
+      console.error(error);
     }
   }
-
-  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault()
-  //   try {
-  //     const result = await signIn('credentials', {
-  //       redirect: false,
-  //       email,
-  //       password,
-  //     })
-  //     if (result?.error) {
-  //       console.log('error', result.error)
-  //       return false
-  //     }
-  //     //Login successful
-  //     router.push('/profile')
-  //   } catch (error) {
-  //     console.log('error', error)
-  //   }
-  // }
-
   return (
     <>
       <div className="flex h-screen items-center justify-center bg-slate-100">

@@ -24,13 +24,15 @@ model Employee {
   militaryStatus String?
   maritalStatus  String?
   dwelling       String?
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
   Leave          Leave[]       @relation(name: "EmpNeedLeave")
   Expenses       Expense[]     @relation(name: "EmpNeedExpenses")
   RoomBooking    RoomBooking[] @relation(name: "EmpRoombooking")
   CarBooking     CarBooking[]  @relation(name: "EmpCarbooking")
   assignedTasks  KanbanTask[]  @relation(name: "EmpAssignedTasks")
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  clientId       String?       @db.ObjectId
+  Client         Client[]      @relation(name: "oneEmptoOneClient")
 }
 
 enum Role {
@@ -117,25 +119,25 @@ enum LeaveStatus {
 }
 
 model RoomBooking {
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
-  user       Employee  @relation(fields: [userId], references: [id], name: "EmpRoombooking")
-  userId     String    @db.ObjectId
-  room       String
-  startTime  DateTime
-  endTime    DateTime
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  user      Employee @relation(fields: [userId], references: [id], name: "EmpRoombooking")
+  userId    String   @db.ObjectId
+  room      String
+  startTime DateTime
+  endTime   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model CarBooking {
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
-  user       Employee  @relation(fields: [userId], references: [id], name: "EmpCarbooking")
-  userId     String    @db.ObjectId
-  car        String
-  startTime  DateTime
-  endTime    DateTime
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  user      Employee @relation(fields: [userId], references: [id], name: "EmpCarbooking")
+  userId    String   @db.ObjectId
+  car       String
+  startTime DateTime
+  endTime   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // เบิกค่าใช้จ่าย
@@ -157,12 +159,14 @@ enum ExpenseStatus {
 }
 
 model Client {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
   firstName      String
   lastName       String
   hashedPassword String
-  email          String   @unique
+  email          String    @unique
   phone          String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  employee       Employee? @relation(fields: [employeeId], references: [id],name: "oneEmptoOneClient")
+  employeeId     String?   @db.ObjectId
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 
-import axios from "axios";
 // react + next
 import { useRouter } from "next/navigation"
 
@@ -32,7 +31,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-
+import { signOut} from "next-auth/react"
 
 export function NavUser({
   user,
@@ -51,17 +50,6 @@ export function NavUser({
     const names = fullName.split(' '); // Split the full name by space
     const initials = names.map(name => name[0].toUpperCase()).join(''); // Take the first letter of each name
     return initials;
-  }
-
-  function handleLogout() {
-    try {
-      const response = axios.post("/api/auth/logout").then((res) => {
-        return window.location.href = "/";;
-      })
-      return response
-    } catch (error) {
-      console.error(error);
-    }
   }
 
   const initials = getInitials(fullName);
@@ -106,13 +94,13 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+            <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/"})} className="cursor-pointer">
               <LogOut className=" mr-5" />
               <span>Logout</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
-    </SidebarMenu>
+    </SidebarMenu >
   )
 }

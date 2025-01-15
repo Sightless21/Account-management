@@ -1,7 +1,6 @@
 'use client'
 // Components
 import { Button } from "@/components/ui/button"
-import axios from "axios"
 import {
   Form,
   FormControl,
@@ -17,6 +16,8 @@ import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
+import { signIn } from "next-auth/react"
+import { useRouter } from "next/navigation"
 
 export default function SignIn() {
   const formSchema = z.object({
@@ -30,18 +31,25 @@ export default function SignIn() {
       password: "",
     },
   })
+  const router = useRouter()
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const response = await axios.post("/api/auth/login", {
+      const result = await signIn("credentials", {
         email: values.email,
         password: values.password,
-      });
-      const { token } = response.data;
-      localStorage.setItem('token', token);
-      console.log("Login successful:", response);
-      window.location.href = "/dashboard"; // Redirect หลังจาก Login สำเร็จ
+        redirect: false
+      })
+
+      if(result && result.error){
+        console.log(result.error) 
+        return false;
+      }
+      console.log(result)
+      router.push('/dashboard')
+
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
   }
   return (

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+// I get server session for use session in client component 
+// if u want to use in server component use "import { getCachedSession } from "@/lib/sessionCache"; read more in lib/sessionCache"
 import { getServerSession } from "next-auth";
 import SessionProvider from "@/components/Provider/SessionProvider";
 

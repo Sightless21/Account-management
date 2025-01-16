@@ -16,7 +16,6 @@ export default function DashboardLayout({
 }) {
     const { data : session, status} = useSession() as { data: Session | null; status: string }
     console.log('status ' + status)
-    console.log('session ' + session)
 
     const router = useRouter()
 

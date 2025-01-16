@@ -51,7 +51,7 @@ const formSchema = z.object({
 
 
 export default function ModalNewTask() {
-    
+
     const [projectName, setProjectName] = useState("")
     const [taskName, setTaskName] = useState("")
     const [description, setDescription] = useState("")
@@ -81,72 +81,72 @@ export default function ModalNewTask() {
                     <DialogDescription>
                         Fill in the form below to create a new task.
                     </DialogDescription>
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                            {/* Form */}
-                            <FormField
-                                control={form.control}
-                                name="projectName"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Project Name</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="new-project" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            {/* TaskName */}
-                            <FormField
-                                control={form.control}
-                                name="taskName"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Task Name</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="new-task" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            {/* Description */}
-                            <FormField
-                                control={form.control}
-                                name="description"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Description</FormLabel>
-                                        <FormControl className="text-start">
-                                            <Textarea placeholder="Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna nibh viverra non semper suscipit posuere a pede." {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            {/* DropDown */}
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="outline">{priority}</Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-56">
-                                    <DropdownMenuLabel>Panel Priority</DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuRadioGroup value={priority} onValueChange={setPriority}>
-                                        <DropdownMenuRadioItem value="LOW" className="text-green-600">Low</DropdownMenuRadioItem>
-                                        <DropdownMenuRadioItem value="MEDIUM" className="text-yellow-600">Medium</DropdownMenuRadioItem>
-                                        <DropdownMenuRadioItem value="HIGH" className="text-red-600">High</DropdownMenuRadioItem>
-                                    </DropdownMenuRadioGroup>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                            <div className="flex flex-row justify-end gap-2">
-                                <Button type="submit"> <TiTick/>Submit</Button>
-                                <Button type="button" variant={"destructive"} className="bg-red-600"> <TiCancel /> Cancel</Button>
-                            </div>
-                        </form>
-                    </Form>
                 </DialogHeader>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                        {/* Form */}
+                        <FormField
+                            control={form.control}
+                            name="projectName"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Project Name</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="new-project" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        {/* TaskName */}
+                        <FormField
+                            control={form.control}
+                            name="taskName"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Task Name</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="new-task" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        {/* Description */}
+                        <FormField
+                            control={form.control}
+                            name="description"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Description</FormLabel>
+                                    <FormControl className="text-start">
+                                        <Textarea placeholder="Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna nibh viverra non semper suscipit posuere a pede." {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        {/* DropDown */}
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline">{priority}</Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-56">
+                                <DropdownMenuLabel>Panel Priority</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuRadioGroup value={priority} onValueChange={setPriority}>
+                                    <DropdownMenuRadioItem value="LOW" className="text-green-600">Low</DropdownMenuRadioItem>
+                                    <DropdownMenuRadioItem value="MEDIUM" className="text-yellow-600">Medium</DropdownMenuRadioItem>
+                                    <DropdownMenuRadioItem value="HIGH" className="text-red-600">High</DropdownMenuRadioItem>
+                                </DropdownMenuRadioGroup>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                        <div className="flex flex-row justify-end gap-2">
+                            <Button type="submit"> <TiTick />Submit</Button>
+                            <Button type="button" variant={"destructive"} className="bg-red-600"> <TiCancel />Cancel</Button>
+                        </div>
+                    </form>
+                </Form>
             </DialogContent>
         </Dialog>
     );

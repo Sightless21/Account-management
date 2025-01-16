@@ -3,7 +3,7 @@ import { ApplicantBoard } from "@/components/applicant-board";
 import { Button } from "@/components/ui/button"
 import { useRouter } from 'next/navigation'
 import * as React from "react"
-import ModalNewApplicant from "@/components/modal-Newapplicant"
+import ModalCreateApplicant from "@/components/modal-createApplicant"
 
 export default function Page() {
     const router = useRouter();
@@ -17,7 +17,7 @@ export default function Page() {
             <div className="flex items-center justify-between scroll-m-20 border-b pb-2 mr-3 text-3xl font-semibold tracking-tight first:mt-0">
                 Applicant Board
                 <div className="flex ml-4 gap-3">
-                    <ModalNewApplicant />
+                    <ModalCreateApplicant />
                     <Button onClick={handleProbationPage}>Probation</Button>
                 </div>
             </div>

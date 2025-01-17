@@ -12,7 +12,7 @@ import { motion } from "framer-motion";
 import { FaFire } from "react-icons/fa";
 import { MdDragIndicator } from "react-icons/md";
 import { IoPersonSharp } from "react-icons/io5";
-import { Button } from "./ui/button";
+import ModalReadApplicant from "@/components/modal-readApplicant"
 
 export const ApplicantBoard = () => {
   return (
@@ -27,7 +27,7 @@ const Board = () => {
   const [cards, setCards] = useState(DEFAULT_CARDS); // Array
 
   return (
-    <div className="flex gap-5 overflow-scroll">
+    <div className="flex gap-5 overflow-scroll top-9">
       <Column
         title="Applicant"
         column="todo"
@@ -229,9 +229,9 @@ const Card = ({ title, id, column, jobRole, handleDragStart }: CardProps) => {
             <MdDragIndicator height={25} width={25} color="white" />
           </div>
         </div>
-        <div className="flex gap-2 items-center py-1 px-2 w-full">
-          <p className="flex text-sm text-muted-foreground items-end">{jobRole}</p>
-            <Button className="mb-1" variant="link" size={'sm'}>More info</Button>
+        <div className="flex gap-2 py-1 px-2 w-full">
+          <p className="flex text-sm text-muted-foreground text-center">{jobRole}</p>
+          <ModalReadApplicant />
         </div>
       </motion.div>
     </>

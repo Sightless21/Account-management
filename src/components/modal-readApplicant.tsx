@@ -1,6 +1,7 @@
 'use client'
 import {
     Dialog,
+    DialogClose,
     DialogContent,
     DialogDescription,
     DialogHeader,
@@ -144,34 +145,34 @@ const itemjson = {
             label: "ศาสนา",
         }
     ],
-    persion: [
+    person: [
         {
             id: "applicantName",
-            labe: "Applicant Name",
+            label: "Applicant Name",
             type: "string",
             placeholder: "John Doe"
         },
         {
             id: "phone",
-            labe: "Phone Number",
+            label: "Phone Number",
             type: "tel",
             placeholder: "000-000-0000"
         },
         {
             id: "email",
-            labe: "Email",
+            label: "Email",
             type: "email",
             placeholder: "JohnDoe@gmail.com"
         },
         {
             id: "position",
-            labe: "Position",
+            label: "Position",
             type: "string",
             placeholder: "Full-stack developer"
         },
         {
             id: "expectSalary",
-            labe: "Expect Salary",
+            label: "Expect Salary",
             type: "string",
             placeholder: "30,000"
         },
@@ -225,7 +226,7 @@ const itemjson = {
 } as const
 
 
-export default function ModalCreateApplicant() {
+export default function ModalReadApplicant() {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -239,16 +240,24 @@ export default function ModalCreateApplicant() {
         },
     })
     const [tasks, setTasks] = useState<typeForm[]>([form.getValues()])
+    const [edit, setEdit] = useState<boolean>(true)
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setTasks([...tasks, values])
         form.reset()
     }
+    function onEdit() {
+        if (edit) {
+            setEdit(false)
+        } else {
+            setEdit(true)
+        }
+    }
 
     return (
         <Dialog>
-            <DialogTrigger asChild>
-                <Button variant="default">New Applicant</Button>
+            <DialogTrigger asChild className="text-sm">
+                <Button variant="link">read more</Button>
             </DialogTrigger>
             <DialogContent className="w-[70%] min-h-20 ">
                 <DialogHeader>
@@ -272,7 +281,7 @@ export default function ModalCreateApplicant() {
                                         className="flex items-center gap-2"
                                     >
                                         <span>{item.label}</span>
-                                        <Input className="w-40 h-5 text-center" id={item.id} />
+                                        <Input disabled={edit} className="w-40 h-5 text-center" id={item.id} />
                                     </Label>
                                 ))}
                                 <div className="flex justify-between w-full gap-4">
@@ -293,6 +302,7 @@ export default function ModalCreateApplicant() {
                                                                 className="flex flex-row items-start space-x-3 space-y-0 leading-none">
                                                                 <FormControl>
                                                                     <Checkbox
+                                                                        disabled={edit}
                                                                         className="mb-3"
                                                                         checked={field.value?.includes(item.id)}
                                                                         onCheckedChange={(checked) => {
@@ -326,6 +336,7 @@ export default function ModalCreateApplicant() {
                                                                 className="flex flex-row items-start space-x-3 space-y-0 leading-none">
                                                                 <FormControl>
                                                                     <Checkbox
+                                                                        disabled={edit}
                                                                         className="mb-3"
                                                                         checked={field.value?.includes(item.id)}
                                                                         onCheckedChange={(checked) => {
@@ -359,6 +370,7 @@ export default function ModalCreateApplicant() {
                                                                 className="flex flex-row items-start space-x-3 space-y-0 leading-none">
                                                                 <FormControl>
                                                                     <Checkbox
+                                                                        disabled={edit}
                                                                         className="mb-3"
                                                                         checked={field.value?.includes(item.id)}
                                                                         onCheckedChange={(checked) => {
@@ -398,6 +410,7 @@ export default function ModalCreateApplicant() {
                                                             className="flex flex-row items-start space-x-3 space-y-0 leading-none">
                                                             <FormControl>
                                                                 <Checkbox
+                                                                    disabled={edit}
                                                                     checked={field.value?.includes(item.id)}
                                                                     onCheckedChange={(checked) => {
                                                                         return checked ? field.onChange([...field.value, item.id]) : field.onChange(field.value?.filter((value) => value !== item.id))
@@ -422,73 +435,24 @@ export default function ModalCreateApplicant() {
                                     <CardTitle>Personal</CardTitle>
                                 </CardHeader>
                                 <CardContent className="grid grid-cols-2 gap-2">
-
-                                    <FormField
-                                        control={form.control}
-                                        name="applicantName"
-                                        render={({ field }) => (
-                                            <FormItem className="">
-                                                <FormLabel>Applicant Name</FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="John Doe" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="phone"
-                                        render={({ field }) => (
-                                            <FormItem className="">
-                                                <FormLabel>Phone Number</FormLabel>
-                                                <FormControl>
-                                                    <Input type="tel" placeholder="000-000-0000" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="email"
-                                        render={({ field }) => (
-                                            <FormItem className="">
-                                                <FormLabel>Email</FormLabel>
-                                                <FormControl>
-                                                    <Input type="email" placeholder="JohnDoe@gmail.com" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    {/* TaskName */}
-                                    <FormField
-                                        control={form.control}
-                                        name="position"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Position</FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="full-stack developer" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="expectSalary"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Expect Salary</FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="30000" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                                    {itemjson.person.map((item) => (
+                                        <FormField
+                                            key={item.id}
+                                            control={form.control}
+                                            name={item.id}
+                                            render={({ field }) => {
+                                                return (
+                                                    <FormItem key={item.id}>
+                                                        <FormLabel className="font-normal">{item.label}</FormLabel>
+                                                        <FormControl>
+                                                            <Input disabled={edit} placeholder={item.placeholder} {...field} />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )
+                                            }}
+                                        />
+                                    ))}
                                     <FormField
                                         control={form.control}
                                         name="birthdate"
@@ -496,7 +460,7 @@ export default function ModalCreateApplicant() {
                                             <FormItem>
                                                 <FormLabel>Birth Date</FormLabel>
                                                 <FormControl>
-                                                    <DatePickerWithPresets {...field} />
+                                                    <DatePickerWithPresets disabled={edit} {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -507,8 +471,11 @@ export default function ModalCreateApplicant() {
                         </div>
                         <div className="grid col-span-2">
                             <div className="flex justify-end gap-2">
+                                <Button type="button" onClick={() => onEdit()} variant={"secondary"}>{edit ? "Edit" : "Editing"} </Button>
                                 <Button type="submit"> <TiTick />Submit</Button>
-                                <Button type="button" variant={"destructive"} className="bg-red-600"> <TiCancel />Cancel</Button>
+                                <DialogClose>
+                                    <Button type="button" variant={"destructive"} className="bg-red-600"> <TiCancel />Cancel</Button>
+                                </DialogClose>
                             </div>
                         </div>
                     </form>

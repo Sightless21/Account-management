@@ -2,14 +2,13 @@
 'use client'
 
 import React, { useState } from "react"
-import ModalCreateApplicant from "@/components/modal-createApplicant"
+import { DatePickerWithPresets } from '@/components/date-picker'
 
 export default function Page() {
-  const [checked, setChecked] = useState(true) // true is loading
 
   return (
     <div>
-      
+
     </div>
   )
 }

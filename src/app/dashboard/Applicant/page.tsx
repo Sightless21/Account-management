@@ -13,7 +13,7 @@ export default function Page() {
     }
 
     return (
-        <div className="flex flex-col gap-4 ml-3 mr-3">
+        <div className="flex flex-col gap-4 ml-3">
             <div className="flex items-center justify-between scroll-m-20 border-b pb-2 mr-3 text-3xl font-semibold tracking-tight first:mt-0">
                 Applicant Board
                 <div className="flex ml-4 gap-3">
@@ -21,7 +21,9 @@ export default function Page() {
                     <Button onClick={handleProbationPage}>Probation</Button>
                 </div>
             </div>
-            <ApplicantBoard />
+            <div className="grid place-items-center mt-[10%]">
+                <ApplicantBoard />
+            </div>
         </div>
     );
 }

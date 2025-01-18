@@ -21,110 +21,45 @@ import { SquareUserRound } from "lucide-react";
 import { DatePickerWithPresets } from '@/components/date-picker'
 import { Label } from "@radix-ui/react-label";
 
-// chage type
-interface typeForm {
-    // Profile card
-    person: {
-        name: string
-        phone: string
-        email: string
-        position: string
-        expectSalary: string
-    }
-    birthdate: string
-    info: {
-        address: {
-            houseNumber: string
-            village: string
-            road: string
-            subDistrict: string
-            district: string
-            province: string
-            zipCode: string
-            country: string
-        }
-        nationality: string
-        religion: string
-        race: string
-    }
-    itemsMilitary: string[]
-    itemsMarital: string[]
-    itemsDwelling: string[]
-    itemsDoc: string[]
-}
-
 const formSchema = z.object({
-    // Profile card
+    //  ข้อมูลบุคคล
     person: z.object({
-        name: z.string().min(2, {
-            message: `*`,
-        }),
-        phone: z.string().min(2, {
-            message: `*`,
-        }),
-        email: z.string().min(2, {
-            message: `*`,
-        }),
-        position: z.string().min(2, {
-            message: `*`,
-        }),
-        expectSalary: z.string().min(2, {
-            message: `*`,
-        }),
+        name: z.string().min(2, { message: "*" }),
+        phone: z
+            .string()
+            .regex(/^0[0-9]{9}$/, { message: "Must be 10 digits and start with 0." }), // ตรวจสอบเบอร์โทรศัพท์
+        email: z.string().email({ message: "*" }), // ตรวจสอบว่าเป็นอีเมลที่ถูกต้อง
+        position: z.string().min(2, { message: "*" }),
+        expectSalary: z.string().min(2, { message: "*" }),
     }),
-    birthdate: z.string().nonempty({
-        message: "*",
-    }),
+    birthdate: z.preprocess(
+        (arg) => (typeof arg === "string" || arg instanceof Date ? new Date(arg) : arg),
+        z.date().refine((date) => date < new Date(), { message: "Birthdate must be in the past." }) // ตรวจสอบว่าไม่ใช่วันในอนาคต
+    ),
     info: z.object({
         address: z.object({
-            houseNumber: z.string().min(2, {
-                message: `*`,
-            }),
-            village: z.string().min(2, {
-                message: `*`,
-            }),
-            road: z.string().min(2, {
-                message: `*`,
-            }),
-            subDistrict: z.string().min(2, {
-                message: `*`,
-            }),
-            district: z.string().min(2, {
-                message: `*`,
-            }),
-            province: z.string().min(2, {
-                message: `*`,
-            }),
-            zipCode: z.string().min(2, {
-                message: `*`,
-            }),
-            country: z.string().min(2, {
-                message: `*`,
-            }),
+            houseNumber: z.string().min(1, { message: "*" }),
+            village: z.string().optional(), // อาจไม่ต้องมีถนนในบางกรณี
+            road: z.string().optional(), 
+            subDistrict: z.string().min(2, { message: "*" }),
+            district: z.string().min(2, { message: "*" }),
+            province: z.string().min(2, { message: "*" }),
+            zipCode: z.string().length(5, { message: "*" }),
+            country: z.string().min(2, { message: "*" }),
         }),
-        nationality: z.string().min(2, {
-            message: `*`,
-        }),
-        religion: z.string().min(2, {
-            message: `*`,
-        }),
-        race: z.string().min(2, {
-            message: `*`,
-        }),
+        nationality: z.string().min(2, { message: "*" }),
+        religion: z.string().min(2, { message: "*" }),
+        race: z.string().min(2, { message: "*" }),
     }),
-    itemsMilitary: z.array(z.string()).refine((value) => value.length === 1, {
-        message: `Required only 1 item.`,
-    }),
-    itemsMarital: z.array(z.string()).refine((value) => value.length === 1, {
-        message: `Required only 1 item.`,
-    }),
-    itemsDwelling: z.array(z.string()).refine((value) => value.length === 1, {
-        message: `Required only 1 item.`,
-    }),
-    itemsDoc: z.array(z.string()).refine((value) => value.some((item) => item), {
-        message: "You have to select at least one item.",
-    }),
-})
+
+    //  รายการที่ต้องเลือก 1 อย่าง
+    itemsMilitary: z.array(z.string()).min(1).max(1, { message: "Please select only one military status." }),
+    itemsMarital: z.array(z.string()).min(1).max(1, { message: "Please select only one marital status." }),
+    itemsDwelling: z.array(z.string()).min(1).max(1, { message: "Please select only one dwelling type." }),
+
+    //  เอกสาร (ต้องเลือกอย่างน้อย 1 อย่าง)
+    itemsDoc: z.array(z.string()).min(1, { message: "You have to select at least one document." }),
+});
 
 const itemjson = {
     doc: [
@@ -278,7 +213,12 @@ const itemjson = {
 } as const
 
 
+/**
+ * ModalCreateApplicant component renders a dialog for creating a new applicant.
+ * It includes a form with various fields for applicant details, documents, and status.
+ */
 export default function ModalCreateApplicant() {
+    // Initialize form using useForm hook with Zod validation schema
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -289,7 +229,7 @@ export default function ModalCreateApplicant() {
                 position: "",
                 expectSalary: "",
             },
-            birthdate: "",
+            birthdate: new Date(),
             info: {
                 address: {
                     houseNumber: "",
@@ -310,14 +250,19 @@ export default function ModalCreateApplicant() {
             itemsDwelling: [],
             itemsDoc: ["thaiIdCard", "houseRegis", "diploma", "bookBank"],
         },
-    })
-    const [applicant, setTasks] = useState<typeForm[]>([form.getValues()])
+    });
 
-    async function onSubmit(values: z.infer<typeof formSchema>,) {
+    // State to store applicant data
+    const [applicant, setTasks] = useState<z.infer<typeof formSchema>[]>([]);
 
-        console.log(values)
-        setTasks([...applicant, values])
-        // form.reset()
+    /**
+     * Handles form submission and updates applicant state.
+     * @param values - Form values
+     */
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        console.log(values);
+        setTasks([...applicant, values]);
+        // form.reset() // Uncomment to reset the form after submission
     }
 
     return (
@@ -330,99 +275,95 @@ export default function ModalCreateApplicant() {
                     <DialogTitle>New Applicant</DialogTitle>
                     <DialogDescription>Fill in the form below to create a new applicant.</DialogDescription>
                 </DialogHeader>
-                {/* layout form */}
+                {/* Form layout */}
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-2 gap-4">
+                        {/* Information Card */}
                         <Card className="col-span-2">
                             <CardHeader>
-                                <CardTitle>Infomation</CardTitle>
+                                <CardTitle>Information</CardTitle>
                                 <CardDescription>ข้อมูลส่วนตัว</CardDescription>
                             </CardHeader>
                             <CardContent className="flex flex-wrap items-center gap-2">
+                                {/* Iterate over info fields */}
                                 {Object.entries(itemjson.info).map(([key, value]) => {
                                     if (key === "address") {
+                                        // Render address fields
                                         return Object.values(value).map((item) => (
                                             <FormField
                                                 key={item.id}
                                                 control={form.control}
-                                                name={`info.address.${item.id}` as `info.address.${keyof typeForm['info']['address']}`}
-                                                render={({ field }) => {
-                                                    return (
-                                                        <FormItem
-                                                            key={item.id}
-                                                            className="flex flex-row items-start space-x-3 space-y-0 leading-none">
-                                                            <Label>{item.label}</Label>
-                                                            <FormControl>
-                                                                <Input className="w-40 h-5 text-center"
-                                                                    {...field}
-                                                                    value={typeof field.value === 'string' ? field.value : ''}
-                                                                />
-                                                            </FormControl>
-                                                        </FormItem>
-                                                    )
-                                                }}
+                                                name={`info.address.${item.id}` as `info.address.${keyof typeof itemjson.info.address}`}
+                                                render={({ field }) => (
+                                                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 leading-none">
+                                                        <Label>{item.label}</Label>
+                                                        <FormMessage />
+                                                        <FormControl>
+                                                            <Input className="w-40 h-5 text-center"
+                                                                {...field}
+                                                                value={typeof field.value === 'string' ? field.value : ''}
+                                                            />
+                                                        </FormControl>
+                                                    </FormItem>
+                                                )}
                                             />
                                         ));
                                     } else {
+                                        // Render other info fields
                                         return (
                                             <FormField
                                                 key={key}
                                                 control={form.control}
-                                                name={`info.${key}` as `info.${keyof typeForm['info']}`}
-                                                render={({ field }) => {
-                                                    return (
-                                                        <FormItem
-                                                            key={key}
-                                                            className="flex flex-row items-start space-x-3 space-y-0 leading-none">
-                                                            {'label' in value && <Label>{value.label}</Label>}
-                                                            <FormControl>
-                                                                <Input className="w-40 h-5 text-center"
-                                                                    {...field}
-                                                                    value={typeof field.value === 'string' ? field.value : ''}
-                                                                />
-                                                            </FormControl>
-                                                        </FormItem>
-                                                    )
-                                                }}
+                                                name={`info.${key}` as `info.${keyof typeof itemjson.info}`}
+                                                render={({ field }) => (
+                                                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 leading-none">
+                                                        {'label' in value && <Label>{value.label}</Label>}
+                                                        <FormMessage />
+                                                        <FormControl>
+                                                            <Input className="w-40 h-5 text-center"
+                                                                {...field}
+                                                                value={typeof field.value === 'string' ? field.value : ''}
+                                                            />
+                                                        </FormControl>
+                                                    </FormItem>
+                                                )}
                                             />
                                         );
                                     }
                                 })}
+                                {/* Military Status Card */}
                                 <div className="flex justify-between w-full gap-4">
                                     <Card className='w-full'>
                                         <CardHeader>
                                             <CardDescription>ภาวะทางการทหาร</CardDescription>
                                         </CardHeader>
                                         <CardContent>
-                                            {itemjson.military.map((item,) => (
+                                            {itemjson.military.map((item) => (
                                                 <FormField
                                                     key={item.id}
                                                     control={form.control}
                                                     name="itemsMilitary"
-                                                    render={({ field }) => {
-                                                        return (
-                                                            <FormItem
-                                                                key={item.id}
-                                                                className="flex flex-row items-start space-x-3 space-y-0 leading-none">
-                                                                <FormControl>
-                                                                    <Checkbox
-                                                                        className="mb-3"
-                                                                        checked={field.value?.includes(item.id)}
-                                                                        onCheckedChange={(checked) => {
-                                                                            const currentValue = Array.isArray(field.value) ? field.value : [];
-                                                                            return checked ? field.onChange([...currentValue, item.id]) : field.onChange(currentValue.filter((value) => value !== item.id));
-                                                                        }}
-                                                                    />
-                                                                </FormControl>
-                                                                <FormLabel className="font-normal">{item.lable}</FormLabel>
-                                                                <FormMessage />
-                                                            </FormItem>
-                                                        )
-                                                    }}
+                                                    render={({ field }) => (
+                                                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 leading-none">
+                                                            <FormControl>
+                                                                <Checkbox
+                                                                    className="mb-3"
+                                                                    checked={field.value?.includes(item.id)}
+                                                                    onCheckedChange={(checked) => {
+                                                                        const currentValue = Array.isArray(field.value) ? field.value : [];
+                                                                        return checked ? field.onChange([...currentValue, item.id]) : field.onChange(currentValue.filter((value) => value !== item.id));
+                                                                    }}
+                                                                />
+                                                            </FormControl>
+                                                            <FormLabel className="font-normal">{item.lable}</FormLabel>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
                                                 />
                                             ))}
                                         </CardContent>
                                     </Card>
+                                    {/* Marital Status Card */}
                                     <Card className='w-full'>
                                         <CardHeader>
                                             <CardDescription>สถานภาพ</CardDescription>
@@ -433,60 +374,53 @@ export default function ModalCreateApplicant() {
                                                     key={item.id}
                                                     control={form.control}
                                                     name="itemsMarital"
-                                                    render={({ field }) => {
-                                                        return (
-                                                            <FormItem
-                                                                key={item.id}
-                                                                className="flex flex-row items-start space-x-3 space-y-0 leading-none">
-                                                                <FormControl>
-                                                                    <Checkbox
-                                                                        className="mb-3"
-                                                                        checked={field.value?.includes(item.id)}
-                                                                        onCheckedChange={(checked) => {
-                                                                            const currentValue = Array.isArray(field.value) ? field.value : [];
-                                                                            return checked ? field.onChange([...currentValue, item.id]) : field.onChange(currentValue.filter((value) => value !== item.id));
-                                                                        }}
-                                                                    />
-                                                                </FormControl>
-                                                                <FormLabel className="font-normal">{item.label}</FormLabel>
-                                                                <FormMessage />
-                                                            </FormItem>
-                                                        )
-                                                    }}
+                                                    render={({ field }) => (
+                                                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 leading-none">
+                                                            <FormControl>
+                                                                <Checkbox
+                                                                    className="mb-3"
+                                                                    checked={field.value?.includes(item.id)}
+                                                                    onCheckedChange={(checked) => {
+                                                                        const currentValue = Array.isArray(field.value) ? field.value : [];
+                                                                        return checked ? field.onChange([...currentValue, item.id]) : field.onChange(currentValue.filter((value) => value !== item.id));
+                                                                    }}
+                                                                />
+                                                            </FormControl>
+                                                            <FormLabel className="font-normal">{item.label}</FormLabel>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
                                                 />
                                             ))}
                                         </CardContent>
                                     </Card>
+                                    {/* Dwelling Status Card */}
                                     <Card className='w-full'>
                                         <CardHeader>
                                             <CardDescription>การอยู่อาศัย</CardDescription>
                                         </CardHeader>
-                                        <CardContent >
+                                        <CardContent>
                                             {itemjson.dwelling.map((item) => (
                                                 <FormField
                                                     key={item.id}
                                                     control={form.control}
                                                     name="itemsDwelling"
-                                                    render={({ field }) => {
-                                                        return (
-                                                            <FormItem
-                                                                key={item.id}
-                                                                className="flex flex-row items-start space-x-3 space-y-0 leading-none">
-                                                                <FormControl>
-                                                                    <Checkbox
-                                                                        className="mb-3"
-                                                                        checked={field.value?.includes(item.id)}
-                                                                        onCheckedChange={(checked) => {
-                                                                            const currentValue = Array.isArray(field.value) ? field.value : [];
-                                                                            return checked ? field.onChange([...currentValue, item.id]) : field.onChange(currentValue.filter((value) => value !== item.id));
-                                                                        }}
-                                                                    />
-                                                                </FormControl>
-                                                                <FormLabel className="font-normal">{item.label}</FormLabel>
-                                                                <FormMessage />
-                                                            </FormItem>
-                                                        )
-                                                    }}
+                                                    render={({ field }) => (
+                                                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 leading-none">
+                                                            <FormControl>
+                                                                <Checkbox
+                                                                    className="mb-3"
+                                                                    checked={field.value?.includes(item.id)}
+                                                                    onCheckedChange={(checked) => {
+                                                                        const currentValue = Array.isArray(field.value) ? field.value : [];
+                                                                        return checked ? field.onChange([...currentValue, item.id]) : field.onChange(currentValue.filter((value) => value !== item.id));
+                                                                    }}
+                                                                />
+                                                            </FormControl>
+                                                            <FormLabel className="font-normal">{item.label}</FormLabel>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
                                                 />
                                             ))}
                                         </CardContent>
@@ -494,8 +428,10 @@ export default function ModalCreateApplicant() {
                                 </div>
                             </CardContent>
                         </Card>
+                        {/* Documents and Personal Information */}
                         <div className="grid grid-cols-5 col-span-2 gap-3">
-                            <Card className="col-span-2 over flow-y-auto">
+                            {/* Documents Card */}
+                            <Card className="col-span-2 overflow-y-auto">
                                 <CardHeader className="flex">
                                     <CardTitle>Documents</CardTitle>
                                     <CardDescription>เอกสารสำหรับสมัครงาน</CardDescription>
@@ -507,23 +443,19 @@ export default function ModalCreateApplicant() {
                                                 key={item.id}
                                                 control={form.control}
                                                 name="itemsDoc"
-                                                render={({ field }) => {
-                                                    return (
-                                                        <FormItem
-                                                            key={item.id}
-                                                            className="flex flex-row items-start space-x-3 space-y-0 leading-none">
-                                                            <FormControl>
-                                                                <Checkbox
-                                                                    checked={field.value?.includes(item.id)}
-                                                                    onCheckedChange={(checked) => {
-                                                                        return checked ? field.onChange([...field.value, item.id]) : field.onChange(field.value?.filter((value) => value !== item.id))
-                                                                    }}
-                                                                />
-                                                            </FormControl>
-                                                            <FormLabel className="font-normal">{item.label}</FormLabel>
-                                                        </FormItem>
-                                                    )
-                                                }}
+                                                render={({ field }) => (
+                                                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 leading-none">
+                                                        <FormControl>
+                                                            <Checkbox
+                                                                checked={field.value?.includes(item.id)}
+                                                                onCheckedChange={(checked) => {
+                                                                    return checked ? field.onChange([...field.value, item.id]) : field.onChange(field.value?.filter((value) => value !== item.id));
+                                                                }}
+                                                            />
+                                                        </FormControl>
+                                                        <FormLabel className="font-normal">{item.label}</FormLabel>
+                                                    </FormItem>
+                                                )}
                                             />
                                         ))}
                                         <FormMessage />
@@ -533,6 +465,7 @@ export default function ModalCreateApplicant() {
                                     </div>
                                 </CardContent>
                             </Card>
+                            {/* Personal Information Card */}
                             <Card className="col-span-3">
                                 <CardHeader className="flex">
                                     <CardTitle>Personal</CardTitle>
@@ -543,21 +476,19 @@ export default function ModalCreateApplicant() {
                                             key={item.id}
                                             control={form.control}
                                             name={`person.${item.id}`}
-                                            render={({ field }) => {
-                                                return (
-                                                    <FormItem key={item.id}>
-                                                        <div className="flex justify-between">
-                                                            <FormLabel>{item.label}</FormLabel><FormMessage />
-                                                        </div>
-                                                        <FormControl>
-                                                            <Input placeholder={item.placeholder} {...field} value={typeof field.value === 'string' ? field.value : ''} />
-                                                        </FormControl>
-                                                    </FormItem>
-                                                )
-                                            }}
+                                            render={({ field }) => (
+                                                <FormItem key={item.id}>
+                                                    <div className="flex justify-between">
+                                                        <FormLabel>{item.label}</FormLabel><FormMessage />
+                                                    </div>
+                                                    <FormControl>
+                                                        <Input placeholder={item.placeholder} {...field} value={typeof field.value === 'string' ? field.value : ''} />
+                                                    </FormControl>
+                                                </FormItem>
+                                            )}
                                         />
                                     ))}
-                                    {/* Birthdate */}
+                                    {/* Birthdate Field */}
                                     <FormField
                                         control={form.control}
                                         name="birthdate"
@@ -575,6 +506,7 @@ export default function ModalCreateApplicant() {
                                 </CardContent>
                             </Card>
                         </div>
+                        {/* Submit and Cancel Buttons */}
                         <div className="grid col-span-2">
                             <div className="flex justify-end gap-2">
                                 <Button type="submit"> <TiTick />Submit</Button>

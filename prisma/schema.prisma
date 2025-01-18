@@ -41,38 +41,62 @@ enum Role {
   EMPLOYEE
 }
 
-model Applicantion {
+model Application {
   id              String            @id @default(auto()) @map("_id") @db.ObjectId
-  name            String
-  email           String
-  dateOfBirth     DateTime
-  address         String?
-  position        String
-  expectSalary    Int
-  nationality     String
-  ethnicity       String
-  religion        String
-  militaryStatus  String
-  maritalStatus   String
-  dwelling        String
-  probationStatus Boolean
-  status          ApplicationStatus @default(NEW)
-  ducuments       Document[]
+  person          Person            @relation(fields: [personId], references: [id])
+  personId        String            @db.ObjectId
+  birthdate       DateTime
+  info            Info              @relation(fields: [infoId], references: [id])
+  infoId          String            @db.ObjectId
+  itemsMilitary   String[]
+  itemsMarital    String[]
+  itemsDwelling   String[]
+  documents       Document[]
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
 }
 
-model Document {
-  id             String        @id @default(uuid()) @map("_id")
-  name           String //nameDocuents
-  applicant      Applicantion? @relation(fields: [applicantionId], references: [id])
-  applicantionId String?       @db.ObjectId
+model Person {
+  id             String  @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  phone          String
+  email          String @unique
+  position       String
+  expectSalary   String
+
+  Application Application[]
 }
 
-enum ApplicationStatus {
-  NEW
-  PENDING
-  APPROVED
+model Info {
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+address       Address? @relation(fields: [addressid], references: [id])
+addressid     String? @db.ObjectId
+nationality   String
+  religion      String
+  race          String
+
+  Application Application[]
+}
+
+model Address {
+  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  houseNumber  String
+  village      String
+  road         String
+  subDistrict  String
+  district     String
+  province     String
+  zipCode      String
+  country      String
+
+  Info Info[]
+}
+
+model Document {
+  id             String       @id @default(uuid()) @map("_id")
+  name           String
+  applicant      Application? @relation(fields: [applicantId], references: [id])
+  applicantId    String?      @db.ObjectId
 }
 
 model KanbanTask {

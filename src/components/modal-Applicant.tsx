@@ -1,25 +1,24 @@
 'use client'
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
-import { TiCancel, TiTick } from "react-icons/ti"
+import { TiCancel, TiTick, TiEdit } from "react-icons/ti"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { SquareUserRound } from "lucide-react";
 import { DatePickerWithPresets } from '@/components/date-picker'
 import { Label } from "@radix-ui/react-label";
+
+// 👇 ใช้ props เพื่อกำหนด Mode & Default Values
+interface ModalApplicantProps {
+    mode: "create" | "edit" | "view";
+    defaultValues?: z.infer<typeof formSchema>;
+}
 
 const formSchema = z.object({
     //  ข้อมูลบุคคล
@@ -40,7 +39,7 @@ const formSchema = z.object({
         address: z.object({
             houseNumber: z.string().min(1, { message: "*" }),
             village: z.string().optional(), // อาจไม่ต้องมีถนนในบางกรณี
-            road: z.string().optional(), 
+            road: z.string().optional(),
             subDistrict: z.string().min(2, { message: "*" }),
             district: z.string().min(2, { message: "*" }),
             province: z.string().min(2, { message: "*" }),
@@ -217,11 +216,12 @@ const itemjson = {
  * ModalCreateApplicant component renders a dialog for creating a new applicant.
  * It includes a form with various fields for applicant details, documents, and status.
  */
-export default function ModalCreateApplicant() {
+export default function ModalApplicant({ mode, defaultValues }: ModalApplicantProps) {
     // Initialize form using useForm hook with Zod validation schema
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
+        mode: "onChange", // ✅ ตรวจสอบ validation แบบเรียลไทม์
+        defaultValues: defaultValues || {
             person: {
                 name: "",
                 phone: "",
@@ -254,6 +254,16 @@ export default function ModalCreateApplicant() {
 
     // State to store applicant data
     const [applicant, setTasks] = useState<z.infer<typeof formSchema>[]>([]);
+    // เพิ่ม state สำหรับควบคุมโหมด
+    const [isEditing, setIsEditing] = useState(mode === "edit");
+
+    const { control, formState } = form;
+    const { isValid } = formState; // ✅ ดึงค่า isValid จาก formState
+
+    // ✅ เมื่อเปลี่ยน `isEditing` ให้ React อัปเดต UI
+    useEffect(() => {
+        console.log("Form is valid:", isValid);
+    }, [isValid]);
 
     /**
      * Handles form submission and updates applicant state.
@@ -268,12 +278,24 @@ export default function ModalCreateApplicant() {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="default">New Applicant</Button>
+                {mode === "create" ? (
+                    <Button variant="default">New Applicant</Button>
+                ) : (
+                    <Button variant="link">
+                        {mode === "view" ? "Read More" : "Edit Applicant"}
+                    </Button>
+                )}
             </DialogTrigger>
             <DialogContent className="w-[70%] min-h-20 ">
                 <DialogHeader>
-                    <DialogTitle>New Applicant</DialogTitle>
-                    <DialogDescription>Fill in the form below to create a new applicant.</DialogDescription>
+                    <DialogTitle>{mode === "create" ? "New Applicant" : isEditing ? "Edit Applicant" : "View Applicant"}</DialogTitle>
+                    <DialogDescription>
+                        {mode === "create"
+                            ? "Fill in the form below to create a new applicant."
+                            : isEditing
+                                ? "Modify the applicant information below."
+                                : "Viewing applicant details."}
+                    </DialogDescription>
                 </DialogHeader>
                 {/* Form layout */}
                 <Form {...form}>
@@ -292,7 +314,7 @@ export default function ModalCreateApplicant() {
                                         return Object.values(value).map((item) => (
                                             <FormField
                                                 key={item.id}
-                                                control={form.control}
+                                                control={control}
                                                 name={`info.address.${item.id}` as `info.address.${keyof typeof itemjson.info.address}`}
                                                 render={({ field }) => (
                                                     <FormItem className="flex flex-row items-start space-x-3 space-y-0 leading-none">
@@ -302,6 +324,7 @@ export default function ModalCreateApplicant() {
                                                             <Input className="w-40 h-5 text-center"
                                                                 {...field}
                                                                 value={typeof field.value === 'string' ? field.value : ''}
+                                                                disabled={mode === "view" && !isEditing}
                                                             />
                                                         </FormControl>
                                                     </FormItem>
@@ -313,7 +336,7 @@ export default function ModalCreateApplicant() {
                                         return (
                                             <FormField
                                                 key={key}
-                                                control={form.control}
+                                                control={control}
                                                 name={`info.${key}` as `info.${keyof typeof itemjson.info}`}
                                                 render={({ field }) => (
                                                     <FormItem className="flex flex-row items-start space-x-3 space-y-0 leading-none">
@@ -323,6 +346,7 @@ export default function ModalCreateApplicant() {
                                                             <Input className="w-40 h-5 text-center"
                                                                 {...field}
                                                                 value={typeof field.value === 'string' ? field.value : ''}
+                                                                disabled={mode === "view" && !isEditing}
                                                             />
                                                         </FormControl>
                                                     </FormItem>
@@ -341,7 +365,7 @@ export default function ModalCreateApplicant() {
                                             {itemjson.military.map((item) => (
                                                 <FormField
                                                     key={item.id}
-                                                    control={form.control}
+                                                    control={control}
                                                     name="itemsMilitary"
                                                     render={({ field }) => (
                                                         <FormItem className="flex flex-row items-start space-x-3 space-y-0 leading-none">
@@ -353,6 +377,7 @@ export default function ModalCreateApplicant() {
                                                                         const currentValue = Array.isArray(field.value) ? field.value : [];
                                                                         return checked ? field.onChange([...currentValue, item.id]) : field.onChange(currentValue.filter((value) => value !== item.id));
                                                                     }}
+                                                                    disabled={mode === "view" && !isEditing}
                                                                 />
                                                             </FormControl>
                                                             <FormLabel className="font-normal">{item.lable}</FormLabel>
@@ -372,7 +397,7 @@ export default function ModalCreateApplicant() {
                                             {itemjson.marital.map((item) => (
                                                 <FormField
                                                     key={item.id}
-                                                    control={form.control}
+                                                    control={control}
                                                     name="itemsMarital"
                                                     render={({ field }) => (
                                                         <FormItem className="flex flex-row items-start space-x-3 space-y-0 leading-none">
@@ -384,6 +409,7 @@ export default function ModalCreateApplicant() {
                                                                         const currentValue = Array.isArray(field.value) ? field.value : [];
                                                                         return checked ? field.onChange([...currentValue, item.id]) : field.onChange(currentValue.filter((value) => value !== item.id));
                                                                     }}
+                                                                    disabled={mode === "view" && !isEditing}
                                                                 />
                                                             </FormControl>
                                                             <FormLabel className="font-normal">{item.label}</FormLabel>
@@ -403,7 +429,7 @@ export default function ModalCreateApplicant() {
                                             {itemjson.dwelling.map((item) => (
                                                 <FormField
                                                     key={item.id}
-                                                    control={form.control}
+                                                    control={control}
                                                     name="itemsDwelling"
                                                     render={({ field }) => (
                                                         <FormItem className="flex flex-row items-start space-x-3 space-y-0 leading-none">
@@ -415,6 +441,7 @@ export default function ModalCreateApplicant() {
                                                                         const currentValue = Array.isArray(field.value) ? field.value : [];
                                                                         return checked ? field.onChange([...currentValue, item.id]) : field.onChange(currentValue.filter((value) => value !== item.id));
                                                                     }}
+                                                                    disabled={mode === "view" && !isEditing}
                                                                 />
                                                             </FormControl>
                                                             <FormLabel className="font-normal">{item.label}</FormLabel>
@@ -441,7 +468,7 @@ export default function ModalCreateApplicant() {
                                         {itemjson.doc.map((item) => (
                                             <FormField
                                                 key={item.id}
-                                                control={form.control}
+                                                control={control}
                                                 name="itemsDoc"
                                                 render={({ field }) => (
                                                     <FormItem className="flex flex-row items-start space-x-3 space-y-0 leading-none">
@@ -451,6 +478,7 @@ export default function ModalCreateApplicant() {
                                                                 onCheckedChange={(checked) => {
                                                                     return checked ? field.onChange([...field.value, item.id]) : field.onChange(field.value?.filter((value) => value !== item.id));
                                                                 }}
+                                                                disabled={mode === "view" && !isEditing}
                                                             />
                                                         </FormControl>
                                                         <FormLabel className="font-normal">{item.label}</FormLabel>
@@ -474,7 +502,7 @@ export default function ModalCreateApplicant() {
                                     {itemjson.person.map((item) => (
                                         <FormField
                                             key={item.id}
-                                            control={form.control}
+                                            control={control}
                                             name={`person.${item.id}`}
                                             render={({ field }) => (
                                                 <FormItem key={item.id}>
@@ -482,7 +510,9 @@ export default function ModalCreateApplicant() {
                                                         <FormLabel>{item.label}</FormLabel><FormMessage />
                                                     </div>
                                                     <FormControl>
-                                                        <Input placeholder={item.placeholder} {...field} value={typeof field.value === 'string' ? field.value : ''} />
+                                                        <Input placeholder={item.placeholder} {...field}
+                                                            value={typeof field.value === 'string' ? field.value : ''}
+                                                            disabled={mode === "view" && !isEditing} />
                                                     </FormControl>
                                                 </FormItem>
                                             )}
@@ -490,7 +520,7 @@ export default function ModalCreateApplicant() {
                                     ))}
                                     {/* Birthdate Field */}
                                     <FormField
-                                        control={form.control}
+                                        control={control}
                                         name="birthdate"
                                         render={({ field }) => (
                                             <FormItem>
@@ -498,7 +528,8 @@ export default function ModalCreateApplicant() {
                                                     <FormLabel>Birth Date</FormLabel><FormMessage />
                                                 </div>
                                                 <FormControl>
-                                                    <DatePickerWithPresets value={field.value} onChange={(date) => field.onChange(date.toISOString())} />
+                                                    <DatePickerWithPresets value={field.value} onChange={(date) => field.onChange(date.toISOString())}
+                                                        disabled={mode === "view" && !isEditing} />
                                                 </FormControl>
                                             </FormItem>
                                         )}
@@ -509,8 +540,24 @@ export default function ModalCreateApplicant() {
                         {/* Submit and Cancel Buttons */}
                         <div className="grid col-span-2">
                             <div className="flex justify-end gap-2">
-                                <Button type="submit"> <TiTick />Submit</Button>
-                                <Button type="button" variant={"destructive"} className="bg-red-600"> <TiCancel />Cancel</Button>
+                                {mode === "create" ? (
+                                    <Button type="submit" disabled={!isValid} >
+                                        <TiTick /> Create Applicant
+                                    </Button>
+                                ) : isEditing ? (
+                                    <Button type="submit" disabled={!isValid} >
+                                        <TiTick /> Save Changes
+                                    </Button>
+                                ) : (
+                                    <Button type="button" onClick={() => setIsEditing(true)}>
+                                        <TiEdit /> Edit
+                                    </Button>
+                                )}
+                                <DialogClose>
+                                    <Button type="button" variant="destructive">
+                                        <TiCancel /> Close
+                                    </Button>
+                                </DialogClose>
                             </div>
                         </div>
                     </form>

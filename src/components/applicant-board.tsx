@@ -12,7 +12,7 @@ import { motion } from "framer-motion";
 import { FaFire } from "react-icons/fa";
 import { MdDragIndicator } from "react-icons/md";
 import { IoPersonSharp } from "react-icons/io5";
-import ModalReadApplicant from "@/components/modal-readApplicant"
+import ModalApplicant from "@/components/modal-Applicant"
 
 export const ApplicantBoard = () => {
   return (
@@ -231,7 +231,7 @@ const Card = ({ title, id, column, jobRole, handleDragStart }: CardProps) => {
         </div>
         <div className="flex gap-2 py-1 px-2 w-full">
           <p className="flex text-sm text-muted-foreground text-center">{jobRole}</p>
-          <ModalReadApplicant />
+          <ModalApplicant mode="view"/>
         </div>
       </motion.div>
     </>

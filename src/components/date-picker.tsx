@@ -20,11 +20,26 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
+interface DatePickerWithPresetsProps {
+  value?: string | number | Date;
+  onChange?: (date: Date) => void;
+  [key: string]: unknown;
+}
 
-export function DatePickerWithPresets({...props}) {
-  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>();
+export function DatePickerWithPresets({value, onChange, ...props }: DatePickerWithPresetsProps) {
+  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(
+    value ? new Date(value) : undefined );
   const [selectedMonth, setSelectedMonth] = React.useState<number>(new Date().getMonth());
   const [selectedYear, setSelectedYear] = React.useState<number>(new Date().getFullYear());
+
+  const handleDateChange = (date: Date | undefined) => {
+    setSelectedDate(date);
+    if (onChange) {
+      if (date) {
+        onChange(date); // อัปเดตค่ากลับไปที่ React Hook Form
+      }
+    }
+  };
 
 
   // ฟังก์ชันอัปเดตเดือนและปีเมื่อเปลี่ยน dropdown
@@ -44,7 +59,7 @@ export function DatePickerWithPresets({...props}) {
     setSelectedYear(year);
     updateCalendarDate(selectedMonth, year);
   };
-  
+
   React.useEffect(() => {
     if (selectedDate) {
       setSelectedMonth(selectedDate.getMonth());
@@ -56,7 +71,7 @@ export function DatePickerWithPresets({...props}) {
     <Popover>
       <PopoverTrigger asChild>
         <Button
-        {...props}
+          {...props}
           variant={"outline"}
           className={cn(
             "w-full justify-start text-left font-normal",
@@ -103,10 +118,10 @@ export function DatePickerWithPresets({...props}) {
         </div>
         <div className="rounded-md border">
           <Calendar captionLayout="dropdown"
-          {...props}
+            {...props}
             mode="single"
             selected={selectedDate}
-            onSelect={setSelectedDate}
+            onSelect={handleDateChange}
             month={new Date(selectedYear, selectedMonth)}
             onMonthChange={(date: { getMonth: () => React.SetStateAction<number>; getFullYear: () => React.SetStateAction<number>; }) => {
               setSelectedMonth(date.getMonth());

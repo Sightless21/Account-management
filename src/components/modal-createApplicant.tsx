@@ -18,59 +18,110 @@ import { z } from "zod"
 import { useState } from "react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { SquareUserRound } from "lucide-react";
-import { Label } from "@radix-ui/react-label";
 import { DatePickerWithPresets } from '@/components/date-picker'
+import { Label } from "@radix-ui/react-label";
 
 // chage type
 interface typeForm {
     // Profile card
-    applicantName: string,
-    position: string,
-    phone: string,
-    email: string,
-    expectSalary: string
+    person: {
+        name: string
+        phone: string
+        email: string
+        position: string
+        expectSalary: string
+    }
     birthdate: string
-}
-
-const leastChar = {
-    applicantName: 2,
-    position: 2,
-    phone: 10,
-    email: 2,
-    expectSalary: 4,
-    birthdate: /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/,
+    info: {
+        address: {
+            houseNumber: string
+            village: string
+            road: string
+            subDistrict: string
+            district: string
+            province: string
+            zipCode: string
+            country: string
+        }
+        nationality: string
+        religion: string
+        race: string
+    }
+    itemsMilitary: string[]
+    itemsMarital: string[]
+    itemsDwelling: string[]
+    itemsDoc: string[]
 }
 
 const formSchema = z.object({
     // Profile card
-    applicantName: z.string().min(leastChar.applicantName, {
-        message: `must be at least ${leastChar.applicantName} characters.`,
-    }),
-    position: z.string().min(leastChar.position, {
-        message: `must be at least ${leastChar.position} characters.`,
-    }),
-    phone: z.string().min(leastChar.phone, {
-        message: `must be at least ${leastChar.phone} characters.`,
-    }),
-    email: z.string().min(leastChar.email, {
-        message: `must be at least ${leastChar.email} characters.`,
-    }),
-    expectSalary: z.string().min(leastChar.expectSalary, {
-        message: `must be at least ${leastChar.expectSalary} characters.`,
+    person: z.object({
+        name: z.string().min(2, {
+            message: `*`,
+        }),
+        phone: z.string().min(2, {
+            message: `*`,
+        }),
+        email: z.string().min(2, {
+            message: `*`,
+        }),
+        position: z.string().min(2, {
+            message: `*`,
+        }),
+        expectSalary: z.string().min(2, {
+            message: `*`,
+        }),
     }),
     birthdate: z.string().nonempty({
-        message: "Birthdate is required.",
+        message: "*",
+    }),
+    info: z.object({
+        address: z.object({
+            houseNumber: z.string().min(2, {
+                message: `*`,
+            }),
+            village: z.string().min(2, {
+                message: `*`,
+            }),
+            road: z.string().min(2, {
+                message: `*`,
+            }),
+            subDistrict: z.string().min(2, {
+                message: `*`,
+            }),
+            district: z.string().min(2, {
+                message: `*`,
+            }),
+            province: z.string().min(2, {
+                message: `*`,
+            }),
+            zipCode: z.string().min(2, {
+                message: `*`,
+            }),
+            country: z.string().min(2, {
+                message: `*`,
+            }),
+        }),
+        nationality: z.string().min(2, {
+            message: `*`,
+        }),
+        religion: z.string().min(2, {
+            message: `*`,
+        }),
+        race: z.string().min(2, {
+            message: `*`,
+        }),
+    }),
+    itemsMilitary: z.array(z.string()).refine((value) => value.length === 1, {
+        message: `Required only 1 item.`,
+    }),
+    itemsMarital: z.array(z.string()).refine((value) => value.length === 1, {
+        message: `Required only 1 item.`,
+    }),
+    itemsDwelling: z.array(z.string()).refine((value) => value.length === 1, {
+        message: `Required only 1 item.`,
     }),
     itemsDoc: z.array(z.string()).refine((value) => value.some((item) => item), {
-        message: "You have to select at least one item.",
-    }),
-    itemsMilitary: z.array(z.string()).refine((value) => value.some((item) => item), {
-        message: "You have to select at least one item.",
-    }),
-    itemsMarital: z.array(z.string()).refine((value) => value.some((item) => item), {
-        message: "You have to select at least one item.",
-    }),
-    itemsDwelling: z.array(z.string()).refine((value) => value.some((item) => item), {
         message: "You have to select at least one item.",
     }),
 })
@@ -98,81 +149,83 @@ const itemjson = {
             label: "อื่นๆ",
         },
     ],
-    info: [
-        {
-            id: "NumberAddress",
-            label: "เลขที่",
+    info: {
+        address: {
+            houseNumber: {
+                id: "houseNumber",
+                label: "เลขที่",
+            },
+            village: {
+                id: "village",
+                label: "หมู่ที่",
+            },
+            road: {
+                id: "road",
+                label: "ถนน",
+            },
+            subDistrict: {
+                id: "subDistrict",
+                label: "ตําบล/แขวง",
+            },
+            district: {
+                id: "district",
+                label: "อําเภอ/เขต",
+            },
+            province: {
+                id: "province",
+                label: "จังหวัด",
+            },
+            zipCode: {
+                id: "zipCode",
+                label: "รหัสไปรษณีย์",
+            },
+            country: {
+                id: "country",
+                label: "ประเทศ",
+            },
         },
-        {
-            id: "Village",
-            label: "หมู่ที่",
-        },
-        {
-            id: "Road",
-            label: "ถนน",
-        },
-        {
-            id: "SubDistrict",
-            label: "ตําบล/แขวง",
-        },
-        {
-            id: "District",
-            label: "อําเภอ/เขต",
-        },
-        {
-            id: "Province",
-            label: "จังหวัด",
-        },
-        {
-            id: "ZipCode",
-            label: "รหัสไปรษณีย์",
-        },
-        {
-            id: "Country",
-            label: "ประเทศ",
-        },
-        {
-            id: "national",
+        nationality: {
+            id: "nationality",
             label: "สัญชาติ",
         },
-        {
-            id: "race",
-            label: "เชื้อชาติ",
-        },
-        {
+        religion: {
             id: "religion",
             label: "ศาสนา",
+        },
+        race: {
+            id: "race",
+            label: "เชื้อชาติ",
         }
-    ],
-    persion: [
+    },
+    person: [
         {
-            id: "applicantName",
-            labe: "Applicant Name",
-            type: "string",
+            id: "name",
+            label: "Applicant Name",
+            type: "text",
             placeholder: "John Doe"
         },
         {
             id: "phone",
-            labe: "Phone Number",
+            label: "Phone Number",
             type: "tel",
             placeholder: "000-000-0000"
         },
         {
             id: "email",
-            labe: "Email",
+            label: "Email",
             type: "email",
             placeholder: "JohnDoe@gmail.com"
         },
         {
             id: "position",
-            labe: "Position",
-            type: "string",
+            label: "Position",
+            type: "text",
             placeholder: "Full-stack developer"
         },
         {
             id: "expectSalary",
-            labe: "Expect Salary",
-            type: "string",
+            label: "Expect Salary",
+            type: "text",
             placeholder: "30,000"
         },
     ],
@@ -229,20 +282,42 @@ export default function ModalCreateApplicant() {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            applicantName: "",
-            position: "",
-            phone: "",
-            email: "",
-            expectSalary: "",
+            person: {
+                name: "",
+                phone: "",
+                email: "",
+                position: "",
+                expectSalary: "",
+            },
             birthdate: "",
+            info: {
+                address: {
+                    houseNumber: "",
+                    village: "-",
+                    road: "",
+                    subDistrict: "",
+                    district: "",
+                    province: "",
+                    zipCode: "",
+                    country: "",
+                },
+                nationality: "",
+                race: "",
+                religion: "",
+            },
+            itemsMilitary: [],
+            itemsMarital: [],
+            itemsDwelling: [],
             itemsDoc: ["thaiIdCard", "houseRegis", "diploma", "bookBank"],
         },
     })
-    const [tasks, setTasks] = useState<typeForm[]>([form.getValues()])
+    const [applicant, setTasks] = useState<typeForm[]>([form.getValues()])
 
-    async function onSubmit(values: z.infer<typeof formSchema>) {
-        setTasks([...tasks, values])
-        form.reset()
+    async function onSubmit(values: z.infer<typeof formSchema>,) {
+
+        console.log(values)
+        setTasks([...applicant, values])
+        // form.reset()
     }
 
     return (
@@ -258,23 +333,60 @@ export default function ModalCreateApplicant() {
                 {/* layout form */}
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-2 gap-4">
-                        {/* Profile */}
                         <Card className="col-span-2">
                             <CardHeader>
                                 <CardTitle>Infomation</CardTitle>
                                 <CardDescription>ข้อมูลส่วนตัว</CardDescription>
                             </CardHeader>
                             <CardContent className="flex flex-wrap items-center gap-2">
-                                {itemjson.info.map((item) => (
-                                    <Label
+                                {Object.values(itemjson.info.address).map((item) => (
+                                    <FormField
                                         key={item.id}
-                                        htmlFor={item.id}
-                                        className="flex items-center gap-2"
-                                    >
-                                        <span>{item.label}</span>
-                                        <Input className="w-40 h-5 text-center" id={item.id} />
-                                    </Label>
+                                        control={form.control}
+                                        name={`info.address.${item.id}`}
+                                        render={({ field }) => {
+                                            return (
+                                                <FormItem
+                                                    key={item.id}
+                                                    className="flex flex-row items-start space-x-3 space-y-0 leading-none">
+                                                    <Label>{item.label}</Label>
+                                                    <FormControl>
+                                                        <Input className="w-40 h-5 text-center"
+                                                            {...field}
+                                                            value={typeof field.value === 'string' ? field.value : ''}
+                                                        />
+                                                    </FormControl>
+                                                </FormItem>
+                                            )
+                                        }}
+                                    />
                                 ))}
+                                {Object.entries(itemjson.info).map(([key, value]) => {
+                                    if (key !== "address") {
+                                        return (
+                                            <FormField
+                                                key={key}
+                                                control={form.control}
+                                                name={`info.${key}` as `info.${keyof typeForm['info']}`}
+                                                render={({ field }) => {
+                                                    return (
+                                                        <FormItem
+                                                            key={key}
+                                                            className="flex flex-row items-start space-x-3 space-y-0 leading-none">
+                                                            {'label' in value && <Label>{value.label}</Label>}
+                                                            <FormControl>
+                                                                <Input className="w-40 h-5 text-center"
+                                                                    {...field}
+                                                                    value={typeof field.value === 'string' ? field.value : ''}
+                                                                />
+                                                            </FormControl>
+                                                        </FormItem>
+                                                    )
+                                                }}
+                                            />
+                                        )
+                                    }
+                                })}
                                 <div className="flex justify-between w-full gap-4">
                                     <Card className='w-full'>
                                         <CardHeader>
@@ -302,6 +414,7 @@ export default function ModalCreateApplicant() {
                                                                     />
                                                                 </FormControl>
                                                                 <FormLabel className="font-normal">{item.lable}</FormLabel>
+                                                                <FormMessage />
                                                             </FormItem>
                                                         )
                                                     }}
@@ -335,6 +448,7 @@ export default function ModalCreateApplicant() {
                                                                     />
                                                                 </FormControl>
                                                                 <FormLabel className="font-normal">{item.label}</FormLabel>
+                                                                <FormMessage />
                                                             </FormItem>
                                                         )
                                                     }}
@@ -368,6 +482,7 @@ export default function ModalCreateApplicant() {
                                                                     />
                                                                 </FormControl>
                                                                 <FormLabel className="font-normal">{item.label}</FormLabel>
+                                                                <FormMessage />
                                                             </FormItem>
                                                         )
                                                     }}
@@ -422,83 +537,39 @@ export default function ModalCreateApplicant() {
                                     <CardTitle>Personal</CardTitle>
                                 </CardHeader>
                                 <CardContent className="grid grid-cols-2 gap-2">
-
-                                    <FormField
-                                        control={form.control}
-                                        name="applicantName"
-                                        render={({ field }) => (
-                                            <FormItem className="">
-                                                <FormLabel>Applicant Name</FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="John Doe" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="phone"
-                                        render={({ field }) => (
-                                            <FormItem className="">
-                                                <FormLabel>Phone Number</FormLabel>
-                                                <FormControl>
-                                                    <Input type="tel" placeholder="000-000-0000" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="email"
-                                        render={({ field }) => (
-                                            <FormItem className="">
-                                                <FormLabel>Email</FormLabel>
-                                                <FormControl>
-                                                    <Input type="email" placeholder="JohnDoe@gmail.com" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    {/* TaskName */}
-                                    <FormField
-                                        control={form.control}
-                                        name="position"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Position</FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="full-stack developer" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="expectSalary"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Expect Salary</FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="30000" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                                    {itemjson.person.map((item) => (
+                                        <FormField
+                                            key={item.id}
+                                            control={form.control}
+                                            name={`person.${item.id}`}
+                                            render={({ field }) => {
+                                                return (
+                                                    <FormItem key={item.id}>
+                                                        <div className="flex justify-between">
+                                                            <FormLabel>{item.label}</FormLabel><FormMessage />
+                                                        </div>
+                                                        <FormControl>
+                                                            <Input placeholder={item.placeholder} {...field} value={typeof field.value === 'string' ? field.value : ''} />
+                                                        </FormControl>
+                                                    </FormItem>
+                                                )
+                                            }}
+                                        />
+                                    ))}
+                                    {/* Birthdate */}
                                     <FormField
                                         control={form.control}
                                         name="birthdate"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Birth Date</FormLabel>
+                                                <div className="flex justify-between">
+                                                    <FormLabel>Birth Date</FormLabel><FormMessage />
+                                                </div>
                                                 <FormControl>
-                                                    <DatePickerWithPresets {...field} />
+                                                    <DatePickerWithPresets value={field.value} onChange={(date) => field.onChange(date.toLocaleString("th-TH", {
+                                                        timeZone: "Asia/Bangkok",
+                                                    }))} />
                                                 </FormControl>
-                                                <FormMessage />
                                             </FormItem>
                                         )}
                                     />

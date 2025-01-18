@@ -339,30 +339,31 @@ export default function ModalCreateApplicant() {
                                 <CardDescription>ข้อมูลส่วนตัว</CardDescription>
                             </CardHeader>
                             <CardContent className="flex flex-wrap items-center gap-2">
-                                {Object.values(itemjson.info.address).map((item) => (
-                                    <FormField
-                                        key={item.id}
-                                        control={form.control}
-                                        name={`info.address.${item.id}`}
-                                        render={({ field }) => {
-                                            return (
-                                                <FormItem
-                                                    key={item.id}
-                                                    className="flex flex-row items-start space-x-3 space-y-0 leading-none">
-                                                    <Label>{item.label}</Label>
-                                                    <FormControl>
-                                                        <Input className="w-40 h-5 text-center"
-                                                            {...field}
-                                                            value={typeof field.value === 'string' ? field.value : ''}
-                                                        />
-                                                    </FormControl>
-                                                </FormItem>
-                                            )
-                                        }}
-                                    />
-                                ))}
                                 {Object.entries(itemjson.info).map(([key, value]) => {
-                                    if (key !== "address") {
+                                    if (key === "address") {
+                                        return Object.values(value).map((item) => (
+                                            <FormField
+                                                key={item.id}
+                                                control={form.control}
+                                                name={`info.address.${item.id}` as `info.address.${keyof typeForm['info']['address']}`}
+                                                render={({ field }) => {
+                                                    return (
+                                                        <FormItem
+                                                            key={item.id}
+                                                            className="flex flex-row items-start space-x-3 space-y-0 leading-none">
+                                                            <Label>{item.label}</Label>
+                                                            <FormControl>
+                                                                <Input className="w-40 h-5 text-center"
+                                                                    {...field}
+                                                                    value={typeof field.value === 'string' ? field.value : ''}
+                                                                />
+                                                            </FormControl>
+                                                        </FormItem>
+                                                    )
+                                                }}
+                                            />
+                                        ));
+                                    } else {
                                         return (
                                             <FormField
                                                 key={key}
@@ -384,7 +385,7 @@ export default function ModalCreateApplicant() {
                                                     )
                                                 }}
                                             />
-                                        )
+                                        );
                                     }
                                 })}
                                 <div className="flex justify-between w-full gap-4">
@@ -566,9 +567,7 @@ export default function ModalCreateApplicant() {
                                                     <FormLabel>Birth Date</FormLabel><FormMessage />
                                                 </div>
                                                 <FormControl>
-                                                    <DatePickerWithPresets value={field.value} onChange={(date) => field.onChange(date.toLocaleString("th-TH", {
-                                                        timeZone: "Asia/Bangkok",
-                                                    }))} />
+                                                    <DatePickerWithPresets value={field.value} onChange={(date) => field.onChange(date.toISOString())} />
                                                 </FormControl>
                                             </FormItem>
                                         )}

@@ -1,5 +1,5 @@
 'use client'
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,} from "@/components/ui/dialog"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button"
@@ -13,6 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { SquareUserRound } from "lucide-react";
 import { DatePickerWithPresets } from '@/components/date-picker'
 import { Label } from "@radix-ui/react-label";
+import axios from "axios";
 
 // 👇 ใช้ props เพื่อกำหนด Mode & Default Values
 interface ModalApplicantProps {
@@ -272,6 +273,12 @@ export default function ModalApplicant({ mode, defaultValues }: ModalApplicantPr
     async function onSubmit(values: z.infer<typeof formSchema>) {
         console.log(values);
         setTasks([...applicant, values]);
+        try {
+            const response = await axios.post("/api/applicant", values);
+            console.log("Applicant created",response.data);
+        } catch (error) {
+            console.log("Error creating applicant", error);
+        }
         // form.reset() // Uncomment to reset the form after submission
     }
 
@@ -553,7 +560,7 @@ export default function ModalApplicant({ mode, defaultValues }: ModalApplicantPr
                                         <TiEdit /> Edit
                                     </Button>
                                 )}
-                                <DialogClose>
+                                <DialogClose asChild>
                                     <Button type="button" variant="destructive">
                                         <TiCancel /> Close
                                     </Button>

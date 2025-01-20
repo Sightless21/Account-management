@@ -249,7 +249,7 @@ export default function ModalApplicant({ mode, defaultValues }: ModalApplicantPr
             itemsMilitary: [],
             itemsMarital: [],
             itemsDwelling: [],
-            itemsDoc: ["thaiIdCard", "houseRegis", "diploma", "bookBank"],
+            itemsDoc: [],
         },
     });
 
@@ -260,6 +260,7 @@ export default function ModalApplicant({ mode, defaultValues }: ModalApplicantPr
 
     const { control, formState } = form;
     const { isValid } = formState; // ✅ ดึงค่า isValid จาก formState
+    let isSubmitting = false;
 
     // ✅ เมื่อเปลี่ยน `isEditing` ให้ React อัปเดต UI
     useEffect(() => {
@@ -271,14 +272,23 @@ export default function ModalApplicant({ mode, defaultValues }: ModalApplicantPr
      * @param values - Form values
      */
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values);
+        console.log("🚀 Form Submitted Data:", values); // ✅ ตรวจสอบค่าก่อนส่ง API
         setTasks([...applicant, values]);
+        if (isSubmitting) return;
+        isSubmitting = true;
         try {
-            const response = await axios.post("/api/applicant", values);
-            console.log("Applicant created",response.data);
+            const response = await axios.post("/api/applicant", values, {
+                headers: { "Content-Type": "application/json" }, // ระบุ Content-Type
+            });
+            console.log("Applicant created", response.data);
+            form.reset(); // Reset fields to default values
+            setTasks([]); // Reset applicant state
         } catch (error) {
             console.log("Error creating applicant", error);
+        } finally {
+            isSubmitting = false;
         }
+        setTasks([]); // Reset applicant state
         // form.reset() // Uncomment to reset the form after submission
     }
 

@@ -9,32 +9,17 @@ datasource db {
 
 // 📌 Model สำหรับผู้สมัคร
 model Applicant {
-  id          String          @id @default(auto()) @map("_id") @db.ObjectId
-  person      Person
-  birthdate   DateTime
-  info        Info
-  dwelling    String
-  marital     String
-  military    String
-  status      ApplicantStatus @default(NEW)
-  probation   Probation?      @relation(fields: [probationId], references: [id]) // ✅ เก็บแค่ references ฝั่งเดียว
-  probationId String?         @unique @db.ObjectId
-  documents   Document[]
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-}
-
-// 📌 Model สำหรับการทดลองงาน
-model Probation {
-  id             String          @id @default(auto()) @map("_id") @db.ObjectId
-  applicant      Applicant?
-  applicantId    String          @db.ObjectId
-  status         ProbationStatus @default(PENDING)
-  evaluatedBy    Employee?       @relation(fields: [evaluatorId], references: [id])
-  evaluatorId    String?         @db.ObjectId
-  evaluationDate DateTime?
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  person        Person // ✅ ฝังข้อมูลผู้สมัคร (Object)
+  birthdate     DateTime // ✅ เก็บวันเกิด
+  info          Info // ✅ ฝังข้อมูลส่วนตัวของผู้สมัคร
+  itemsMilitary String // ✅ รายการภาวะทหาร (Array ของ String)
+  itemsMarital  String // ✅ รายการสถานภาพสมรส
+  itemsDwelling String // ✅ รายการการอยู่อาศัย
+  documents     Document[] // ✅ แทน `itemsDoc`
+  status        ApplicantStatus @default(NEW)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 }
 
 // 📌 Model พนักงาน (อัปเดตให้รองรับการเพิ่มจากผู้สมัคร)
@@ -64,8 +49,6 @@ model Employee {
   updatedAt      DateTime      @updatedAt
   clientId       String?       @db.ObjectId
   Client         Client[]      @relation(name: "oneEmptoOneClient")
-
-  Probation Probation[]
 }
 
 enum Role {
@@ -132,9 +115,11 @@ type Address {
 }
 
 // 📌 เอกสารแนบ
-type Document {
-  id   String @map("_id") @db.ObjectId
-  name String
+model Document {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  applicant   Applicant? @relation(fields: [applicantId], references: [id])
+  applicantId String?    @db.ObjectId
 }
 
 // KabanTask

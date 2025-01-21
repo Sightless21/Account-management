@@ -13,53 +13,14 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { SquareUserRound } from "lucide-react";
 import { DatePickerWithPresets } from '@/components/date-picker'
 import { Label } from "@radix-ui/react-label";
-import axios from "axios";
+import { useApplicantStore } from "@/hooks/useApplicantStore";
+import { formSchema } from "@/schema/formSchema";
 
 // 👇 ใช้ props เพื่อกำหนด Mode & Default Values
 interface ModalApplicantProps {
     mode: "create" | "edit" | "view";
     defaultValues?: z.infer<typeof formSchema>;
 }
-
-const formSchema = z.object({
-    //  ข้อมูลบุคคล
-    person: z.object({
-        name: z.string().min(2, { message: "*" }),
-        phone: z
-            .string()
-            .regex(/^0[0-9]{9}$/, { message: "Must be 10 digits and start with 0." }), // ตรวจสอบเบอร์โทรศัพท์
-        email: z.string().email({ message: "*" }), // ตรวจสอบว่าเป็นอีเมลที่ถูกต้อง
-        position: z.string().min(2, { message: "*" }),
-        expectSalary: z.string().min(2, { message: "*" }),
-    }),
-    birthdate: z.preprocess(
-        (arg) => (typeof arg === "string" || arg instanceof Date ? new Date(arg) : arg),
-        z.date().refine((date) => date < new Date(), { message: "Birthdate must be in the past." }) // ตรวจสอบว่าไม่ใช่วันในอนาคต
-    ),
-    info: z.object({
-        address: z.object({
-            houseNumber: z.string().min(1, { message: "*" }),
-            village: z.string().optional(), // อาจไม่ต้องมีถนนในบางกรณี
-            road: z.string().optional(),
-            subDistrict: z.string().min(2, { message: "*" }),
-            district: z.string().min(2, { message: "*" }),
-            province: z.string().min(2, { message: "*" }),
-            zipCode: z.string().length(5, { message: "*" }),
-            country: z.string().min(2, { message: "*" }),
-        }),
-        nationality: z.string().min(2, { message: "*" }),
-        religion: z.string().min(2, { message: "*" }),
-        race: z.string().min(2, { message: "*" }),
-    }),
-
-    //  รายการที่ต้องเลือก 1 อย่าง
-    itemsMilitary: z.array(z.string()).min(1).max(1, { message: "Please select only one military status." }),
-    itemsMarital: z.array(z.string()).min(1).max(1, { message: "Please select only one marital status." }),
-    itemsDwelling: z.array(z.string()).min(1).max(1, { message: "Please select only one dwelling type." }),
-
-    //  เอกสาร (ต้องเลือกอย่างน้อย 1 อย่าง)
-    itemsDoc: z.array(z.string()).min(1, { message: "You have to select at least one document." }),
-});
 
 const itemjson = {
     doc: [
@@ -212,7 +173,6 @@ const itemjson = {
     ]
 } as const
 
-
 /**
  * ModalCreateApplicant component renders a dialog for creating a new applicant.
  * It includes a form with various fields for applicant details, documents, and status.
@@ -249,7 +209,8 @@ export default function ModalApplicant({ mode, defaultValues }: ModalApplicantPr
             itemsMilitary: [],
             itemsMarital: [],
             itemsDwelling: [],
-            itemsDoc: [],
+            documents: [],
+            status: "NEW",
         },
     });
 
@@ -276,11 +237,10 @@ export default function ModalApplicant({ mode, defaultValues }: ModalApplicantPr
         setTasks([...applicant, values]);
         if (isSubmitting) return;
         isSubmitting = true;
+
         try {
-            const response = await axios.post("/api/applicant", values, {
-                headers: { "Content-Type": "application/json" }, // ระบุ Content-Type
-            });
-            console.log("Applicant created", response.data);
+            useApplicantStore.getState().addApplicant(values);
+            console.log("Applicant created", values);
             form.reset(); // Reset fields to default values
             setTasks([]); // Reset applicant state
         } catch (error) {
@@ -486,7 +446,7 @@ export default function ModalApplicant({ mode, defaultValues }: ModalApplicantPr
                                             <FormField
                                                 key={item.id}
                                                 control={control}
-                                                name="itemsDoc"
+                                                name="documents"
                                                 render={({ field }) => (
                                                     <FormItem className="flex flex-row items-start space-x-3 space-y-0 leading-none">
                                                         <FormControl>

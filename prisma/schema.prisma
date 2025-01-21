@@ -17,7 +17,7 @@ model Applicant {
   itemsMarital  String // ✅ รายการสถานภาพสมรส
   itemsDwelling String // ✅ รายการการอยู่อาศัย
   documents     Document[] // ✅ แทน `itemsDoc`
-  status        ApplicantStatus @default(NEW)
+  status        ApplicantStatus 
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 }

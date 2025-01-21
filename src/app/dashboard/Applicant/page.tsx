@@ -1,9 +1,10 @@
 'use client'
-import { ApplicantBoard } from "@/components/applicant-board";
+// import { ApplicantBoard } from "@/components/applicant-board";
 import { Button } from "@/components/ui/button"
 import { useRouter } from 'next/navigation'
 import * as React from "react"
 import ModalApplicant from "@/components/modal-Applicant"
+import { ApplicantBoard } from "@/components/Dnd/mainBoard"
 
 export default function Page() {
     const router = useRouter();

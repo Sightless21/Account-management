@@ -5,19 +5,15 @@ import { prisma } from "@/lib/prisma"; // 📌 นำเข้า Prisma Client
 export async function POST(request: Request) {
     try {
         const data = await request.json();
-
         console.log("📌 Received Body:", data);
         if (!request.body) {
             console.error("❌ No payload received.");
             return NextResponse.json({ error: "No payload received" }, { status: 400 });
         }
-
-        // Validate the payload
-        if (!data || !data.person.name || !data.person.email || !data.birthdate) {
-            console.error("❌ Invalid payload:", data);
-            return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
+        // ตรวจสอบว่า body มีค่าหรือไม่ และมี properties ที่ต้องการ
+        if (!data || !data.documents || !Array.isArray(data.documents)) {
+            throw new Error("Missing or invalid documents array");
         }
-
         const createApplicant = await prisma.applicant.create({
             data: {
                 person: {
@@ -47,21 +43,38 @@ export async function POST(request: Request) {
                 itemsDwelling: data.itemsDwelling[0],
                 itemsMarital: data.itemsMarital[0],
                 itemsMilitary: data.itemsMilitary[0],
+                documents: data.documents.length > 0 ? { create: data.documents.map((doc: any) => ({ name: doc })) } : undefined, // ✅ ป้องกัน `undefined.map()`
                 status: data.status || "NEW",
-                documents: data.itemsDoc.length > 0 ? { create: data.itemsDoc.map((doc : any) => ({ name: doc })) } : undefined, // ✅ ป้องกัน `undefined.map()`
             },
         });
         console.log("createApplicant:", createApplicant);
+
         if (!createApplicant) {
             throw new Error("createApplicant is null or undefined.");
         }
         return NextResponse.json(createApplicant, { status: 202 });
     } catch (error) {
         if (error instanceof Error) {
-            console.error("Error creating applicant:", error.message);
+            console.error("Error creating applicant: ", error.message || error);
+            return NextResponse.json({ error: "Internal Server Error", message: error }, { status: 500 });
         } else {
             console.error("Error creating applicant:", error)
             return NextResponse.json({ error: "Internal Server Error", message: error }, { status: 500 });
         }
+    }
+}
+
+export async function GET() {
+    try {
+        const applicants = await prisma.applicant.findMany({
+            include: {
+                documents: true, // ดึงข้อมูลเอกสารที่เกี่ยวข้องมาด้วย
+            },
+        });
+
+        return NextResponse.json(applicants, { status: 200 });
+    } catch (error) {
+        console.error("Error fetching applicants:", error);
+        return NextResponse.json({ error: "Error fetching applicants" }, { status: 500 });
     }
 }

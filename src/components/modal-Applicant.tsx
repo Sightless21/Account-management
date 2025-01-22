@@ -218,6 +218,7 @@ export default function ModalApplicant({ mode, defaultValues }: ModalApplicantPr
     const [applicant, setTasks] = useState<z.infer<typeof formSchema>[]>([]);
     // เพิ่ม state สำหรับควบคุมโหมด
     const [isEditing, setIsEditing] = useState(mode === "edit");
+    
 
     const { control, formState } = form;
     const { isValid } = formState; // ✅ ดึงค่า isValid จาก formState
@@ -241,7 +242,7 @@ export default function ModalApplicant({ mode, defaultValues }: ModalApplicantPr
         try {
             useApplicantStore.getState().addApplicant(values);
             console.log("Applicant created", values);
-            form.reset(); // Reset fields to default values
+            // form.reset(); // Reset fields to default values
             setTasks([]); // Reset applicant state
         } catch (error) {
             console.log("Error creating applicant", error);

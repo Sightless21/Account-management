@@ -64,12 +64,34 @@ export async function POST(request: Request) {
     }
 }
 
+export async function PATCH(request: Request) {
+    try {
+        const { id, status } = await request.json();
+
+        if (!id || !status) {
+            return NextResponse.json({ error: "Missing ID or status" }, { status: 400 });
+        }
+
+        // 🔥 อัปเดต applicant ใน Prisma
+        const updatedApplicant = await prisma.applicant.update({
+            where: { id },
+            data: { status },
+        });
+
+        return NextResponse.json(updatedApplicant, { status: 200 });
+    } catch (error) {
+        console.error("Error updating applicant:", error);
+        return NextResponse.json({ error: "Error updating applicant" }, { status: 500 });
+    }
+}
+
 export async function GET() {
     try {
         const applicants = await prisma.applicant.findMany({
             include: {
                 documents: true, // ดึงข้อมูลเอกสารที่เกี่ยวข้องมาด้วย
             },
+            orderBy: { id: "asc" }, // เรียงลำดับตาม order
         });
 
         return NextResponse.json(applicants, { status: 200 });

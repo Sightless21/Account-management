@@ -2,6 +2,7 @@
 import { z } from "zod"
 
 export const formSchema = z.object({
+    id: z.string()?.optional(),
     //  ข้อมูลบุคคล
     person: z.object({
         name: z.string().min(2, { message: "*" }),
@@ -12,6 +13,7 @@ export const formSchema = z.object({
         position: z.string().min(2, { message: "*" }),
         expectSalary: z.string().min(2, { message: "*" }),
     }),
+    // birthdate: z.date().refine((date) => date < new Date(), { message: "Birthdate must be in the past." }), // ตรวจสอบว่าไม่ใช่วันในอนาคต
     birthdate: z.preprocess(
         (arg) => (typeof arg === "string" || arg instanceof Date ? new Date(arg) : arg),
         z.date().refine((date) => date < new Date(), { message: "Birthdate must be in the past." }) // ตรวจสอบว่าไม่ใช่วันในอนาคต
@@ -39,5 +41,5 @@ export const formSchema = z.object({
 
     //  เอกสาร (ต้องเลือกอย่างน้อย 1 อย่าง)
     documents: z.array(z.string()).min(1, { message: "You have to select at least one document." }),
-    status: z.string().optional(),
+    status: z.string(),
 });

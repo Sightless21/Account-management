@@ -46,6 +46,7 @@ const Card = ({ person, status, info , birthdate, itemsMilitary ,itemsMarital , 
     itemsMarital: Array.isArray(itemsMarital) ? itemsMarital : [itemsMarital],
     itemsDwelling: Array.isArray(itemsDwelling) ? itemsDwelling : [itemsDwelling],
     documents: documents.map((doc) => doc.name) || [],
+    status,
   };
   
   return (

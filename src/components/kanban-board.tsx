@@ -75,10 +75,12 @@ const Column = ({
 
     const handleDragStart = (e: DragEvent, card: CardType) => {
         e.dataTransfer.setData("cardId", card.id);
+        console.log("🚀 ~ file: Columns.tsx:33 ~ handleDragStart ~ e : ", e);
     };
 
     const handleDragEnd = (e: DragEvent) => {
         const cardId = e.dataTransfer.getData("cardId");
+        console.log("🚀 ~ file: Columns.tsx:33 ~ handleDragEnd ~ cardId : ", cardId);
 
         setActive(false);
         clearHighlights();

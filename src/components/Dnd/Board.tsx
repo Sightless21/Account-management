@@ -1,5 +1,5 @@
 'use client'
-import React, {useEffect } from "react";
+import React, { useEffect } from "react";
 import { Column } from "./Columns";
 import BurnBarrel from "./BurnBarrel";
 import { useApplicantStore } from "@/hooks/useApplicantStore"; // นำเข้า Zustand Store

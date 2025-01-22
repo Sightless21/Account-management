@@ -5,10 +5,18 @@ import { z } from "zod";
 
 type ApplicantType = z.infer<typeof formSchema>; // ใช้ infer schema แทน CardType
 
+export type CardType = z.infer<typeof formSchema> & {
+    id: string;
+    order: number;
+    createdAt: string; // ✅ เปลี่ยนจาก Date เป็น string
+    updatedAt: string; // ✅ เปลี่ยนจาก Date เป็น string
+};
+
 interface ApplicantStore {
     applicants: ApplicantType[];
     fetchApplicants: () => Promise<void>;
     addApplicant: (newApplicant: ApplicantType) => Promise<void>;
+    updateApplicantStatus: (id: string, status: string) => void; // 📌 เพิ่มฟังก์ชันนี้
 }
 
 export const useApplicantStore = create<ApplicantStore>((set) => ({
@@ -35,5 +43,12 @@ export const useApplicantStore = create<ApplicantStore>((set) => ({
         } catch (error) {
             console.error("Error adding applicant:", error);
         }
+    },
+    updateApplicantStatus: (id, status) => {
+        set((state) => ({
+            applicants: state.applicants.map((applicant) =>
+                applicant.id === id ? { ...applicant, status } : applicant
+            ),
+        }));
     },
 }));

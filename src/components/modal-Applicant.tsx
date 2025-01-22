@@ -8,7 +8,7 @@ import { TiCancel, TiTick, TiEdit } from "react-icons/ti"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { SquareUserRound } from "lucide-react";
 import { DatePickerWithPresets } from '@/components/date-picker'
@@ -216,13 +216,30 @@ export default function ModalApplicant({ mode, defaultValues }: ModalApplicantPr
 
     // State to store applicant data
     const [applicant, setTasks] = useState<z.infer<typeof formSchema>[]>([]);
+
+    const [currentMode, setCurrentMode] = useState(mode);
+
+    const [isReadyToSave, setIsReadyToSave] = useState(false);
+
+    const formRef = useRef(form);
+
+    useEffect(() => {
+        setCurrentMode(mode);
+    }, [mode]);
+
+    useEffect(() => {
+        if (defaultValues && JSON.stringify(defaultValues) !== JSON.stringify(form.getValues())) {
+            formRef.current.reset(defaultValues);
+        }
+    }, [defaultValues, form]);
+
     // เพิ่ม state สำหรับควบคุมโหมด
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isEditing, setIsEditing] = useState(mode === "edit");
-    
 
     const { control, formState } = form;
     const { isValid } = formState; // ✅ ดึงค่า isValid จาก formState
-    let isSubmitting = false;
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // ✅ เมื่อเปลี่ยน `isEditing` ให้ React อัปเดต UI
     useEffect(() => {
@@ -234,20 +251,32 @@ export default function ModalApplicant({ mode, defaultValues }: ModalApplicantPr
      * @param values - Form values
      */
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log("🚀 Form Submitted Data:", values); // ✅ ตรวจสอบค่าก่อนส่ง API
+
+        console.log("🚀 Form Data:", values); // ✅ ตรวจสอบค่าก่อนส่ง API
         setTasks([...applicant, values]);
+
         if (isSubmitting) return;
-        isSubmitting = true;
+        setIsSubmitting(true);
+
+        console.log("Mode is:", currentMode);
 
         try {
-            useApplicantStore.getState().addApplicant(values);
-            console.log("Applicant created", values);
+            if (currentMode === "create") {
+                await useApplicantStore.getState().addApplicant(values);
+                console.log("Applicant created", values);
+            } else if (currentMode === "edit" && isReadyToSave) {
+                values.id = defaultValues?.id;
+                await useApplicantStore.getState().updateApplicant(values);
+                console.log("Applicant updated", values);
+                setCurrentMode("view");
+                setIsReadyToSave(false)
+            }
             // form.reset(); // Reset fields to default values
-            setTasks([]); // Reset applicant state
+            setTasks([]);
         } catch (error) {
             console.log("Error creating applicant", error);
         } finally {
-            isSubmitting = false;
+            setIsSubmitting(false);
         }
         setTasks([]); // Reset applicant state
         // form.reset() // Uncomment to reset the form after submission
@@ -302,7 +331,7 @@ export default function ModalApplicant({ mode, defaultValues }: ModalApplicantPr
                                                             <Input className="w-40 h-5 text-center"
                                                                 {...field}
                                                                 value={typeof field.value === 'string' ? field.value : ''}
-                                                                disabled={mode === "view" && !isEditing}
+                                                                disabled={currentMode === "view" && !isEditing}
                                                             />
                                                         </FormControl>
                                                     </FormItem>
@@ -324,7 +353,7 @@ export default function ModalApplicant({ mode, defaultValues }: ModalApplicantPr
                                                             <Input className="w-40 h-5 text-center"
                                                                 {...field}
                                                                 value={typeof field.value === 'string' ? field.value : ''}
-                                                                disabled={mode === "view" && !isEditing}
+                                                                disabled={currentMode === "view" && !isEditing}
                                                             />
                                                         </FormControl>
                                                     </FormItem>
@@ -355,7 +384,7 @@ export default function ModalApplicant({ mode, defaultValues }: ModalApplicantPr
                                                                         const currentValue = Array.isArray(field.value) ? field.value : [];
                                                                         return checked ? field.onChange([...currentValue, item.id]) : field.onChange(currentValue.filter((value) => value !== item.id));
                                                                     }}
-                                                                    disabled={mode === "view" && !isEditing}
+                                                                    disabled={currentMode === "view" && !isEditing}
                                                                 />
                                                             </FormControl>
                                                             <FormLabel className="font-normal">{item.lable}</FormLabel>
@@ -387,7 +416,7 @@ export default function ModalApplicant({ mode, defaultValues }: ModalApplicantPr
                                                                         const currentValue = Array.isArray(field.value) ? field.value : [];
                                                                         return checked ? field.onChange([...currentValue, item.id]) : field.onChange(currentValue.filter((value) => value !== item.id));
                                                                     }}
-                                                                    disabled={mode === "view" && !isEditing}
+                                                                    disabled={currentMode === "view" && !isEditing}
                                                                 />
                                                             </FormControl>
                                                             <FormLabel className="font-normal">{item.label}</FormLabel>
@@ -419,7 +448,7 @@ export default function ModalApplicant({ mode, defaultValues }: ModalApplicantPr
                                                                         const currentValue = Array.isArray(field.value) ? field.value : [];
                                                                         return checked ? field.onChange([...currentValue, item.id]) : field.onChange(currentValue.filter((value) => value !== item.id));
                                                                     }}
-                                                                    disabled={mode === "view" && !isEditing}
+                                                                    disabled={currentMode === "view" && !isEditing}
                                                                 />
                                                             </FormControl>
                                                             <FormLabel className="font-normal">{item.label}</FormLabel>
@@ -456,7 +485,7 @@ export default function ModalApplicant({ mode, defaultValues }: ModalApplicantPr
                                                                 onCheckedChange={(checked) => {
                                                                     return checked ? field.onChange([...field.value, item.id]) : field.onChange(field.value?.filter((value) => value !== item.id));
                                                                 }}
-                                                                disabled={mode === "view" && !isEditing}
+                                                                disabled={currentMode === "view" && !isEditing}
                                                             />
                                                         </FormControl>
                                                         <FormLabel className="font-normal">{item.label}</FormLabel>
@@ -490,7 +519,7 @@ export default function ModalApplicant({ mode, defaultValues }: ModalApplicantPr
                                                     <FormControl>
                                                         <Input placeholder={item.placeholder} {...field}
                                                             value={typeof field.value === 'string' ? field.value : ''}
-                                                            disabled={mode === "view" && !isEditing} />
+                                                            disabled={currentMode === "view" && !isEditing} />
                                                     </FormControl>
                                                 </FormItem>
                                             )}
@@ -507,7 +536,7 @@ export default function ModalApplicant({ mode, defaultValues }: ModalApplicantPr
                                                 </div>
                                                 <FormControl>
                                                     <DatePickerWithPresets value={field.value} onChange={(date) => field.onChange(date.toISOString())}
-                                                        disabled={mode === "view" && !isEditing} />
+                                                        disabled={currentMode === "view" && !isEditing} />
                                                 </FormControl>
                                             </FormItem>
                                         )}
@@ -518,21 +547,40 @@ export default function ModalApplicant({ mode, defaultValues }: ModalApplicantPr
                         {/* Submit and Cancel Buttons */}
                         <div className="grid col-span-2">
                             <div className="flex justify-end gap-2">
-                                {mode === "create" ? (
-                                    <Button type="submit" disabled={!isValid} >
+                                {currentMode === "create" && (
+                                    <Button
+                                        type="submit"
+                                        disabled={!isValid}
+                                        onClick={() => form.handleSubmit(onSubmit)()}
+                                    >
                                         <TiTick /> Create Applicant
                                     </Button>
-                                ) : isEditing ? (
-                                    <Button type="submit" disabled={!isValid} >
+                                )}
+
+                                {currentMode === "edit" && (
+                                    <Button
+                                        type="submit"
+                                        disabled={!isValid}
+                                        onClick={() => setIsReadyToSave(true)}
+                                    >
                                         <TiTick /> Save Changes
                                     </Button>
-                                ) : (
-                                    <Button type="button" onClick={() => setIsEditing(true)}>
+                                )}
+
+                                {currentMode === "view" && (
+                                    <Button
+                                        type="button"
+                                        onClick={() => setCurrentMode("edit")}
+                                    >
                                         <TiEdit /> Edit
                                     </Button>
                                 )}
+
                                 <DialogClose asChild>
-                                    <Button type="button" variant="destructive">
+                                    <Button
+                                        type="button"
+                                        variant="destructive"
+                                    >
                                         <TiCancel /> Close
                                     </Button>
                                 </DialogClose>

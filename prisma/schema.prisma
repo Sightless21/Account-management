@@ -17,7 +17,7 @@ model Applicant {
   itemsMarital  String // ✅ รายการสถานภาพสมรส
   itemsDwelling String // ✅ รายการการอยู่อาศัย
   documents     Document[] // ✅ แทน `itemsDoc`
-  status        ApplicantStatus 
+  status        ApplicantStatus
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 }
@@ -118,8 +118,8 @@ type Address {
 model Document {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
   name        String
-  applicant   Applicant? @relation(fields: [applicantId], references: [id])
-  applicantId String?    @db.ObjectId
+  applicantId String     @db.ObjectId
+  applicant   Applicant @relation(fields: [applicantId], references: [id])
 }
 
 // KabanTask

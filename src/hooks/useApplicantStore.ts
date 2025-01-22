@@ -17,6 +17,7 @@ interface ApplicantStore {
     fetchApplicants: () => Promise<void>;
     addApplicant: (newApplicant: ApplicantType) => Promise<void>;
     updateApplicantStatus: (id: string, status: string) => void; // 📌 เพิ่มฟังก์ชันนี้
+    updateApplicant: (updateApplicant: ApplicantType) => Promise<void>;
 }
 
 export const useApplicantStore = create<ApplicantStore>((set) => ({
@@ -44,7 +45,26 @@ export const useApplicantStore = create<ApplicantStore>((set) => ({
             console.error("Error adding applicant:", error);
         }
     },
-    updateApplicantStatus: (id, status) => {
+    updateApplicant: async (updateApplicant: ApplicantType) => {
+        try {
+            const { id, ...data } = updateApplicant;
+            // set((state) => ({
+            //     applicants: state.applicants.map((applicant) =>
+            //         applicant.id === id ? { ...applicant, ...data } : applicant
+            //     ),
+            // }));
+
+            // ✅ ยิง API เพื่ออัปเดตฐานข้อมูล
+            await axios.patch(`/api/applicant/${id}`, data, {
+                headers: { "Content-Type": "application/json" },
+            });
+            console.log("🔹 Update URL:", `/api/applicant/${id}`);
+            await useApplicantStore.getState().fetchApplicants(); // ดึงข้อมูลใหม่
+        } catch (error) {
+            console.error("Error updating applicant:", error);
+        }
+    },
+    updateApplicantStatus: async (id, status) => {
         set((state) => ({
             applicants: state.applicants.map((applicant) =>
                 applicant.id === id ? { ...applicant, status } : applicant

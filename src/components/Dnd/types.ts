@@ -27,8 +27,6 @@ export interface CardType {
   itemsMilitary: string;
   itemsMarital: string;
   itemsDwelling: string;
-  createdAt: string;
-  updatedAt: string;
   documents: {
     id: string;
     name: string; // ชื่อเอกสาร

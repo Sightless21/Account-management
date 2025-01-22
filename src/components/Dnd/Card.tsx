@@ -86,8 +86,6 @@ const Card = ({ person, status, info , birthdate, itemsMilitary ,itemsMarital , 
             itemsMarital: "",
             itemsDwelling: "",
             status,
-            createdAt: "",
-            updatedAt: "",
             documents: [],
           })
         }

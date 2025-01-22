@@ -43,8 +43,6 @@ export const CARDS: CardType[] = [
         itemsMarital: "divorced",
         itemsDwelling: "Home",
         status: "NEW",
-        createdAt: "2025-01-20T04:55:34.477Z",
-        updatedAt: "2025-01-20T04:55:34.477Z",
         documents: [
             {
                 id: "678dd746031295594f9f8331",
@@ -97,8 +95,6 @@ export const CARDS: CardType[] = [
         itemsMarital: "divorced",
         itemsDwelling: "Home",
         status: "PENDING_INTERVIEW",
-        createdAt: "2025-01-20T04:55:34.477Z",
-        updatedAt: "2025-01-20T04:55:34.477Z",
         documents: [
             {
                 id: "678dd746031295594f9f8331",

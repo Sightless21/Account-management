@@ -1,9 +1,34 @@
-import { ObjectId } from "mongodb"; // ✅ ต้อง import ObjectId
-import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
+import { ObjectId } from 'mongodb';
+import { prisma } from '@/lib/prisma';
 
-export async function PATCH(req: Request, context: { params: { id: string } }) {
-    const { id } = await context.params;
+interface Context {
+    params: {
+        id: string;
+    };
+}
+interface Document {
+    id: string;
+    name: string;
+}
+
+interface UpdatedDocument {
+    id: string;
+    name: string;
+}
+
+interface Document {
+    id: string;
+    name: string;
+}
+
+interface UpdatedDocument {
+    id: string;
+    name: string;
+}
+
+export async function PATCH(req: Request, context: Context) {
+    const { id } = context.params;
     const body = await req.json();
     const { documents: documentNames, itemsMilitary, itemsMarital, itemsDwelling, ...otherData } = body;
 
@@ -39,18 +64,18 @@ export async function PATCH(req: Request, context: { params: { id: string } }) {
 
         // คำนวณเอกสารใหม่
         const newDocuments = documentNames.filter(
-            (docName) => !getDocuments.some((doc) => doc.name === docName)
+            (docName: string) => !getDocuments.some((doc) => doc.name === docName)
         );
 
         console.log("🔹 New Documents:", newDocuments);
 
         // คำนวณเอกสารที่ต้องอัปเดต
-        const updatedDocuments = documentNames
-            .map((docName) => {
-                const existingDoc = getDocuments.find((doc) => doc.name === docName);
-                return existingDoc ? { id: existingDoc.id, name: docName } : null;
+        const updatedDocuments: UpdatedDocument[] = documentNames
+            .map((docName: string): UpdatedDocument | null => {
+            const existingDoc: Document | undefined = getDocuments.find((doc: Document) => doc.name === docName);
+            return existingDoc ? { id: existingDoc.id, name: docName } : null;
             })
-            .filter((doc) => doc !== null);
+            .filter((doc: UpdatedDocument | null): doc is UpdatedDocument => doc !== null);
 
         console.log("🔹 Updated Documents:", updatedDocuments);
 
@@ -73,7 +98,7 @@ export async function PATCH(req: Request, context: { params: { id: string } }) {
         console.log("🔹 Updated Existing Documents");
 
         // เพิ่มเอกสารใหม่
-        const createPromises = newDocuments.map((name) =>
+        const createPromises = newDocuments.map((name: string) =>
             prisma.document.create({
                 data: {
                     name,

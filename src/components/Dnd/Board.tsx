@@ -37,7 +37,7 @@ export const Board = () => {
         cards={applicants}
         setCards={fetchApplicants}
       />
-      <BurnBarrel setCards={fetchApplicants} />
+      <BurnBarrel cards={applicants} setCards={fetchApplicants} />
     </div>
   );
 };

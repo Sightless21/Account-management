@@ -78,13 +78,6 @@ enum ApplicantStatus {
   INTERVIEW_PASSED // สัมภาษณ์ผ่าน
 }
 
-// 📌 ENUM สำหรับผลการทดลองงาน
-enum ProbationStatus {
-  PENDING // รอการประเมิน
-  PASSED // ผ่านทดลองงาน
-  FAILED // ไม่ผ่านทดลองงาน
-}
-
 // 📌 โครงสร้างข้อมูลผู้สมัคร
 type Person {
   name         String
@@ -119,7 +112,7 @@ model Document {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   applicantId String     @db.ObjectId
-  applicant   Applicant @relation(fields: [applicantId], references: [id])
+  applicant   Applicant @relation(fields: [applicantId], references: [id], onDelete: Cascade)
 }
 
 // KabanTask

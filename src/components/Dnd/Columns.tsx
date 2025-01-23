@@ -87,7 +87,7 @@ export const Column = ({
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    highlightIndicator(e);
+    // highlightIndicator(e);
     setActive(true);
   };
 
@@ -99,39 +99,39 @@ export const Column = ({
     });
   };
 
-  const highlightIndicator = (e: React.DragEvent<HTMLDivElement>) => {
-    const indicators = getIndicators();
+  // const highlightIndicator = (e: React.DragEvent<HTMLDivElement>) => {
+  //   const indicators = getIndicators();
 
-    clearHighlights(indicators);
+  //   clearHighlights(indicators);
 
-    const el = getNearestIndicator(e, indicators);
+  //   const el = getNearestIndicator(e, indicators);
 
-    el.element.style.opacity = "1";
-  };
+  //   el.element.style.opacity = "-1";
+  // };
 
-  const getNearestIndicator = (e: React.DragEvent<HTMLDivElement>, indicators: HTMLElement[]) => {
-    const DISTANCE_OFFSET = 50;
+  // const getNearestIndicator = (e: React.DragEvent<HTMLDivElement>, indicators: HTMLElement[]) => {
+  //   const DISTANCE_OFFSET = 50;
 
-    const el = indicators.reduce(
-      (closest, child) => {
-        const box = child.getBoundingClientRect();
+  //   const el = indicators.reduce(
+  //     (closest, child) => {
+  //       const box = child.getBoundingClientRect();
 
-        const offset = e.clientY - (box.top + DISTANCE_OFFSET);
+  //       const offset = e.clientY - (box.top + DISTANCE_OFFSET);
 
-        if (offset < 0 && offset > closest.offset) {
-          return { offset: offset, element: child };
-        } else {
-          return closest;
-        }
-      },
-      {
-        offset: Number.NEGATIVE_INFINITY,
-        element: indicators[indicators.length - 1],
-      }
-    );
+  //       if (offset < 0 && offset > closest.offset) {
+  //         return { offset: offset, element: child };
+  //       } else {
+  //         return closest;
+  //       }
+  //     },
+  //     {
+  //       offset: Number.NEGATIVE_INFINITY,
+  //       element: indicators[indicators.length - 1],
+  //     }
+  //   );
 
-    return el;
-  };
+  //   return el;
+  // };
 
   const getIndicators = () => {
     return Array.from(
@@ -165,7 +165,7 @@ export const Column = ({
         {filteredCards.map((c) => (
           <Card key={c.id} {...c} handleDragStart={(e) => handleDragStart(e, c, column)} />
         ))}
-        <DropIndicator beforeId={null} column={column} />
+        {/* <DropIndicator beforeId={null} column={column} /> */}
       </div>
     </div>
   );

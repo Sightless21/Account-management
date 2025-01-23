@@ -1,17 +1,13 @@
 'use client';
-import { Dispatch, SetStateAction, useState, DragEvent } from "react";
+import { useState, DragEvent } from "react";
 import { FaFire } from "react-icons/fa";
 import { FiTrash } from "react-icons/fi";
-import { CardType } from "./types";
+import { useApplicantStore } from "@/hooks/useApplicantStore";
 
 
-type BurnBarrelProps = {
-  setCards: Dispatch<SetStateAction<CardType[]>>;
-};
-
-const BurnBarrel = ({ setCards }: BurnBarrelProps) => {
+const BurnBarrel = () => {
   const [active, setActive] = useState(false);
-
+  const { fetchApplicants , deleteApplicant } = useApplicantStore();
   const handleDragOver = (e: DragEvent) => {
     e.preventDefault();
     setActive(true);
@@ -21,9 +17,19 @@ const BurnBarrel = ({ setCards }: BurnBarrelProps) => {
     setActive(false);
   };
 
-  const handleDragEnd = (e: DragEvent) => {
+  const handleDragEnd = async (e: DragEvent) => {
     const cardId = e.dataTransfer.getData("cardId");
-    setCards((prev) => prev.filter((c) => c.id !== cardId));
+
+    if (!cardId) return;
+
+    try {
+      await deleteApplicant(cardId); // 🔹 ใช้ store เพื่อเรียก API
+      console.log(`Successfully deleted applicant with ID: ${cardId}`);
+
+      await fetchApplicants();
+    } catch (error) {
+      console.error("Error deleting applicant:", error);
+    }
     setActive(false);
   };
 

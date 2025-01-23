@@ -18,6 +18,7 @@ interface ApplicantStore {
     addApplicant: (newApplicant: ApplicantType) => Promise<void>;
     updateApplicantStatus: (id: string, status: string) => void; // 📌 เพิ่มฟังก์ชันนี้
     updateApplicant: (updateApplicant: ApplicantType) => Promise<void>;
+    deleteApplicant: (id: string) => Promise<void>;
 }
 
 export const useApplicantStore = create<ApplicantStore>((set) => ({
@@ -33,8 +34,6 @@ export const useApplicantStore = create<ApplicantStore>((set) => ({
             console.error("Error fetching applicants:", error);
         }
     },
-
-    // ฟังก์ชันเพิ่ม applicant และดึงข้อมูลใหม่
     addApplicant: async (newApplicant: ApplicantType) => {
         try {
             await axios.post("/api/applicant", newApplicant, {
@@ -71,4 +70,14 @@ export const useApplicantStore = create<ApplicantStore>((set) => ({
             ),
         }));
     },
+    deleteApplicant: async (id: string) => {
+        try {
+            await axios.delete(`/api/applicant/${id}`);
+            console.log(`Successfully deleted applicant with ID: ${id}`);
+            await useApplicantStore.getState().fetchApplicants(); // ดึงข้อมูลใหม่
+        } catch (error) {
+            console.error("Error deleting applicant:", error);
+        }
+    },
+
 }));

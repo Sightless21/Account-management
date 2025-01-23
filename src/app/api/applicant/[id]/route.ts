@@ -72,8 +72,8 @@ export async function PATCH(req: Request, context: Context) {
         // คำนวณเอกสารที่ต้องอัปเดต
         const updatedDocuments: UpdatedDocument[] = documentNames
             .map((docName: string): UpdatedDocument | null => {
-            const existingDoc: Document | undefined = getDocuments.find((doc: Document) => doc.name === docName);
-            return existingDoc ? { id: existingDoc.id, name: docName } : null;
+                const existingDoc: Document | undefined = getDocuments.find((doc: Document) => doc.name === docName);
+                return existingDoc ? { id: existingDoc.id, name: docName } : null;
             })
             .filter((doc: UpdatedDocument | null): doc is UpdatedDocument => doc !== null);
 
@@ -129,4 +129,44 @@ export async function PATCH(req: Request, context: Context) {
             { status: 500 }
         );
     }
+}
+
+export async function DELETE(req: Request, context: Context) {
+    const { id } = await context.params;
+    if (!id) {
+        return NextResponse.json(
+            { error: "Missing ID parameter" },
+            { status: 400 }
+        );
+    }
+
+    console.log("🔹 Deleting applicant with ID:", id);
+    try {
+        // ใช้ Prisma Transaction
+        await prisma.$transaction([
+          // ลบเอกสารที่เกี่ยวข้อง
+          prisma.document.deleteMany({
+            where: {
+              applicantId: id, // เชื่อมโยงกับ Axpplicant ID
+            },
+          }),
+          // ลบ Applicant
+          prisma.applicant.delete({
+            where: {
+              id,
+            },
+          }),
+        ]);
+    
+        return NextResponse.json(
+          { message: "Applicant and related documents deleted successfully" },
+          { status: 200 }
+        );
+      } catch (error) {
+        console.error("❌ Error deleting applicant and related documents:", error);
+        return NextResponse.json(
+          { error: "An error occurred while deleting the applicant and related documents" },
+          { status: 500 }
+        );
+      }
 }

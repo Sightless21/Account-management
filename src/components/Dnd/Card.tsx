@@ -11,18 +11,18 @@ type CardProps = CardType & {
   handleDragStart: (e: DragEvent, card: CardType) => void;
 };
 
-const Card = ({ person, status, info , birthdate, itemsMilitary ,itemsMarital , itemsDwelling , documents, id ,handleDragStart }: CardProps) => {
+const Card = ({ person, status, info, birthdate, itemsMilitary, itemsMarital, itemsDwelling, documents, id, handleDragStart }: CardProps) => {
 
   // console.log("🚀 ~ file: Card.tsx:19 ~ Card ~ person:", person)
   const { name, position, email, phone, expectSalary } = person;
-  const { address, nationality, religion, race , } = info;
+  const { address, nationality, religion, race, } = info;
 
   const data = {
     person: {
       name: name,
       phone: phone,
       email: email,
-      position: position, 
+      position: position,
       expectSalary: expectSalary,
     },
     id,
@@ -37,7 +37,7 @@ const Card = ({ person, status, info , birthdate, itemsMilitary ,itemsMarital , 
         zipCode: address.zipCode,
         country: address.country
       },
-      nationality: nationality,  
+      nationality: nationality,
       religion: religion,
       race: race
     },
@@ -48,7 +48,7 @@ const Card = ({ person, status, info , birthdate, itemsMilitary ,itemsMarital , 
     documents: documents.map((doc) => doc.name) || [],
     status,
   };
-  
+
   return (
     <>
       <DropIndicator beforeId={id} column={status} />
@@ -64,7 +64,7 @@ const Card = ({ person, status, info , birthdate, itemsMilitary ,itemsMarital , 
               email: "",
               position: "",
               expectSalary: ""
-            }, 
+            },
             id,
             info: {
               address: {
@@ -102,8 +102,14 @@ const Card = ({ person, status, info , birthdate, itemsMilitary ,itemsMarital , 
             <MdDragIndicator height={25} width={25} color="white" />
           </div>
         </div>
-        <div className="flex gap-2 py-1 px-2 w-full justify-between">
-          <p className="flex text-sm text-muted-foreground text-center justify-center align-middle">{position}</p>
+        <div className="flex gap-2 py-1 px-2 w-full justify-between items-center">
+          {/* ใช้ flex-1 เพื่อให้ div นี้ขยายเต็มพื้นที่ที่เหลือ */}
+          <div className="flex-1 flex justify-center items-center">
+            <p className="text-sm text-muted-foreground text-center text-ellipsis">
+              {position}
+            </p>
+          </div>
+          {/* ModalApplicant จะอยู่ทางขวาโดยอัตโนมัติ */}
           <ModalApplicant mode="view" defaultValues={data} />
         </div>
       </motion.div>

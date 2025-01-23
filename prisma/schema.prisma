@@ -10,13 +10,13 @@ datasource db {
 // 📌 Model สำหรับผู้สมัคร
 model Applicant {
   id            String          @id @default(auto()) @map("_id") @db.ObjectId
-  person        Person // ✅ ฝังข้อมูลผู้สมัคร (Object)
-  birthdate     DateTime // ✅ เก็บวันเกิด
-  info          Info // ✅ ฝังข้อมูลส่วนตัวของผู้สมัคร
-  itemsMilitary String // ✅ รายการภาวะทหาร (Array ของ String)
-  itemsMarital  String // ✅ รายการสถานภาพสมรส
-  itemsDwelling String // ✅ รายการการอยู่อาศัย
-  documents     Document[] // ✅ แทน `itemsDoc`
+  person        Person 
+  birthdate     DateTime 
+  info          Info 
+  itemsMilitary String 
+  itemsMarital  String 
+  itemsDwelling String 
+  documents     Document[] 
   status        ApplicantStatus
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
@@ -109,9 +109,9 @@ type Address {
 
 // 📌 เอกสารแนบ
 model Document {
-  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
   name        String
-  applicantId String     @db.ObjectId
+  applicantId String    @db.ObjectId
   applicant   Applicant @relation(fields: [applicantId], references: [id], onDelete: Cascade)
 }
 

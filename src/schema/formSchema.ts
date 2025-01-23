@@ -38,7 +38,8 @@ export const formSchema = z.object({
     itemsMilitary: z.array(z.string()).min(1).max(1, { message: "Please select only one military status." }),
     itemsMarital: z.array(z.string()).min(1).max(1, { message: "Please select only one marital status." }),
     itemsDwelling: z.array(z.string()).min(1).max(1, { message: "Please select only one dwelling type." }),
-
+    createdAt: z.string().optional(),
+    updatedAt: z.string().optional(),
     //  เอกสาร (ต้องเลือกอย่างน้อย 1 อย่าง)
     documents: z.array(z.string()).min(1, { message: "You have to select at least one document." }),
     status: z.string(),

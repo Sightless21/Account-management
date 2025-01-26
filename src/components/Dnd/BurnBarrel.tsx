@@ -23,7 +23,7 @@ const BurnBarrel = () => {
     if (!cardId) return;
 
     try {
-      await deleteApplicant(cardId); // 🔹 ใช้ store เพื่อเรียก API
+      await deleteApplicant(cardId);
       console.log(`Successfully deleted applicant with ID: ${cardId}`);
 
       await fetchApplicants();

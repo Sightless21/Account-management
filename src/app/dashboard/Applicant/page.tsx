@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { useRouter } from 'next/navigation'
 import * as React from "react"
 import ModalApplicant from "@/components/modal-Applicant"
-import { ApplicantBoard } from "@/components/Dnd/mainBoard"
+import { ApplicantBoard } from "@/components/Dnd/ApplicantBoard"
 
 export default function Page() {
     const router = useRouter();
@@ -22,7 +22,7 @@ export default function Page() {
                     <Button onClick={handleProbationPage}>Probation</Button>
                 </div>
             </div>
-            <div className="grid place-items-center mt-[10%]">
+            <div className="flex w-full h-full">
                 <ApplicantBoard />
             </div>
         </div>

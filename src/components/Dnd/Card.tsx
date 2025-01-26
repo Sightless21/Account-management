@@ -4,7 +4,6 @@ import { DragEvent } from "react";
 import { IoPersonSharp } from "react-icons/io5";
 import { MdDragIndicator } from "react-icons/md";
 import ModalApplicant from "@/components/modal-Applicant";
-import DropIndicator from "./DropIndicator";
 import { CardType } from "./types";
 
 type CardProps = CardType & {
@@ -50,70 +49,67 @@ const Card = ({ person, status, info, birthdate, itemsMilitary, itemsMarital, it
   };
 
   return (
-    <>
-      <DropIndicator beforeId={id} column={status} />
-      <motion.div
-        layout
-        layoutId={id}
-        draggable="true"
-        onDragStart={(e) =>
-          handleDragStart(e as unknown as DragEvent, {
-            person: {
-              name: "",
-              phone: "",
-              email: "",
-              position: "",
-              expectSalary: ""
+    <motion.div
+      layout
+      layoutId={id}
+      draggable="true"
+      onDragStart={(e) =>
+        handleDragStart(e as unknown as DragEvent, {
+          person: {
+            name: "",
+            phone: "",
+            email: "",
+            position: "",
+            expectSalary: ""
+          },
+          id,
+          info: {
+            address: {
+              houseNumber: "",
+              village: "",
+              road: "",
+              subDistrict: "",
+              district: "",
+              province: "",
+              zipCode: "",
+              country: ""
             },
-            id,
-            info: {
-              address: {
-                houseNumber: "",
-                village: "",
-                road: "",
-                subDistrict: "",
-                district: "",
-                province: "",
-                zipCode: "",
-                country: ""
-              },
-              nationality: "",
-              religion: "",
-              race: ""
-            },
-            birthdate: "",
-            itemsMilitary: "",
-            itemsMarital: "",
-            itemsDwelling: "",
-            status,
-            documents: [],
-          })
-        }
-        className="flex items-start flex-col justify-between cursor-grab rounded border border-neutral-700 bg-white active:cursor-grabbing hover:bg-neutral-300 snap-center"
-        whileTap={{ scale: 1.04 }}
-        whileHover={{ scale: 1.04 }}
-      >
-        <div className="flex items-center justify-between gap-x-9 mb-2 bg-neutral-800 w-full p-2">
-          <div className="flex items-start gap-2">
-            <IoPersonSharp color="white" />
-            <p className="text-sm text-neutral-100 overflow-hidden">{name}</p>
-          </div>
-          <div className="flex items-end">
-            <MdDragIndicator height={25} width={25} color="white" />
-          </div>
+            nationality: "",
+            religion: "",
+            race: ""
+          },
+          birthdate: "",
+          itemsMilitary: "",
+          itemsMarital: "",
+          itemsDwelling: "",
+          status,
+          documents: [],
+        })
+      }
+      className="flex items-start flex-col mt-2 justify-between cursor-grab rounded border border-neutral-700 bg-white active:cursor-grabbing hover:bg-neutral-300 snap-center"
+      whileTap={{ scale: 1.04 }}
+      whileHover={{ scale: 1.04 }}
+    >
+      <div className="flex items-center justify-between gap-x-9 mb-2 bg-neutral-800 w-full p-2">
+        <div className="flex items-start gap-2">
+          <IoPersonSharp color="white" />
+          <p className="text-sm text-neutral-100 overflow-hidden">{name}</p>
         </div>
-        <div className="flex gap-2 py-1 px-2 w-full justify-between items-center">
-          {/* ใช้ flex-1 เพื่อให้ div นี้ขยายเต็มพื้นที่ที่เหลือ */}
-          <div className="flex-1 flex justify-center items-center">
-            <p className="text-sm text-muted-foreground text-center text-ellipsis">
-              {position}
-            </p>
-          </div>
-          {/* ModalApplicant จะอยู่ทางขวาโดยอัตโนมัติ */}
-          <ModalApplicant mode="view" defaultValues={data} />
+        <div className="flex items-end">
+          <MdDragIndicator height={25} width={25} color="white" />
         </div>
-      </motion.div>
-    </>
+      </div>
+      <div className="flex gap-2 py-1 px-2 w-full justify-between items-center">
+        {/* ใช้ flex-1 เพื่อให้ div นี้ขยายเต็มพื้นที่ที่เหลือ */}
+        <div className="flex-1 flex justify-center items-center">
+          <p className="text-sm text-muted-foreground text-center text-ellipsis">
+            {position}
+          </p>
+        </div>
+        {/* ModalApplicant จะอยู่ทางขวาโดยอัตโนมัติ */}
+        <ModalApplicant mode="view" defaultValues={data} />
+      </div>
+    </motion.div>
   );
 };
 

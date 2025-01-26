@@ -1,6 +1,6 @@
 export interface CardType {
-  id: string; // รหัสของผู้สมัคร
-  status: string; // สถานะของผู้สมัคร เช่น "NEW", "PENDING_INTERVIEW", "INTERVIEW_PASSED"
+  id: string;
+  status: string; // สถานะของผู้สมัคร "NEW", "PENDING_INTERVIEW", "INTERVIEW_PASSED"
   person: {
     email: string;
     expectSalary: string;
@@ -29,8 +29,8 @@ export interface CardType {
   itemsDwelling: string;
   documents: {
     id: string;
-    name: string; // ชื่อเอกสาร
-    applicantId: string; // รหัสผู้สมัครที่เกี่ยวข้อง
+    name: string; 
+    applicantId: string;
   }[];
 }
 // ข้อมูลคอลัมน์

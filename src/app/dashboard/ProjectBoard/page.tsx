@@ -14,6 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Input } from "@/components/ui/input"; // นำเข้า Input
 import { ChevronDown } from "lucide-react";
 import { ModalProject } from "@/components/modal-project";
 import { RadialChart } from "@/components/radialchart-text";
@@ -34,6 +35,7 @@ export interface Project {
 }
 
 interface ChartData {
+  projectId: string
   projectName: string;
   chartData: {
     name: string;
@@ -50,10 +52,10 @@ interface ChartData {
 }
 
 export default function Page() {
-  const { projects, fetchProjects, addProject, deleteProject, updateProject } =
+  const { projects, fetchProjects, addProject, } =
     useProjectStore();
-  // const [projects, setProjects] = useState<Project[]>([]);
-  const [selectedProject, setSelectedProject] = useState<string | null>(null);
+  const [sortOption, setSortOption] = useState<string>("Order by"); // ค่าเริ่มต้น
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const projectsPerPage = 6;
 
@@ -62,22 +64,9 @@ export default function Page() {
     fetchProjects();
   }, [fetchProjects]);
 
-  const handleDeleteProject = async (id: string) => {
-    await deleteProject(id);
-  };
-
-  const handleUpdateProject = async (id: string) => {
-    const updatedProject = {
-      id,
-      projectName: "Updated Project Name",
-      task: [],
-    };
-    await updateProject(id, updatedProject);
-  };
-
   const handleAddProject = async (projectName: string) => {
     const newProject = {
-      id:"",
+      id: "",
       projectName: projectName,
       task: [],
     };
@@ -91,93 +80,118 @@ export default function Page() {
     const totalTasks = project.task?.length;
     const donePercentage = totalTasks > 0 ? (doneTasks / totalTasks) * 100 : 0;
     const doneAngle = (donePercentage * 360) / 100;
+    const projectId = project.id
 
     return {
       projectName: project.projectName,
-      chartData: [
-        {
-          name: "Done Tasks",
-          value: donePercentage,
-          fill: "var(--color-done)",
-        },
-      ],
-      chartConfig: {
-        value: { label: "Done" },
-      },
+      chartData: [{ name: "Done Tasks", value: donePercentage, fill: "var(--color-done)" }],
+      chartConfig: { value: { label: "Done" } },
       donePercentage,
       doneAngle,
       totalTasks,
       doneTasks,
+      projectId,
     };
   }, []);
 
-  // Filter and paginate projects
+  // 📌 เรียงลำดับโครงการตามเงื่อนไขที่เลือก
+  const sortedProjects = useMemo(() => {
+    const sorted = [...projects];
+
+    switch (sortOption) {
+      case "Sort A-Z":
+        sorted.sort((a, b) => a.projectName.localeCompare(b.projectName));
+        break;
+      case "Sort Z-A":
+        sorted.sort((a, b) => b.projectName.localeCompare(a.projectName));
+        break;
+      case "most task":
+        sorted.sort((a, b) => (b.task?.length ?? 0) - (a.task?.length ?? 0));
+        break;
+      case "less task":
+        sorted.sort((a, b) => (a.task?.length ?? 0) - (b.task?.length ?? 0));
+        break;
+    }
+
+    return sorted;
+  }, [projects, sortOption]);
+
   const filteredProjects = useMemo(() => {
-    return projects.filter(
-      (project) => !selectedProject || project.projectName === selectedProject
+    return sortedProjects.filter((project) =>
+      project.projectName.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [projects, selectedProject]);
+  }, [sortedProjects, searchQuery]);
+
 
   const paginatedProjects = useMemo(() => {
     const startIndex = (currentPage - 1) * projectsPerPage;
-    const endIndex = startIndex + projectsPerPage;
-    return filteredProjects.slice(startIndex, endIndex).map(generateChartData);
+    return filteredProjects.slice(startIndex, startIndex + projectsPerPage).map(generateChartData);
   }, [filteredProjects, currentPage, projectsPerPage, generateChartData]);
 
   const totalPages = Math.ceil(filteredProjects.length / projectsPerPage);
 
   return (
     <div className="flex flex-col gap-4 ml-3 mr-3">
-      <div className="flex items-center justify-between scroll-m-20 border-b pb-2 mr-3 text-3xl font-semibold tracking-tight first:mt-0">
+      <div className="flex items-center justify-between border-b pb-2 text-3xl font-semibold">
         Project Board
       </div>
+
       <div className="container">
         <Card className="flex flex-col">
           <CardHeader className="items-center">
             <CardTitle>Overall Process Board</CardTitle>
           </CardHeader>
+
           <CardContent>
-            <div className="container flex justify-end gap-4">
-              <div className="flex gap-3 justify-end mb-4">
-                <ModalProject createProject={handleAddProject} />
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="flex items-center gap-2">
-                      {selectedProject || "Filter by Project"}
-                      <ChevronDown className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem onClick={() => setSelectedProject(null)}>
-                      All Projects
+            <div className="flex justify-end items-center mb-4 gap-3">
+              <ModalProject createProject={handleAddProject} />
+              {/* Dropdown สำหรับการกรองโปรเจค */}
+              <Input
+                type="text"
+                placeholder="Search Project..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-64 border border-gray-300 rounded-lg px-3 py-2"
+              />
+              {searchQuery && (
+                <Button variant={"destructive"} onClick={() => setSearchQuery("")}>
+                  Clear
+                </Button>
+              )}
+
+              {/* Dropdown สำหรับการเรียงลำดับ */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="flex items-center gap-2">
+                    {sortOption}
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  {["Sort A-Z", "Sort Z-A", "Most task", "Less task"].map((option) => (
+                    <DropdownMenuItem key={option} onClick={() => setSortOption(option)}>
+                      {option}
                     </DropdownMenuItem>
-                    {projects.map((project) => (
-                      <DropdownMenuItem
-                        key={project.id}
-                        onClick={() => setSelectedProject(project.projectName)}
-                      >
-                        {project.projectName}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
-            {/* Radial Charts */}
+
+            {/* แสดง Project */}
             <div className="flex flex-wrap justify-center gap-7">
               {paginatedProjects.length === 0 ? (
-                <div className="flex flex-col items-center justify-center w-full h-96">
-                  <p className="text-2xl font-semibold">Please create a project</p>
-                  <ModalProject createProject={handleAddProject}/>
+                <div className="flex flex-col gap-5 items-center justify-center w-full h-96">
+                  <p className="text-2xl font-semibold">Not found Project</p>
+                  <ModalProject createProject={handleAddProject} />
                 </div>
               ) : (
                 paginatedProjects.map((project) => (
                   <RadialChart
                     key={project.projectName}
+                    projectID={project.projectId}
                     data={project.chartData}
                     config={project.chartConfig}
                     title={project.projectName}
-                    projectName={project.projectName}
                     value={project.doneAngle}
                     description={`Total done tasks: ${project.doneTasks}`}
                     footerText={`Total ${project.totalTasks} tasks are under this project`}
@@ -185,23 +199,14 @@ export default function Page() {
                 ))
               )}
             </div>
-            {/* Pagination Controls */}
+
+            {/* Pagination */}
             <div className="flex justify-center gap-2 mt-4">
-              <Button
-                variant="outline"
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage(currentPage - 1)}
-              >
+              <Button variant="outline" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
                 Previous
               </Button>
-              <span className="flex items-center px-4">
-                Page {currentPage} of {totalPages}
-              </span>
-              <Button
-                variant="outline"
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage(currentPage + 1)}
-              >
+              <span className="flex items-center px-4">Page {currentPage} of {totalPages}</span>
+              <Button variant="outline" disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}>
                 Next
               </Button>
             </div>

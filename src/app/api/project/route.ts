@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse , NextRequest} from "next/server";
 import { prisma } from "@/lib/prisma";
 
 //CRUD Project
@@ -38,18 +38,24 @@ export async function POST(request: Request) {
     }
 }
 // อัปเดต Project //Update project (name)
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
-    const { id } = await params;
+export async function PATCH(request: Request) {
     const body = await request.json();
-    console.log("📌 Received ID:", id)
-    console.log("📌 Received Body:", body)
+    const { id, projectName } = body; // รับ id และ projectName จาก body
+
+    // ตรวจสอบว่า `id` และ `projectName` มีค่าหรือไม่
+    if (!id || !projectName) {
+        return NextResponse.json(
+            { error: "Invalid request. 'id' and 'projectName' are required." },
+            { status: 400 }
+        );
+    }
 
     try {
-        const updateProject = await prisma.project.update({
+        const updatedProject = await prisma.project.update({
             where: { id },
-            data: body,
+            data: { projectName }, // อัปเดตเฉพาะ projectName
         });
-        return NextResponse.json(updateProject, { status: 200 });
+        return NextResponse.json(updatedProject, { status: 200 });
     } catch (error) {
         console.error("Error updating project:", error);
         return NextResponse.json({ error: "Error updating project" }, { status: 500 });
@@ -57,12 +63,21 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 }
 
 // ลบ Project และ Task ที่อยู่ด้านใน
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
-    const { id } = await params;
+export async function DELETE(request: NextRequest) {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id'); // ดึงค่า id จาก query string
+
+    if (!id) {
+        return NextResponse.json(
+            { error: "Invalid request. 'id' is required." },
+            { status: 400 }
+        );
+    }
+
     try {
         const deleteProject = await prisma.project.delete({
             where: { id },
-            include: { task: true },
+            include: { task: true }, // ลบ tasks ที่เกี่ยวข้องด้วย
         });
         return NextResponse.json(deleteProject, { status: 200 });
     } catch (error) {

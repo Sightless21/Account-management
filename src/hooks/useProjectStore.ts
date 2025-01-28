@@ -19,7 +19,7 @@ interface ProjectStore {
     fetchProjects: () => Promise<void>; //Get all projects and Task in Project
     addProject: (newProject: Project) => Promise<void>; //Add new project with empty task
     deleteProject: (id: string) => Promise<void>; //Delete project with all task
-    updateProject: (id: string, updatedProject: Project) => Promise<void>; //Update project (Project Name)
+    updateNameProject: (id: string, NewNameProject: string) => Promise<void>; //Update project (Project Name)
 }
 
 export const useProjectStore = create<ProjectStore>((set) => ({
@@ -41,26 +41,31 @@ export const useProjectStore = create<ProjectStore>((set) => ({
             console.error("Error adding project:", error);
         }
     },
-    updateProject: async (id: string, updatedProject: Project) => {
+    //updateName
+    updateNameProject: async (id: string, NewNameProject: string) => {
         try {
-            const response = await axios.patch(`/api/project/${id}`, updatedProject);
+            const response = await axios.patch(`/api/project/`, { id, projectName: NewNameProject });
+
+            // อัปเดต state ใน Zustand
             set((state) => ({
                 projects: state.projects.map((project) =>
-                    project.id === id ? response.data : project
+                    project.id === id ? { ...project, projectName: NewNameProject } : project
                 ),
             }));
-            useProjectStore.getState().fetchProjects();
+
+            console.log("Project name updated successfully:", response.data);
         } catch (error) {
             console.error("Error updating project:", error);
         }
     },
     deleteProject: async (id: string) => {
+        console.log("Deleting project with ID:", id);
         try {
-            await axios.delete(`/api/project/${id}`);
+            await axios.delete(`/api/project/?id=${id}`); // ส่ง id ผ่าน query string
             set((state) => ({
                 projects: state.projects.filter((project) => project.id !== id),
             }));
-            useProjectStore.getState().fetchProjects();
+            useProjectStore.getState().fetchProjects(); // ดึงข้อมูลล่าสุด
         } catch (error) {
             console.error("Error deleting project:", error);
         }

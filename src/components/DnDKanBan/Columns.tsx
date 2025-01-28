@@ -10,6 +10,7 @@ type ColumnProps = {
     title: string;
     headingBgColor: string;
     headingColor: string;
+    projectName: string | null
     projectID: string | null
     cards: CardType[];
     column: ColumnType;
@@ -21,6 +22,7 @@ export const Column = ({
     cards,
     headingBgColor,
     column,
+    projectName,
     projectID
 }: ColumnProps) => {
     const [active, setActive] = useState(false);
@@ -99,7 +101,7 @@ export const Column = ({
                 className={`h-[458px] w-full transition-colors p-4 border-t-2 overflow-auto border-dotted ${active ? "bg-neutral-800/20" : "bg-neutral-800/0"}`}
             >
                 {filteredCards.map((c) => {
-                    return <Card key={c.id} {...c} handleDragStart={(e) => handleDragStart(e, c, column)} projectID={projectID} />;
+                    return <Card key={c.id} {...c} handleDragStart={(e) => handleDragStart(e, c, column)} projectID={projectID} projectName={projectName} />;
                 })}
                 <DropIndicator beforeId={null} column={column} />
             </div>

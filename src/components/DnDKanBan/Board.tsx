@@ -10,7 +10,7 @@ type BoardProp = {
     projectName: string | null
 }
 
-export const Board = ({ data ,projectID}: BoardProp) => {
+export const Board = ({ data ,projectID , projectName}: BoardProp) => {
     return (
         <div className="flex gap-5 p-2">
             <Column
@@ -20,6 +20,7 @@ export const Board = ({ data ,projectID}: BoardProp) => {
                 headingColor="text-blue-600 uppercase"
                 cards={data}
                 projectID={projectID}
+                projectName={projectName}
             />
             <Column
                 title="Doing"
@@ -28,6 +29,7 @@ export const Board = ({ data ,projectID}: BoardProp) => {
                 headingColor="text-yellow-600 uppercase"
                 cards={data}
                 projectID={projectID}
+                projectName={projectName}
             />
             <Column
                 title="Done"
@@ -36,6 +38,7 @@ export const Board = ({ data ,projectID}: BoardProp) => {
                 headingColor="text-emerald-600 uppercase"
                 cards={data}
                 projectID={projectID}
+                projectName={projectName}
             />
             <BurnBarrel />
         </div>

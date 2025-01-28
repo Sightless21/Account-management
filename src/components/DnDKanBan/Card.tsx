@@ -10,10 +10,11 @@ import ModalTask from "../modal-Task";
 
 type CardProps = CardType & {
     projectID: string | null
+    projectName: string | null
     handleDragStart: (e: DragEvent, card: CardType) => void;
 };
 
-export const Card = ({ taskName, id, status, projectID, description, priority, handleDragStart }: CardProps) => {
+export const Card = ({ taskName, projectName , id, status, projectID, description, priority, handleDragStart }: CardProps) => {
 
     const data = {
         taskName,
@@ -21,7 +22,7 @@ export const Card = ({ taskName, id, status, projectID, description, priority, h
         status,
         description,
         priority,
-        projectName: projectID ? "Project Name" : "" // Replace "Project Name" with the actual project name if available
+        projectName: projectName 
     }
     function getPriorityColor(priority: string) {
         switch (priority) {
@@ -61,7 +62,7 @@ export const Card = ({ taskName, id, status, projectID, description, priority, h
                 </div>
                 <div className="flex w-full justify-between items-center gap-2 p-2">
                     <Badge className="bg-slate-200">{getPriorityColor(priority)}</Badge>
-                    <ModalTask mode='view' defaultValues={data} projectId={projectID} projectName={data.projectName} />
+                    <ModalTask mode='view' defaultValues={{ ...data, projectName: data.projectName ?? '' }} projectId={projectID} projectName={data.projectName ?? ''} />
                 </div>
             </motion.div>
         </>

@@ -36,7 +36,7 @@ import { ColumnType } from "./DnDKanBan/types";
 import { useTaskStore } from "@/hooks/useTaskStore";
 
 interface TaskProps {
-    defaultValues?: z.infer<typeof formSchema>;
+    defaultValues: z.infer<typeof formSchema>;
     projectId: string |  null;
     projectName?: string;
     mode?: "view" | "edit" | "create";

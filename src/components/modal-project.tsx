@@ -74,7 +74,7 @@ export function ModalProject({createProject}: ModalProjectProps) {
                     <DialogFooter className="space-x-2">
                         <Button type="submit">Create</Button>
                         <DialogClose asChild>
-                            <Button type="button" variant="secondary" className="bg-red-500 text-white hover:bg-red-400">
+                            <Button type="button" variant="destructive" >
                                 Close
                             </Button>
                         </DialogClose>

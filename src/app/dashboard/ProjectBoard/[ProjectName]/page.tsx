@@ -5,6 +5,7 @@ import ModalTask from '@/components/modal-Task';
 import { Button } from '@/components/ui/button';
 import { useRouter, useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+import { ChevronLeft } from 'lucide-react';
 
 export default function Page() {
     const router = useRouter();
@@ -12,7 +13,7 @@ export default function Page() {
     const projectName = typeof params?.ProjectName === 'string' ? decodeURIComponent(params.ProjectName) : null;
     console.log("ProjectName : ", projectName);
 
-    const {projects, fetchProjects } = useProjectStore();
+    const { projects, fetchProjects } = useProjectStore();
     const [projectId, setProjectId] = useState<string | null>(null);
 
     useEffect(() => {
@@ -41,14 +42,14 @@ export default function Page() {
         <div className='flex flex-col gap-4 ml-3 mr-3'>
             <div className="flex items-center justify-between scroll-m-20 border-b pb-2 mr-3 text-3xl font-semibold tracking-tight first:mt-0">
                 Project : {projectName} Tasks {projectId ? `(${projectId})` : ''}
-                <div className="flex ml-4 gap-3">
-                    {/* Button */}
-                    <ModalTask mode="create" projectId={projectId} projectName={projectName || undefined} />
-                    <Button onClick={handleProjectPage}>Project</Button>
-                </div>
             </div>
-            <div className='flex w-full h-full'>
+            <div className='flex flex-col w-full h-full'>
                 {/* ส่ง projectId ไปยัง KanBanBoard */}
+                <div className="flex  ml-4 gap-3">
+                    {/* Button */}
+                    <Button variant={"outline"} onClick={handleProjectPage}><ChevronLeft />Project Page</Button>
+                    <ModalTask mode="create" projectId={projectId} projectName={projectName || undefined} />
+                </div>
                 <KanBanBoard projectID={projectId} projectName={projectName} />
             </div>
         </div>

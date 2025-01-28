@@ -100,13 +100,11 @@ const Card = ({ person, status, info, birthdate, itemsMilitary, itemsMarital, it
         </div>
       </div>
       <div className="flex gap-2 py-1 px-2 w-full justify-between items-center">
-        {/* ใช้ flex-1 เพื่อให้ div นี้ขยายเต็มพื้นที่ที่เหลือ */}
         <div className="flex-1 flex justify-center items-center">
           <p className="text-sm text-muted-foreground text-center text-ellipsis">
             {position}
           </p>
         </div>
-        {/* ModalApplicant จะอยู่ทางขวาโดยอัตโนมัติ */}
         <ModalApplicant mode="view" defaultValues={data} />
       </div>
     </motion.div>

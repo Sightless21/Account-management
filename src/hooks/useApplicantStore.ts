@@ -47,11 +47,11 @@ export const useApplicantStore = create<ApplicantStore>((set) => ({
     updateApplicant: async (updateApplicant: ApplicantType) => {
         try {
             const { id, ...data } = updateApplicant;
-            // set((state) => ({
-            //     applicants: state.applicants.map((applicant) =>
-            //         applicant.id === id ? { ...applicant, ...data } : applicant
-            //     ),
-            // }));
+            set((state) => ({
+                applicants: state.applicants.map((applicant) =>
+                    applicant.id === id ? { ...applicant, ...data } : applicant
+                ),
+            }));
 
             // ✅ ยิง API เพื่ออัปเดตฐานข้อมูล
             await axios.patch(`/api/applicant/${id}`, data, {

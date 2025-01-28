@@ -62,8 +62,8 @@ const data = {
           url: "/Applicant",
         },
         {
-          title: "Kanban Board",
-          url: "/KanBanBoard",
+          title: "Project board",
+          url: "/ProjectBoard",
         },
         {
           title: "Meeting room",

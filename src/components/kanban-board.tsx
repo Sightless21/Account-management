@@ -21,7 +21,7 @@ export const KanBanBoard = () => {
     );
 }
 const Board = () => {
-    const [cards, setCards] = useState(DEFAULT_CARDS); // Array
+    const [cards, setCards] = useState(DEFAULT_CARDS);
 
     return (
         <div className="flex gap-5 overflow-scroll">

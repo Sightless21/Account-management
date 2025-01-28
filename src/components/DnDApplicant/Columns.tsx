@@ -24,8 +24,6 @@ export const Column = ({
   const [active, setActive] = useState(false);
   const { fetchApplicants , updateApplicantStatus } = useApplicantStore();
 
-  console.log("fetchApplicants (Col) : ",fetchApplicants.length)
-
   const handleDragStart = (e: React.DragEvent<Element>, card: CardType, fromColumn: ColumnType) => {
     e.dataTransfer.setData("cardId", card.id);
     e.dataTransfer.setData("fromColumn", fromColumn);
@@ -35,7 +33,6 @@ export const Column = ({
 
     e.preventDefault();
     setActive(false);
-    // clearHighlights();
 
     const cardId = e.dataTransfer.getData("cardId");
     const fromColumn = e.dataTransfer.getData("fromColumn") as ColumnType;
@@ -67,8 +64,6 @@ export const Column = ({
     copy.push(cardToTransfer);
 
     updateApplicantStatus(cardId, column);
-
-    console.log("🚀 Columns.tsx:71 ~ handleDragEnd ~ copy", copy);
 
     try {
       await axios.patch("/api/applicant", { id: cardId, status: column });

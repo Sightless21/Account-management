@@ -271,7 +271,7 @@ export default function ModalApplicant({ mode, defaultValues }: ModalApplicantPr
                 setCurrentMode("view");
                 setIsReadyToSave(false)
             }
-            // form.reset(); // Reset fields to default values
+            form.reset(); // Reset fields to default values
             setTasks([]);
         } catch (error) {
             console.log("Error creating applicant", error);
@@ -279,7 +279,7 @@ export default function ModalApplicant({ mode, defaultValues }: ModalApplicantPr
             setIsSubmitting(false);
         }
         setTasks([]); // Reset applicant state
-        // form.reset() // Uncomment to reset the form after submission
+        form.reset() // Uncomment to reset the form after submission
     }
 
     return (

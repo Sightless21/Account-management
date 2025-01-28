@@ -10,13 +10,13 @@ datasource db {
 // 📌 Model สำหรับผู้สมัคร
 model Applicant {
   id            String          @id @default(auto()) @map("_id") @db.ObjectId
-  person        Person 
-  birthdate     DateTime 
-  info          Info 
-  itemsMilitary String 
-  itemsMarital  String 
-  itemsDwelling String 
-  documents     Document[] 
+  person        Person
+  birthdate     DateTime
+  info          Info
+  itemsMilitary String
+  itemsMarital  String
+  itemsDwelling String
+  documents     Document[]
   status        ApplicantStatus
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
@@ -44,7 +44,6 @@ model Employee {
   Expenses       Expense[]     @relation(name: "EmpNeedExpenses")
   RoomBooking    RoomBooking[] @relation(name: "EmpRoombooking")
   CarBooking     CarBooking[]  @relation(name: "EmpCarbooking")
-  assignedTasks  KanbanTask[]  @relation(name: "EmpAssignedTasks")
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   clientId       String?       @db.ObjectId
@@ -121,18 +120,36 @@ model KanbanTask {
   projectName String
   taskName    String
   description String
-  status      TaskStatus @default(TODO)
+  status      TaskStatus @default(todo)
   priority    Priority   @default(LOW)
-  author      Employee?  @relation(fields: [authorId], references: [id], name: "EmpAssignedTasks")
-  authorId    String     @db.ObjectId
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Project {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  projectName String   @unique
+  task        Task[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Task {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  taskName    String
+  description String
+  status      TaskStatus @default(todo)
+  priority    Priority   @default(LOW)
+  Project     Project?   @relation(fields: [projectId], references: [id])
+  projectId   String?    @db.ObjectId
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 }
 
 enum TaskStatus {
-  TODO
-  DOING
-  DONE
+  todo
+  doing
+  done
 }
 
 enum Priority {

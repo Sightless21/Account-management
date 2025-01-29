@@ -100,9 +100,9 @@ function transformApplicantData(data: any) {
 }
 
 // 🗑 DELETE Applicant
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params;
-  
+export async function DELETE(req: NextRequest, context: { params: { id: string } }) {
+  const { id } = context.params; // ✅ ดึง id จาก context.params แทน
+
   if (!id) {
     return NextResponse.json({ error: "Missing ID parameter" }, { status: 400 });
   }

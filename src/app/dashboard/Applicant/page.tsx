@@ -1,30 +1,102 @@
-'use client'
-// import { ApplicantBoard } from "@/components/applicant-board";
-import { Button } from "@/components/ui/button"
-import { useRouter } from 'next/navigation'
-import * as React from "react"
-import ModalApplicant from "@/components/modal-Applicant"
-import { ApplicantBoard } from "@/components/DnDApplicant/ApplicantBoard"
+"use client";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import * as React from "react";
+import ModalApplicant from "@/components/modal-Applicant";
+import { ApplicantBoard } from "@/components/DnDApplicant/ApplicantBoard";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useApplicantStore } from "@/hooks/useApplicantStore";
+import { TableOfContents } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
 
 export default function Page() {
-    const router = useRouter();
+  const { applicants, fetchApplicants } = useApplicantStore();
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState(""); // 🔍 ค้นหา applicant name
+  const [selectedPosition, setSelectedPosition] = useState(" "); // 🏷️ เลือก position
+  const [loading, setLoading] = useState(false); // 🟡 สถานะโหลด
 
-    function handleProbationPage() {
-        router.push("/dashboard/Applicant/Probation");
-    }
+  useEffect(() => {
+    setLoading(true);
+    fetchApplicants().then(() => setLoading(false)); // ดึงข้อมูลเมื่อ component โหลดครั้งแรก
+  }, [fetchApplicants]);
 
-    return (
-        <div className="flex flex-col gap-4 ml-3">
-            <div className="flex items-center justify-between scroll-m-20 border-b pb-2 mr-3 text-3xl font-semibold tracking-tight first:mt-0">
-                Applicant Board
-                <div className="flex ml-4 gap-3">
-                    <ModalApplicant mode="create" />
-                    <Button onClick={handleProbationPage}>Probation</Button>
-                </div>
-            </div>
-            <div className="flex w-full h-full">
-                <ApplicantBoard />
-            </div>
-        </div>
-    );
+  function handleProbationPage() {
+    router.push("/dashboard/Applicant/Probation");
+  }
+
+  return (
+    <div className="ml-3 mr-3 flex flex-col gap-4">
+      <div className="mr-3 flex scroll-m-20 items-center justify-between border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+        Applicant Board
+      </div>
+      <Card>
+        <CardHeader className="mt-2 flex flex-row gap-3 p-2">
+          <div className="flex flex-row gap-3">
+            {/* 🔍 Input สำหรับค้นหา applicant name */}
+            <Input
+              type="text"
+              placeholder="Search Task name..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-64 rounded-lg border border-gray-300 px-3 py-2"
+            />
+
+            {/* 🏷️ Dropdown สำหรับกรอง position */}
+            <Select
+              value={selectedPosition}
+              onValueChange={setSelectedPosition}
+            >
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Filter Priority" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value=" ">All Position</SelectItem>
+                {[
+                  ...new Set(
+                    applicants.map((applicant) => applicant.person.position),
+                  ),
+                ].map((position) => (
+                  <SelectItem key={position} value={position}>
+                    {position}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {/* 📝 Button เพิ่ม applicant */}
+            <ModalApplicant mode="create" />
+            {/* 📝 Button ตารางทดลองงาน */}
+            <Button variant={"outline"} onClick={handleProbationPage}>
+              Probationary Officer Table <TableOfContents />
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <ApplicantBoard
+            data={applicants}
+            searchQuery={searchQuery}
+            selectProsition={selectedPosition}
+          />
+        </CardContent>
+        <CardFooter>
+          <p className={loading ? "text-yellow-500" : "text-green-500"}>
+            {loading ? "Loading..." : "Loaded Success"}
+          </p>
+        </CardFooter>
+      </Card>
+    </div>
+  );
 }

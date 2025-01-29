@@ -1,15 +1,30 @@
-// Main ApplicantBoard Component
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React from "react";
 import { Board } from "./Board";
-import { useApplicantStore } from "@/hooks/useApplicantStore";
 
-export const ApplicantBoard = () => {
-   const { applicants, fetchApplicants } = useApplicantStore();
+interface ApplicantBoardProps {
+  data: any;
+  searchQuery?: string | null;
+  selectProsition?: string | null;
+}
 
+export const ApplicantBoard = ({
+  data,
+  searchQuery,
+  selectProsition,
+}: ApplicantBoardProps) => {
+  const filteredApplicants = data.filter((applicant: any) => {
+    return (
+      applicant.person.name
+        .toLowerCase()
+        .includes(searchQuery ?? "".toLowerCase()) &&
+      (selectProsition === " " || applicant.person.position === selectProsition)
+    );
+  });
   return (
-    <div className="flex flex-col p-2 gap-2 w-full h-full mt-8 justify-center items-center">
-      <Board data={applicants} refetch={fetchApplicants}/>
+    <div className="mt-8 flex h-full w-full flex-col items-center justify-center gap-2 p-2">
+      <Board data={filteredApplicants} />
     </div>
   );
 };

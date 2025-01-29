@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { motion } from "framer-motion";
 import { DragEvent } from "react";
 import { IoPersonSharp } from "react-icons/io5";
@@ -10,11 +10,21 @@ type CardProps = CardType & {
   handleDragStart: (e: DragEvent, card: CardType) => void;
 };
 
-const Card = ({ person, status, info, birthdate, itemsMilitary, itemsMarital, itemsDwelling, documents, id, handleDragStart }: CardProps) => {
-
+const Card = ({
+  person,
+  status,
+  info,
+  birthdate,
+  itemsMilitary,
+  itemsMarital,
+  itemsDwelling,
+  documents,
+  id,
+  handleDragStart,
+}: CardProps) => {
   // console.log("🚀 ~ file: Card.tsx:19 ~ Card ~ person:", person)
   const { name, position, email, phone, expectSalary } = person;
-  const { address, nationality, religion, race, } = info;
+  const { address, nationality, religion, race } = info;
 
   const data = {
     person: {
@@ -34,16 +44,20 @@ const Card = ({ person, status, info, birthdate, itemsMilitary, itemsMarital, it
         district: address.district,
         province: address.province,
         zipCode: address.zipCode,
-        country: address.country
+        country: address.country,
       },
       nationality: nationality,
       religion: religion,
-      race: race
+      race: race,
     },
     birthdate: new Date(birthdate),
-    itemsMilitary: Array.isArray(itemsMilitary) ? itemsMilitary : [itemsMilitary],
+    itemsMilitary: Array.isArray(itemsMilitary)
+      ? itemsMilitary
+      : [itemsMilitary],
     itemsMarital: Array.isArray(itemsMarital) ? itemsMarital : [itemsMarital],
-    itemsDwelling: Array.isArray(itemsDwelling) ? itemsDwelling : [itemsDwelling],
+    itemsDwelling: Array.isArray(itemsDwelling)
+      ? itemsDwelling
+      : [itemsDwelling],
     documents: documents.map((doc) => doc.name) || [],
     status,
   };
@@ -60,7 +74,7 @@ const Card = ({ person, status, info, birthdate, itemsMilitary, itemsMarital, it
             phone: "",
             email: "",
             position: "",
-            expectSalary: ""
+            expectSalary: "",
           },
           id,
           info: {
@@ -72,11 +86,11 @@ const Card = ({ person, status, info, birthdate, itemsMilitary, itemsMarital, it
               district: "",
               province: "",
               zipCode: "",
-              country: ""
+              country: "",
             },
             nationality: "",
             religion: "",
-            race: ""
+            race: "",
           },
           birthdate: "",
           itemsMilitary: "",
@@ -86,22 +100,22 @@ const Card = ({ person, status, info, birthdate, itemsMilitary, itemsMarital, it
           documents: [],
         })
       }
-      className="flex items-start flex-col mt-2 justify-between cursor-grab rounded border border-neutral-700 bg-white active:cursor-grabbing hover:bg-neutral-300 snap-center"
+      className="mt-2 flex cursor-grab snap-center flex-col items-start justify-between rounded border border-neutral-700 bg-white hover:bg-neutral-300 active:cursor-grabbing"
       whileTap={{ scale: 1.04 }}
       whileHover={{ scale: 1.04 }}
     >
-      <div className="flex items-center justify-between gap-x-9 mb-2 bg-neutral-800 w-full p-2">
+      <div className="mb-2 flex w-full items-center justify-between gap-x-9 bg-neutral-800 p-2">
         <div className="flex items-start gap-2">
           <IoPersonSharp color="white" />
-          <p className="text-sm text-neutral-100 overflow-hidden">{name}</p>
+          <p className="overflow-hidden text-sm text-neutral-100">{name}</p>
         </div>
         <div className="flex items-end">
           <MdDragIndicator height={25} width={25} color="white" />
         </div>
       </div>
-      <div className="flex gap-2 py-1 px-2 w-full justify-between items-center">
-        <div className="flex-1 flex justify-center items-center">
-          <p className="text-sm text-muted-foreground text-center text-ellipsis">
+      <div className="flex w-full items-center justify-between gap-2 px-2 py-1">
+        <div className="flex flex-1 items-center justify-center">
+          <p className="text-ellipsis text-center text-sm text-muted-foreground">
             {position}
           </p>
         </div>

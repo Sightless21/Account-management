@@ -1,10 +1,9 @@
-'use client';
+"use client";
 import React, { useState } from "react";
 import Card from "./Card";
 import { CardType, ColumnType } from "./types";
 import axios from "axios";
 import { useApplicantStore } from "@/hooks/useApplicantStore"; // นำเข้า Zustand Store
-
 
 type ColumnProps = {
   title: string;
@@ -22,15 +21,18 @@ export const Column = ({
   column,
 }: ColumnProps) => {
   const [active, setActive] = useState(false);
-  const { fetchApplicants , updateApplicantStatus } = useApplicantStore();
+  const { updateApplicantStatus } = useApplicantStore();
 
-  const handleDragStart = (e: React.DragEvent<Element>, card: CardType, fromColumn: ColumnType) => {
+  const handleDragStart = (
+    e: React.DragEvent<Element>,
+    card: CardType,
+    fromColumn: ColumnType,
+  ) => {
     e.dataTransfer.setData("cardId", card.id);
     e.dataTransfer.setData("fromColumn", fromColumn);
   };
 
   const handleDragEnd = async (e: React.DragEvent<HTMLDivElement>) => {
-
     e.preventDefault();
     setActive(false);
 
@@ -67,7 +69,6 @@ export const Column = ({
 
     try {
       await axios.patch("/api/applicant", { id: cardId, status: column });
-      await fetchApplicants();
     } catch (error) {
       console.error("❌ Error updating status:", error);
     }
@@ -85,8 +86,10 @@ export const Column = ({
   const filteredCards = cards.filter((c) => c.status === column);
 
   return (
-    <div className={`w-72 h-[500px] shrink-0 border rounded-md ${headingBgColor}`}>
-      <div className={`flex items-center justify-between p-2 rounded-t-md`}>
+    <div
+      className={`h-[500px] w-72 shrink-0 rounded-md border ${headingBgColor}`}
+    >
+      <div className={`flex items-center justify-between rounded-t-md p-2`}>
         <h3 className={`font-medium decoration-4 ${headingColor}`}>{title}</h3>
         <span className="text-sm text-muted-foreground">
           Total : {filteredCards.length}
@@ -96,10 +99,14 @@ export const Column = ({
         onDrop={handleDragEnd}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        className={`h-[458px] w-full transition-colors p-4 border-t-2 overflow-auto border-dotted ${active ? "bg-neutral-800/20" : "bg-neutral-800/0"}`}
+        className={`h-[458px] w-full overflow-auto border-t-2 border-dotted p-4 transition-colors ${active ? "bg-neutral-800/20" : "bg-neutral-800/0"}`}
       >
         {filteredCards.map((c) => (
-          <Card key={c.id} {...c} handleDragStart={(e) => handleDragStart(e, c, column)} />
+          <Card
+            key={c.id}
+            {...c}
+            handleDragStart={(e) => handleDragStart(e, c, column)}
+          />
         ))}
       </div>
     </div>

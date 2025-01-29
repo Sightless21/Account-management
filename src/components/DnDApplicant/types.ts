@@ -29,7 +29,7 @@ export interface CardType {
   itemsDwelling: string;
   documents: {
     id: string;
-    name: string; 
+    name: string;
     applicantId: string;
   }[];
 }

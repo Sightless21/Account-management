@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { useApplicantStore } from "@/hooks/useApplicantStore"; // นำเข้า Zustand Store
+import { toast } from "sonner";
 
 export default function Page() {
   const { applicants, fetchApplicants, deleteApplicant } = useApplicantStore();
@@ -10,12 +11,10 @@ export default function Page() {
   const handleNotPass = async (id: string) => {
     try {
       await deleteApplicant(id);
-      alert("Applicant and related documents deleted successfully!");
+      toast.warning("Applicant and related documents deleted successfully!");
     } catch (error) {
       console.error("Error deleting applicant:", error);
-      alert(
-        "An error occurred while deleting the applicant and related documents.",
-      );
+      toast.error("An error occurred while deleting the applicant.");
     }
   };
 

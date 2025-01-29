@@ -5,7 +5,7 @@ import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Toaster } from "sonner";
+import { toast } from "sonner";
 
 export default function DashboardLayout({
   children,
@@ -23,6 +23,7 @@ export default function DashboardLayout({
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/");
+      toast.error("Please try login again. Your session has expired or you are not logged in.");
     }
   }, [router, status]);
 
@@ -43,7 +44,6 @@ export default function DashboardLayout({
             </p>
           </div>
           <div className="mt-2">
-            <Toaster position="top-center" richColors offset="10vh" />
             {children}
           </div>
         </SidebarInset>

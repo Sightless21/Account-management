@@ -31,7 +31,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-
+import { signOut} from "next-auth/react"
 
 export function NavUser({
   user,
@@ -94,13 +94,13 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => router.push("/")} className="cursor-pointer">
+            <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/"})} className="cursor-pointer">
               <LogOut className=" mr-5" />
               <span>Logout</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
-    </SidebarMenu>
+    </SidebarMenu >
   )
 }

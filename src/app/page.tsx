@@ -1,9 +1,4 @@
 'use client'
-
-//import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-
 // Components
 import { Button } from "@/components/ui/button"
 import {
@@ -21,55 +16,42 @@ import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
+import { signIn } from "next-auth/react"
+import { useRouter } from "next/navigation"
 
 export default function SignIn() {
-
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-
-  const router = useRouter()
-
   const formSchema = z.object({
-    username: z.string().min(3).max(30),
+    email: z.string().email().min(3).max(30),
     password: z.string().min(6).max(30),
   })
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   })
+  const router = useRouter()
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setEmail(values.username)
-    setPassword(values.password)
+    try {
+      const result = await signIn("credentials", {
+        email: values.email,
+        password: values.password,
+        redirect: false
+      })
 
-    if(email === "John@test.com"&& password === "123456"){
+      if(result && result.error){
+        console.log(result.error) 
+        return false;
+      }
+      console.log(result)
       router.push('/dashboard')
+
+    } catch (error) {
+      console.error(error)
     }
   }
-
-  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault()
-  //   try {
-  //     const result = await signIn('credentials', {
-  //       redirect: false,
-  //       email,
-  //       password,
-  //     })
-  //     if (result?.error) {
-  //       console.log('error', result.error)
-  //       return false
-  //     }
-  //     //Login successful
-  //     router.push('/profile')
-  //   } catch (error) {
-  //     console.log('error', error)
-  //   }
-  // }
-
   return (
     <>
       <div className="flex h-screen items-center justify-center bg-slate-100">
@@ -82,10 +64,10 @@ export default function SignIn() {
               <FormDescription>Japan System Login form</FormDescription>
               <FormField
                 control={form.control}
-                name="username"
+                name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Username</FormLabel>
+                    <FormLabel>Email</FormLabel>
                     <FormMessage />
                     <FormControl>
                       <Input placeholder="JohnDoe@gmail.com" {...field} />

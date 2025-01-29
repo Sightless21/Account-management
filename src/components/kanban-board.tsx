@@ -21,7 +21,7 @@ export const KanBanBoard = () => {
     );
 }
 const Board = () => {
-    const [cards, setCards] = useState(DEFAULT_CARDS); // Array
+    const [cards, setCards] = useState(DEFAULT_CARDS);
 
     return (
         <div className="flex gap-5 overflow-scroll">
@@ -75,10 +75,12 @@ const Column = ({
 
     const handleDragStart = (e: DragEvent, card: CardType) => {
         e.dataTransfer.setData("cardId", card.id);
+        console.log("🚀 ~ file: Columns.tsx:33 ~ handleDragStart ~ e : ", e);
     };
 
     const handleDragEnd = (e: DragEvent) => {
         const cardId = e.dataTransfer.getData("cardId");
+        console.log("🚀 ~ file: Columns.tsx:33 ~ handleDragEnd ~ cardId : ", cardId);
 
         setActive(false);
         clearHighlights();

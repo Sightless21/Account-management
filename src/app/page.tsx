@@ -18,6 +18,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
+import { toast } from 'sonner';
 
 export default function SignIn() {
   const formSchema = z.object({
@@ -41,12 +42,19 @@ export default function SignIn() {
         redirect: false
       })
 
-      if(result && result.error){
-        console.log(result.error) 
+      if (result && result.error) {
+        console.log(result.error)
+        toast.info('You should try asking your HR.', {
+          duration : 5000,
+          position : "top-right"
+        });
+        toast.error('Not found user')
         return false;
       }
+      
       console.log(result)
       router.push('/dashboard')
+      toast.success('Successfully Login')
 
     } catch (error) {
       console.error(error)

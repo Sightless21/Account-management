@@ -25,8 +25,6 @@ export default function Page() {
     const router = useRouter();
     const params = useParams();
     const projectName = typeof params?.ProjectName === 'string' ? decodeURIComponent(params.ProjectName) : null;
-    console.log("ProjectName : ", projectName);
-
     const { projects, fetchProjects } = useProjectStore();
     const [projectId, setProjectId] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState(""); // 🔍 ค้นหา Task
@@ -61,10 +59,6 @@ export default function Page() {
                 Project : {projectName} Tasks {projectId ? `(${projectId})` : ''}
             </div>
             <div className='flex flex-col w-full h-full'>
-                {/* ส่ง projectId ไปยัง KanBanBoard */}
-                <div className="flex  ml-4 gap-3">
-                    {/* Button */}
-                </div>
                 <Card>
                     <CardHeader className='flex flex-row gap-3 p-2 mt-2'>
                         <div className='flex flex-row ml-6 gap-3 '>
@@ -87,7 +81,7 @@ export default function Page() {
                                     <SelectItem value=" ">All</SelectItem>
                                     <SelectItem value="HIGH">High</SelectItem>
                                     <SelectItem value="MEDIUM">Medium</SelectItem>
-                                    <SelectItem value="LOW">Low</SelectItem>
+                                    <SelectItem value="LOW">Low </SelectItem>
                                 </SelectContent>
                             </Select>
                             <ModalTask
@@ -110,7 +104,7 @@ export default function Page() {
                         />
                     </CardContent>
                     <CardFooter>
-                    <p className={loading ? "text-yellow-500" : "text-green-500"}>
+                        <p className={loading ? "text-yellow-500" : "text-green-500"}>
                             {loading ? "Loading..." : "Loaded Success"}
                         </p>
                     </CardFooter>

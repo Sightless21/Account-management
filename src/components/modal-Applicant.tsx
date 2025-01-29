@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { useEffect, useRef, useState } from "react"
 import { Checkbox } from "@/components/ui/checkbox"
-import { SquareUserRound } from "lucide-react";
+import { SquareUserRound , UserRoundPlus } from "lucide-react";
 import { DatePickerWithPresets } from '@/components/date-picker'
 import { Label } from "@radix-ui/react-label";
 import { useApplicantStore } from "@/hooks/useApplicantStore";
@@ -286,7 +286,7 @@ export default function ModalApplicant({ mode, defaultValues }: ModalApplicantPr
         <Dialog>
             <DialogTrigger asChild>
                 {mode === "create" ? (
-                    <Button variant="default">New Applicant</Button>
+                    <Button variant="default">New Applicant <UserRoundPlus/></Button>
                 ) : (
                     <Button variant="link">
                         {mode === "view" ? "Read More" : "Edit Applicant"}

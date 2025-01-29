@@ -22,7 +22,7 @@ export const Column = ({
   column,
 }: ColumnProps) => {
   const [active, setActive] = useState(false);
-  const { fetchApplicants , updateApplicantStatus } = useApplicantStore();
+  const { updateApplicantStatus } = useApplicantStore();
 
   const handleDragStart = (e: React.DragEvent<Element>, card: CardType, fromColumn: ColumnType) => {
     e.dataTransfer.setData("cardId", card.id);
@@ -67,7 +67,6 @@ export const Column = ({
 
     try {
       await axios.patch("/api/applicant", { id: cardId, status: column });
-      await fetchApplicants();
     } catch (error) {
       console.error("❌ Error updating status:", error);
     }

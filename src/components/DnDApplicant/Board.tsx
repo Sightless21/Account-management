@@ -1,18 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
-import React, { useEffect } from "react";
+import React from "react";
 import { Column } from "./Columns";
 import BurnBarrel from "./BurnBarrel";
 
 type BoardProp = {
   data: any;
-  refetch: any
 }
 
-export const Board = ({data , refetch}: BoardProp) => {
-  useEffect(() => {
-    refetch(); 
-}, [refetch]);
+export const Board = ({data }: BoardProp) => {
+
 
   return (
     <div className="flex gap-5 p-2">

@@ -5,6 +5,7 @@ import "./globals.css";
 // if u want to use in server component use "import { getCachedSession } from "@/lib/sessionCache"; read more in lib/sessionCache"
 import { getServerSession } from "next-auth";
 import SessionProvider from "@/components/Provider/SessionProvider";
+import { Toaster } from 'sonner';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,6 +32,7 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <SessionProvider session={session}>
+          <Toaster position="bottom-center" richColors offset="10vh"/>
           {children}
         </SessionProvider>
       </body>

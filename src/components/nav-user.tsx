@@ -1,21 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-"use client"
+"use client";
 
 // react + next
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation";
 
 // icons
-import {
-  ChevronsUpDown,
-  LogOut,
-} from "lucide-react"
+import { ChevronsUpDown, LogOut } from "lucide-react";
 
 // components
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,36 +17,36 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
-import { signOut} from "next-auth/react"
+} from "@/components/ui/sidebar";
+import { signOut } from "next-auth/react";
 
 export function NavUser({
   user,
 }: {
   user: {
-    name: string
-    email: string
-    avatar: string
-  }
+    name: string;
+    email: string;
+    avatar: string;
+  };
 }) {
-  const { isMobile } = useSidebar()
+  const { isMobile } = useSidebar();
 
   // Get the initials of the user
   const fullName = user.name;
   function getInitials(fullName: string) {
-    const names = fullName.split(' '); // Split the full name by space
-    const initials = names.map(name => name[0].toUpperCase()).join(''); // Take the first letter of each name
+    const names = fullName.split(" "); // Split the full name by space
+    const initials = names.map((name) => name[0].toUpperCase()).join(""); // Take the first letter of each name
     return initials;
   }
 
   const initials = getInitials(fullName);
-  const router = useRouter()
+  const router = useRouter();
 
   return (
     <SidebarMenu>
@@ -66,7 +59,9 @@ export function NavUser({
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
+                <AvatarFallback className="rounded-lg">
+                  {initials}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{user.name}</span>
@@ -85,7 +80,9 @@ export function NavUser({
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">
+                    {initials}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{user.name}</span>
@@ -94,13 +91,16 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/"})} className="cursor-pointer">
-              <LogOut className=" mr-5" />
+            <DropdownMenuItem
+              onClick={() => signOut({ callbackUrl: "/" })}
+              className="cursor-pointer"
+            >
+              <LogOut className="mr-5" />
               <span>Logout</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
-    </SidebarMenu >
-  )
+    </SidebarMenu>
+  );
 }

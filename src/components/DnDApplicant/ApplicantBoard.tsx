@@ -3,23 +3,27 @@
 import React from "react";
 import { Board } from "./Board";
 
-
 interface ApplicantBoardProps {
   data: any;
-  searchQuery?: string | null
-  selectProsition?: string | null
+  searchQuery?: string | null;
+  selectProsition?: string | null;
 }
 
-export const ApplicantBoard = ({ data,searchQuery, selectProsition, }: ApplicantBoardProps) => {
-  
+export const ApplicantBoard = ({
+  data,
+  searchQuery,
+  selectProsition,
+}: ApplicantBoardProps) => {
   const filteredApplicants = data.filter((applicant: any) => {
     return (
-      applicant.person.name.toLowerCase().includes(searchQuery ?? "".toLowerCase()) &&
+      applicant.person.name
+        .toLowerCase()
+        .includes(searchQuery ?? "".toLowerCase()) &&
       (selectProsition === " " || applicant.person.position === selectProsition)
     );
-  })
+  });
   return (
-    <div className="flex flex-col p-2 gap-2 w-full h-full mt-8 justify-center items-center">
+    <div className="mt-8 flex h-full w-full flex-col items-center justify-center gap-2 p-2">
       <Board data={filteredApplicants} />
     </div>
   );

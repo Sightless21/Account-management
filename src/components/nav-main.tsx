@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { ChevronRight, type LucideIcon } from "lucide-react"
+import { ChevronRight, type LucideIcon } from "lucide-react";
 
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+} from "@/components/ui/collapsible";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -16,26 +16,28 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "@/components/ui/sidebar"
-import Link from "next/link"
+} from "@/components/ui/sidebar";
+import Link from "next/link";
 
 export function NavMain({
   items,
 }: {
   items: {
-    title: string
-    url: string
-    icon?: LucideIcon
-    isActive?: boolean
+    title: string;
+    url: string;
+    icon?: LucideIcon;
+    isActive?: boolean;
     items?: {
-      title: string
-      url: string
-    }[]
-  }[]
+      title: string;
+      url: string;
+    }[];
+  }[];
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel className="flex a justify-center lign-middle">Japan System Menu</SidebarGroupLabel>
+      <SidebarGroupLabel className="a lign-middle flex justify-center">
+        Japan System Menu
+      </SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible
@@ -58,7 +60,7 @@ export function NavMain({
                     <SidebarMenuSubItem key={subItem.title}>
                       <Link href={`${item.url}${subItem.url}`} passHref>
                         <SidebarMenuSubButton asChild>
-                            <span>{subItem.title}</span>
+                          <span>{subItem.title}</span>
                         </SidebarMenuSubButton>
                       </Link>
                     </SidebarMenuSubItem>
@@ -70,5 +72,5 @@ export function NavMain({
         ))}
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }

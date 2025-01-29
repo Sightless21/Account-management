@@ -1,5 +1,5 @@
 // it is used to cache the session for useing in multiple components (server components) (async components)
-// just call 
+// just call
 // import { getCachedSession } from "@/lib/sessionCache";
 // const session = await getCachedSession();
 

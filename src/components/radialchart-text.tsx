@@ -20,8 +20,8 @@ import {
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
-import { Pencil ,Trash} from 'lucide-react';
-import { Input } from "@/components/ui/input"
+import { Pencil, Trash } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { useProjectStore } from "@/hooks/useProjectStore";
 
 interface RadialChartProps {
@@ -29,7 +29,7 @@ interface RadialChartProps {
   config: ChartConfig;
   title: string;
   value: number;
-  projectID : string
+  projectID: string;
   description?: string;
   footerText?: string;
 }
@@ -42,10 +42,8 @@ export function RadialChart({
   projectID,
   description,
   footerText,
-
 }: RadialChartProps) {
-
-  const { updateNameProject , deleteProject } = useProjectStore();
+  const { updateNameProject, deleteProject } = useProjectStore();
   const [isEditing, setIsEditing] = useState(false);
   const [newTitle, setNewTitle] = useState(title);
 
@@ -54,7 +52,7 @@ export function RadialChart({
     if (newTitle.trim() !== "" && newTitle !== title) {
       try {
         // ยิง API เพื่ออัปเดตชื่อ
-        await updateNameProject(projectID, newTitle )
+        await updateNameProject(projectID, newTitle);
         console.log("Project name updated successfully");
       } catch (error) {
         console.error("Failed to update project name:", error);
@@ -67,8 +65,8 @@ export function RadialChart({
   const router = useRouter();
 
   return (
-    <Card className="flex flex-col hover:shadow-2xl hover:scale-105 transition-transform duration-300 ease-in-out">
-      <CardHeader className="items-center pb-0 static">
+    <Card className="flex flex-col transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-2xl">
+      <CardHeader className="static items-center pb-0">
         {isEditing ? (
           <Input
             type="text"
@@ -83,11 +81,14 @@ export function RadialChart({
           />
         ) : (
           <div
-            className="flex items-center gap-2 cursor-pointer group hover:underline"
+            className="group flex cursor-pointer items-center gap-2 hover:underline"
             onClick={() => setIsEditing(true)}
           >
-            <CardTitle >{title}</CardTitle>
-            <Pencil size={20} className="text-muted-foreground group-hover:text-foreground transition-colors" />
+            <CardTitle>{title}</CardTitle>
+            <Pencil
+              size={20}
+              className="text-muted-foreground transition-colors group-hover:text-foreground"
+            />
           </div>
         )}
         <CardDescription>{description}</CardDescription>
@@ -148,13 +149,23 @@ export function RadialChart({
       </CardContent>
       <CardFooter className="flex-col gap-8 text-sm">
         <div className="leading-none text-muted-foreground">{footerText}</div>
-        <Button onClick={() => {
-          if (title) {
-            router.push(`/dashboard/ProjectBoard/${title}`);
-          }
-        }}>View Tasks</Button>
+        <Button
+          onClick={() => {
+            if (title) {
+              router.push(`/dashboard/ProjectBoard/${title}`);
+            }
+          }}
+        >
+          View Tasks
+        </Button>
         <div className="flex flex-row">
-          <Button variant={"ghost"} className="hover:bg-red-300" onClick={()=> (deleteProject(projectID))}><Trash/></Button>
+          <Button
+            variant={"ghost"}
+            className="hover:bg-red-300"
+            onClick={() => deleteProject(projectID)}
+          >
+            <Trash />
+          </Button>
         </div>
       </CardFooter>
     </Card>

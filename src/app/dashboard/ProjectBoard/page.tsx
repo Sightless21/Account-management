@@ -1,19 +1,14 @@
 "use client";
 
 import { useEffect, useState, useMemo, useCallback } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input"; // นำเข้า Input
 import { ChevronDown } from "lucide-react";
 import { ModalProject } from "@/components/modal-project";
@@ -35,7 +30,7 @@ export interface Project {
 }
 
 interface ChartData {
-  projectId: string
+  projectId: string;
   projectName: string;
   chartData: {
     name: string;
@@ -58,8 +53,7 @@ export default function Page() {
   /**
    * State variables
    */
-  const { projects, fetchProjects, addProject, } =
-    useProjectStore();
+  const { projects, fetchProjects, addProject } = useProjectStore();
   const [sortOption, setSortOption] = useState<string>("Order by"); // ค่าเริ่มต้น
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -71,15 +65,23 @@ export default function Page() {
    * @returns The chart data
    */
   const generateChartData = useCallback((project: Project): ChartData => {
-    const doneTasks = project.task?.filter((task) => task.status === "done").length;
+    const doneTasks = project.task?.filter(
+      (task) => task.status === "done",
+    ).length;
     const totalTasks = project.task?.length;
     const donePercentage = totalTasks > 0 ? (doneTasks / totalTasks) * 100 : 0;
     const doneAngle = (donePercentage * 360) / 100;
-    const projectId = project.id
+    const projectId = project.id;
 
     return {
       projectName: project.projectName,
-      chartData: [{ name: "Done Tasks", value: donePercentage, fill: "var(--color-done)" }],
+      chartData: [
+        {
+          name: "Done Tasks",
+          value: donePercentage,
+          fill: "var(--color-done)",
+        },
+      ],
       chartConfig: { value: { label: "Done" } },
       donePercentage,
       doneAngle,
@@ -106,7 +108,6 @@ export default function Page() {
     };
     await addProject(newProject);
   };
-
 
   // 📌 เรียงลำดับโครงการตามเงื่อนไขที่เลือก
   const sortedProjects = useMemo(() => {
@@ -135,17 +136,18 @@ export default function Page() {
    */
   const filteredProjects = useMemo(() => {
     return sortedProjects.filter((project) =>
-      project.projectName.toLowerCase().includes(searchQuery.toLowerCase())
+      project.projectName.toLowerCase().includes(searchQuery.toLowerCase()),
     );
   }, [sortedProjects, searchQuery]);
-
 
   /**
    * Paginate the projects
    */
   const paginatedProjects = useMemo(() => {
     const startIndex = (currentPage - 1) * projectsPerPage;
-    return filteredProjects.slice(startIndex, startIndex + projectsPerPage).map(generateChartData);
+    return filteredProjects
+      .slice(startIndex, startIndex + projectsPerPage)
+      .map(generateChartData);
   }, [filteredProjects, currentPage, projectsPerPage, generateChartData]);
 
   /**
@@ -154,7 +156,7 @@ export default function Page() {
   const totalPages = Math.ceil(filteredProjects.length / projectsPerPage);
 
   return (
-    <div className="flex flex-col gap-4 ml-3 mr-3">
+    <div className="ml-3 mr-3 flex flex-col gap-4">
       <div className="flex items-center justify-between border-b pb-2 text-3xl font-semibold">
         Project Board
       </div>
@@ -166,7 +168,7 @@ export default function Page() {
           </CardHeader>
 
           <CardContent>
-            <div className="flex justify-end items-center mb-4 gap-3">
+            <div className="mb-4 flex items-center justify-end gap-3">
               <ModalProject createProject={handleAddProject} />
               {/* Dropdown สำหรับการกรองโปรเจค */}
               <Input
@@ -174,10 +176,13 @@ export default function Page() {
                 placeholder="Search Project..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-64 border border-gray-300 rounded-lg px-3 py-2"
+                className="w-64 rounded-lg border border-gray-300 px-3 py-2"
               />
               {searchQuery && (
-                <Button variant={"destructive"} onClick={() => setSearchQuery("")}>
+                <Button
+                  variant={"destructive"}
+                  onClick={() => setSearchQuery("")}
+                >
                   Clear
                 </Button>
               )}
@@ -191,11 +196,16 @@ export default function Page() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  {["Sort A-Z", "Sort Z-A", "Most task", "Less task"].map((option) => (
-                    <DropdownMenuItem key={option} onClick={() => setSortOption(option)}>
-                      {option}
-                    </DropdownMenuItem>
-                  ))}
+                  {["Sort A-Z", "Sort Z-A", "Most task", "Less task"].map(
+                    (option) => (
+                      <DropdownMenuItem
+                        key={option}
+                        onClick={() => setSortOption(option)}
+                      >
+                        {option}
+                      </DropdownMenuItem>
+                    ),
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -203,7 +213,7 @@ export default function Page() {
             {/* แสดง Project */}
             <div className="flex flex-wrap justify-center gap-7">
               {paginatedProjects.length === 0 ? (
-                <div className="flex flex-col gap-5 items-center justify-center w-full h-96">
+                <div className="flex h-96 w-full flex-col items-center justify-center gap-5">
                   <p className="text-2xl font-semibold">Not found Project</p>
                   <ModalProject createProject={handleAddProject} />
                 </div>
@@ -224,12 +234,22 @@ export default function Page() {
             </div>
 
             {/* Pagination */}
-            <div className="flex justify-center gap-2 mt-4">
-              <Button variant="outline" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
+            <div className="mt-4 flex justify-center gap-2">
+              <Button
+                variant="outline"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(currentPage - 1)}
+              >
                 Previous
               </Button>
-              <span className="flex items-center px-4">Page {currentPage} of {totalPages}</span>
-              <Button variant="outline" disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}>
+              <span className="flex items-center px-4">
+                Page {currentPage} of {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(currentPage + 1)}
+              >
                 Next
               </Button>
             </div>

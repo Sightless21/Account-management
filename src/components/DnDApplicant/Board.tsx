@@ -1,16 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client'
+"use client";
 import React from "react";
 import { Column } from "./Columns";
 import BurnBarrel from "./BurnBarrel";
 
 type BoardProp = {
   data: any;
-}
+};
 
-export const Board = ({data }: BoardProp) => {
-
-
+export const Board = ({ data }: BoardProp) => {
   return (
     <div className="flex gap-5 p-2">
       <Column

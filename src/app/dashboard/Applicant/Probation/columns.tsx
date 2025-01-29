@@ -13,7 +13,15 @@ export type Applicant = {
 };
 
 // ปรับ columns ให้รับ handleNotPass เป็นพารามิเตอร์
-export const columns = (handleNotPass: (id: string) => void): ColumnDef<{ id: string | undefined; name: string; position: string; createdAt: string | undefined; status: string; }>[] => [
+export const columns = (
+  handleNotPass: (id: string) => void,
+): ColumnDef<{
+  id: string | undefined;
+  name: string;
+  position: string;
+  createdAt: string | undefined;
+  status: string;
+}>[] => [
   {
     accessorKey: "name",
     header: "Name",

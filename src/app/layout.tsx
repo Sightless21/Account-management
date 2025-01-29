@@ -4,7 +4,7 @@ import "./globals.css";
 // I get server session for use session in client component
 // if u want to use in server component use "import { getCachedSession } from "@/lib/sessionCache"; read more in lib/sessionCache"
 import { getServerSession } from "next-auth";
-import SessionProvider from "@/components/Provider/SessionProvider";
+import SessionProvider from "@/context/SessionProvider";
 import { Toaster } from "sonner";
 
 const geistSans = Geist({
@@ -30,11 +30,9 @@ export default async function RootLayout({
   const session = await getServerSession();
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <SessionProvider session={session}>
-          <Toaster position="bottom-center" richColors offset="10vh" />
+          <Toaster richColors />
           {children}
         </SessionProvider>
       </body>

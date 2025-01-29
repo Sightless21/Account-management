@@ -83,7 +83,7 @@ export function DataTable<TData, TValue>({
           Reset
         </Button>
         <Button
-          onClick={() => redirect("/dashboard/Applicant")}
+          onClick={() => { redirect("/dashboard/Applicant")}}
           className="ml-3"
         >
           <IoIosArrowBack />

@@ -9,7 +9,7 @@ interface Document {
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = await params;
+  const { id } = params;
   if (!ObjectId.isValid(id)) {
     return NextResponse.json({ error: "Invalid ID format" }, { status: 400 });
   }
@@ -100,7 +100,7 @@ function transformApplicantData(data: any) {
 
 // 🗑 DELETE Applicant
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = await params;
+  const { id } =  params;
   if (!id) {
     return NextResponse.json({ error: "Missing ID parameter" }, { status: 400 });
   }

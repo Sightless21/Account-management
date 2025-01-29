@@ -208,6 +208,7 @@ export default function ModalApplicant({
     resolver: zodResolver(formSchema),
     mode: "onChange", // ✅ ตรวจสอบ validation แบบเรียลไทม์
     defaultValues: defaultValues || {
+      id: "",
       person: {
         name: "",
         phone: "",

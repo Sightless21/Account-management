@@ -46,20 +46,24 @@ export const useApplicantStore = create<ApplicantStore>((set) => ({
   updateApplicant: async (updateApplicant: ApplicantType) => {
     try {
       const { id, ...data } = updateApplicant;
+  
+      // ✅ ยิง API เพื่ออัปเดตฐานข้อมูลก่อน
+      await axios.patch(`/api/applicant/${id}`, data, {
+        headers: { "Content-Type": "application/json" },
+      });
+      console.log("🔹 Update URL:", `/api/applicant/${id}`);
+  
+      // ✅ อัปเดต Zustand state หลังจาก API สำเร็จ
       set((state) => ({
         applicants: state.applicants.map((applicant) =>
           applicant.id === id ? { ...applicant, ...data } : applicant,
         ),
       }));
-
-      // ✅ ยิง API เพื่ออัปเดตฐานข้อมูล
-      await axios.patch(`/api/applicant/${id}`, data, {
-        headers: { "Content-Type": "application/json" },
-      });
-      console.log("🔹 Update URL:", `/api/applicant/${id}`);
-      await useApplicantStore.getState().fetchApplicants(); // ดึงข้อมูลใหม่
+  
+      // ✅ รอ fetchApplicants() ให้เสร็จก่อน เพื่อให้ state เป็นค่าล่าสุด
+      await useApplicantStore.getState().fetchApplicants();
     } catch (error) {
-      console.error("Error updating applicant:", error);
+      console.error("❌ Error updating applicant:", error);
     }
   },
   updateApplicantStatus: async (id, status) => {

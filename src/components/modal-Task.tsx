@@ -37,9 +37,18 @@ import { useTaskStore } from "@/hooks/useTaskStore";
 
 interface TaskProps {
     defaultValues: z.infer<typeof formSchema>;
-    projectId: string |  null;
+    projectId?: string |  null;
     projectName?: string;
     mode?: "view" | "edit" | "create";
+    setLoading?: (loading: boolean) => void; 
+}
+interface FieldProps {
+    name: keyof z.infer<typeof formSchema>;
+    label: string;
+    placeholder: string;
+    disabled?: boolean;
+    control: Control<z.infer<typeof formSchema>>;
+    multiline?: boolean;
 }
 
 const formSchema = z.object({
@@ -51,14 +60,7 @@ const formSchema = z.object({
     priority: z.string().optional(),
 });
 
-const Field: React.FC<{
-    name: keyof z.infer<typeof formSchema>;
-    label: string;
-    placeholder: string;
-    disabled?: boolean;
-    control: Control<z.infer<typeof formSchema>>;
-    multiline?: boolean;
-}> = ({ name, label, placeholder, disabled, control, multiline = false }) => (
+const Field = ({ name, label, placeholder, disabled, control, multiline = false }: FieldProps) => (
     <FormField
         control={control}
         name={name}
@@ -78,7 +80,7 @@ const Field: React.FC<{
     />
 );
 
-const ModalTask: React.FC<TaskProps> = ({ defaultValues, mode = "create" , projectId, projectName}) => {
+const ModalTask = ({ defaultValues, mode = "create" , projectId, projectName , setLoading} : TaskProps) => {
     const [currentMode, setCurrentMode] = useState<"view" | "edit" | "create">(mode);
     const [priority, setPriority] = useState<string>(defaultValues?.priority || "LOW");
     const [project] = useState<string>(projectName || "");
@@ -102,6 +104,7 @@ const ModalTask: React.FC<TaskProps> = ({ defaultValues, mode = "create" , proje
     const handleSubmit = async (values: z.infer<typeof formSchema>) => {
         console.log(values);
         try {
+            setLoading?.(true)
             if (currentMode === "create") {
                 await useTaskStore.getState().createTask(projectId || "", { ...values, id: values.id || "", status: (values.status || "todo") as ColumnType, priority: values.priority || "LOW", projectId: project, });
                 form.reset();
@@ -111,6 +114,8 @@ const ModalTask: React.FC<TaskProps> = ({ defaultValues, mode = "create" , proje
             }
         } catch (error) {
             console.error(error);
+        } finally {
+            setLoading?.(false); // ✅ ตั้งค่า loading = false หลังจากเสร็จสิ้น
         }
     };
 

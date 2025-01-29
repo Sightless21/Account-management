@@ -51,7 +51,13 @@ interface ChartData {
   doneTasks: number;
 }
 
+/**
+ * Page component for the Project Board page
+ */
 export default function Page() {
+  /**
+   * State variables
+   */
   const { projects, fetchProjects, addProject, } =
     useProjectStore();
   const [sortOption, setSortOption] = useState<string>("Order by"); // ค่าเริ่มต้น
@@ -59,22 +65,11 @@ export default function Page() {
   const [currentPage, setCurrentPage] = useState(1);
   const projectsPerPage = 6;
 
-  useEffect(() => {
-    // ดึงข้อมูลโปรเจกต์เมื่อ component ถูก mount
-    fetchProjects();
-  }, [fetchProjects]);
-
-  const handleAddProject = async (projectName: string) => {
-    const newProject = {
-      id: "",
-      projectName: projectName,
-      task: [],
-    };
-    await addProject(newProject);
-  };
-
-
-  // Generate chart data for each project
+  /**
+   * Generate chart data for each project
+   * @param project The project data
+   * @returns The chart data
+   */
   const generateChartData = useCallback((project: Project): ChartData => {
     const doneTasks = project.task?.filter((task) => task.status === "done").length;
     const totalTasks = project.task?.length;
@@ -94,6 +89,25 @@ export default function Page() {
     };
   }, []);
 
+  // ดึงข้อมูลโปรเจกต์เมื่อ component ถูก mount
+  useEffect(() => {
+    fetchProjects();
+  }, [fetchProjects]);
+
+  /**
+   * Handle the add project button
+   * @param projectName The name of the new project
+   */
+  const handleAddProject = async (projectName: string) => {
+    const newProject = {
+      id: "",
+      projectName: projectName,
+      task: [],
+    };
+    await addProject(newProject);
+  };
+
+
   // 📌 เรียงลำดับโครงการตามเงื่อนไขที่เลือก
   const sortedProjects = useMemo(() => {
     const sorted = [...projects];
@@ -105,10 +119,10 @@ export default function Page() {
       case "Sort Z-A":
         sorted.sort((a, b) => b.projectName.localeCompare(a.projectName));
         break;
-      case "most task":
+      case "Most task":
         sorted.sort((a, b) => (b.task?.length ?? 0) - (a.task?.length ?? 0));
         break;
-      case "less task":
+      case "Less task":
         sorted.sort((a, b) => (a.task?.length ?? 0) - (b.task?.length ?? 0));
         break;
     }
@@ -116,6 +130,9 @@ export default function Page() {
     return sorted;
   }, [projects, sortOption]);
 
+  /**
+   * Filter the projects by the search query
+   */
   const filteredProjects = useMemo(() => {
     return sortedProjects.filter((project) =>
       project.projectName.toLowerCase().includes(searchQuery.toLowerCase())
@@ -123,11 +140,17 @@ export default function Page() {
   }, [sortedProjects, searchQuery]);
 
 
+  /**
+   * Paginate the projects
+   */
   const paginatedProjects = useMemo(() => {
     const startIndex = (currentPage - 1) * projectsPerPage;
     return filteredProjects.slice(startIndex, startIndex + projectsPerPage).map(generateChartData);
   }, [filteredProjects, currentPage, projectsPerPage, generateChartData]);
 
+  /**
+   * Calculate the total pages
+   */
   const totalPages = Math.ceil(filteredProjects.length / projectsPerPage);
 
   return (

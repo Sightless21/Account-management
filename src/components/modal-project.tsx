@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -24,20 +24,29 @@ export function ModalProject({ createProject }: ModalProjectProps) {
   const [projectName, setProjectName] = useState("");
   const [isInputEmpty, setIsInputEmpty] = useState(false);
 
-  // ฟังก์ชันสำหรับจัดการการส่งฟอร์ม
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
+  // สร้าง ref สำหรับ Dialog
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
-    // ตรวจสอบว่าค่าที่กรอกไม่ใช่ค่าว่าง
+  // ฟังก์ชันสำหรับจัดการการส่งฟอร์ม
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+       // ตรวจสอบว่าค่าที่กรอกไม่ใช่ค่าว่าง
     if (!projectName.trim()) {
       setIsInputEmpty(true);
       return;
     }
-    setIsInputEmpty(false);
-    console.log("Project Name:", projectName);
-
     // ส่งข้อมูลโปรเจกต์ไปยัง API
-    return createProject(projectName);
+    createProject(projectName);
+    // ปิด modal หลังจากส่งสำเร็จ
+    if (dialogRef.current) {
+      dialogRef.current.close();
+    }
+    setIsInputEmpty(false);
+    setProjectName("");
+    } catch (error) {
+      console.error("Error creating project:", error);
+    }
   };
 
   return (

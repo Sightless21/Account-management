@@ -1,27 +1,28 @@
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { useApplicantStore } from "@/hooks/useApplicantStore"; // นำเข้า Zustand Store
 import { toast } from "sonner";
 
 export default function Page() {
-  const { applicants, fetchApplicants, deleteApplicant } = useApplicantStore();
+  const { applicants, deleteApplicant } = useApplicantStore();
 
   const handleNotPass = async (id: string) => {
     try {
-      await deleteApplicant(id);
-      toast.warning("Applicant and related documents deleted successfully!");
+      toast.promise(
+        deleteApplicant(id),
+        {
+          loading: "Deleting applicant...",
+          success: "Applicant deleted successfully!",
+          error: "Error deleting applicant",
+        },
+      )
     } catch (error) {
       console.error("Error deleting applicant:", error);
       toast.error("An error occurred while deleting the applicant.");
     }
   };
-
-  useEffect(() => {
-    fetchApplicants(); // ดึงข้อมูลเมื่อ component โหลดครั้งแรก
-  }, [fetchApplicants]);
-
   // กรองเฉพาะ applicant ที่มี status เป็น "INTERVIEW_PASSED"
   const filteredApplicants = applicants.filter(
     (applicant) => applicant.status === "INTERVIEW_PASSED",

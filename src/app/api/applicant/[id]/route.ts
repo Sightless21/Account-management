@@ -1,4 +1,4 @@
-import { NextResponse, NextRequest,} from "next/server";
+import { NextResponse, NextRequest, } from "next/server";
 import { ObjectId } from "mongodb";
 import { prisma } from "@/lib/prisma";
 
@@ -9,7 +9,7 @@ interface Document {
 
 // ✅ PATCH: Update Applicant
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const id = params.id;
+  const { id } = await params;
 
   if (!ObjectId.isValid(id)) {
     return NextResponse.json({ error: "Invalid ID format" }, { status: 400 });
@@ -62,7 +62,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
 // ✅ DELETE: Delete Applicant
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-  const id = params.id;
+  const { id } = await params;
 
   if (!id) {
     return NextResponse.json({ error: "Missing ID parameter" }, { status: 400 });

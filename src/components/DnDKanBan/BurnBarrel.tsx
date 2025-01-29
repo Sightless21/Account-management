@@ -4,6 +4,7 @@ import React, { useState, DragEvent } from "react";
 import { FaFire } from "react-icons/fa";
 import { FiTrash } from "react-icons/fi";
 import { useTaskStore } from "@/hooks/useTaskStore";
+import { toast } from "sonner";
 
 export const BurnBarrel = () => {
   const [active, setActive] = useState(false);
@@ -25,7 +26,11 @@ export const BurnBarrel = () => {
 
     setActive(false);
     try {
-      deleteTask(cardId);
+      toast.promise(deleteTask(cardId), {
+        loading: "Deleting task...",
+        success: "Task deleted successfully!",
+        error: "Error deleting task",
+      })
     } catch (error) {
       console.error("Error deleting task:", error);
     }

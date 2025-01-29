@@ -14,6 +14,7 @@ import { ChevronDown } from "lucide-react";
 import { ModalProject } from "@/components/modal-project";
 import { RadialChart } from "@/components/radialchart-text";
 import { useProjectStore } from "@/hooks/useProjectStore";
+import { toast } from "sonner";
 
 // Define types
 interface Task {
@@ -93,7 +94,11 @@ export default function Page() {
 
   // ดึงข้อมูลโปรเจกต์เมื่อ component ถูก mount
   useEffect(() => {
-    fetchProjects();
+    toast.promise(fetchProjects(), {
+      loading: "Loading projects...",
+      success: "Successfully load projects",
+      error: "Error loading projects",
+    })
   }, [fetchProjects]);
 
   /**
@@ -101,12 +106,20 @@ export default function Page() {
    * @param projectName The name of the new project
    */
   const handleAddProject = async (projectName: string) => {
-    const newProject = {
-      id: "",
-      projectName: projectName,
-      task: [],
-    };
-    await addProject(newProject);
+    try {
+      const newProject = {
+        id: "",
+        projectName: projectName,
+        task: [],
+      };
+      toast.promise(addProject(newProject), {
+        loading: "Adding project...",
+        success: "Successfully add project",
+        error: "Error adding project",
+      })
+    } catch (error) {
+      console.error("Error adding project:", error);
+    }
   };
 
   // 📌 เรียงลำดับโครงการตามเงื่อนไขที่เลือก

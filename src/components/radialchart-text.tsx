@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 import { Pencil, Trash } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useProjectStore } from "@/hooks/useProjectStore";
+import { toast } from "sonner";
 
 interface RadialChartProps {
   data: { name: string; value: number; fill: string }[];
@@ -52,7 +53,11 @@ export function RadialChart({
     if (newTitle.trim() !== "" && newTitle !== title) {
       try {
         // ยิง API เพื่ออัปเดตชื่อ
-        await updateNameProject(projectID, newTitle);
+        toast.promise(updateNameProject(projectID, newTitle), {
+          loading: "Updating project name...",
+          success: "Successfully update project name",
+          error: "Error updating project name",
+        })
         console.log("Project name updated successfully");
       } catch (error) {
         console.error("Failed to update project name:", error);
@@ -162,7 +167,11 @@ export function RadialChart({
           <Button
             variant={"ghost"}
             className="hover:bg-red-300"
-            onClick={() => deleteProject(projectID)}
+            onClick={() => toast.promise(deleteProject(projectID), {
+              loading: "Deleting project...",
+              success: "Successfully delete project",
+              error: "Error deleting project",
+            })}
           >
             <Trash />
           </Button>

@@ -34,6 +34,7 @@ import { useForm, Control } from "react-hook-form";
 import { z } from "zod";
 import { ColumnType } from "./DnDKanBan/types";
 import { useTaskStore } from "@/hooks/useTaskStore";
+import { toast } from "sonner";
 
 interface TaskProps {
   defaultValues: z.infer<typeof formSchema>;
@@ -104,14 +105,10 @@ const ModalTask = ({
   projectName,
   setLoading,
 }: TaskProps) => {
-  const [currentMode, setCurrentMode] = useState<"view" | "edit" | "create">(
-    mode,
-  );
-  const [priority, setPriority] = useState<string>(
-    defaultValues?.priority || "LOW",
-  );
+  const [currentMode, setCurrentMode] = useState<"view" | "edit" | "create">(mode);
+  const [priority, setPriority] = useState<string>(defaultValues?.priority || "LOW");
   const [project] = useState<string>(projectName || "");
-
+  const { createTask, updateTasks} = useTaskStore();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     mode: "onChange",
@@ -124,36 +121,38 @@ const ModalTask = ({
       priority: "LOW",
     },
   });
-
   const { isValid } = form.formState;
 
-  const handleModeSwitch = (mode: "view" | "edit" | "create") =>
-    setCurrentMode(mode);
+  const handleModeSwitch = (mode: "view" | "edit" | "create") => setCurrentMode(mode);
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log(values);
     try {
       setLoading?.(true);
       if (currentMode === "create") {
-        await useTaskStore
-          .getState()
-          .createTask(projectId || "", {
-            ...values,
-            id: values.id || "",
-            status: (values.status || "todo") as ColumnType,
-            priority: values.priority || "LOW",
-            projectId: project,
-          });
+        await toast.promise(createTask(projectId || "", {
+          ...values,
+          id: values.id || "",
+          status: (values.status || "todo") as ColumnType,
+          priority: values.priority || "LOW",
+          projectId: project,
+        }),{
+          loading: "Creating task...",
+          success: "Task created",
+          error: "Failed to create task",
+        });
         form.reset();
       } else if (currentMode === "edit") {
-        await useTaskStore
-          .getState()
-          .updateTasks({
-            ...values,
-            id: values.id || "",
-            status: (values.status || "todo") as ColumnType,
-            priority: values.priority || "LOW",
-            projectId: project,
-          });
+        await toast.promise(updateTasks({
+          ...values,
+          id: values.id || "",
+          status: (values.status || "todo") as ColumnType,
+          priority: values.priority || "LOW",
+          projectId: projectId || "",
+        }),{
+          loading: "Updating task...",
+          success: "Task updated",
+          error: "Failed to update task",
+        })
         setCurrentMode("view");
       }
     } catch (error) {

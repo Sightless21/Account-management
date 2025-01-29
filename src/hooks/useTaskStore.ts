@@ -43,24 +43,16 @@ export const useTaskStore = create<TaskStore>((set) => ({
   },
   updateTasks: async (updatedTask: CardType) => {
     const { id, ...data } = updatedTask;
-    const previousTasks = useTaskStore.getState().tasks;
-
+    
     try {
       // ยิง API เพื่ออัปเดตข้อมูล
       await axios.patch(`/api/project/${id}`, data);
       console.log(`Task ID ${id} updated successfully`);
-
-      // อัปเดต state ใน Zustand
-      set((state) => ({
-        tasks: state.tasks.map((task) =>
-          task.id === id ? { ...task, ...data } : task,
-        ),
-      }));
+  
+      // รีเฟรชข้อมูล task จากเซิร์ฟเวอร์
+      await useTaskStore.getState().fetchTasks(updatedTask.projectId);
     } catch (error) {
       console.error("Error updating task:", error);
-
-      // Rollback หาก API ล้มเหลว
-      set({ tasks: previousTasks });
     }
   },
 

@@ -46,16 +46,14 @@ model Employee {
   CarBooking     CarBooking[]  @relation(name: "EmpCarbooking")
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
-  clientId       String?       @db.ObjectId
-  Client         Client[]      @relation(name: "oneEmptoOneClient")
+  clientId       String?       @unique @db.ObjectId
+  Client         Client?     @relation(fields: [clientId], references: [id], name: "oneEmptoOneClient")
 }
-
 enum Role {
   ADMIN
   HR
   EMPLOYEE
 }
-
 // 📌 Model สำหรับ Client
 model Client {
   id             String    @id @default(auto()) @map("_id") @db.ObjectId
@@ -64,8 +62,8 @@ model Client {
   hashedPassword String
   email          String    @unique
   phone          String
-  employee       Employee? @relation(fields: [employeeId], references: [id], name: "oneEmptoOneClient")
-  employeeId     String?   @db.ObjectId
+  employee       Employee? @relation(name: "oneEmptoOneClient")
+  employeeId     String?   @unique @db.ObjectId
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 }
@@ -85,7 +83,6 @@ type Person {
   position     String
   expectSalary String
 }
-
 // 📌 ข้อมูลส่วนบุคคลของผู้สมัคร
 type Info {
   address     Address
@@ -114,18 +111,6 @@ model Document {
   applicant   Applicant @relation(fields: [applicantId], references: [id], onDelete: Cascade)
 }
 
-// KabanTask
-model KanbanTask {
-  id          String     @id @default(auto()) @map("_id") @db.ObjectId
-  projectName String
-  taskName    String
-  description String
-  status      TaskStatus @default(todo)
-  priority    Priority   @default(LOW)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-}
-
 model Project {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   projectName String   @unique
@@ -145,21 +130,16 @@ model Task {
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 }
-
 enum TaskStatus {
   todo
   doing
   done
 }
-
 enum Priority {
   LOW
   MEDIUM
   HIGH
 }
-
-// end Kabantask
-
 model Leave {
   id        String      @id @default(auto()) @map("_id") @db.ObjectId
   user      Employee    @relation(fields: [userId], references: [id], name: "EmpNeedLeave")
@@ -171,13 +151,11 @@ model Leave {
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 }
-
 enum LeaveStatus {
   PENDING
   APPROVED
   REJECTED
 }
-
 model RoomBooking {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   user      Employee @relation(fields: [userId], references: [id], name: "EmpRoombooking")
@@ -188,7 +166,6 @@ model RoomBooking {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
 model CarBooking {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   user      Employee @relation(fields: [userId], references: [id], name: "EmpCarbooking")
@@ -199,7 +176,6 @@ model CarBooking {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
 // เบิกค่าใช้จ่าย
 model Expense {
   id          String        @id @default(auto()) @map("_id") @db.ObjectId
@@ -211,7 +187,6 @@ model Expense {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 }
-
 enum ExpenseStatus {
   PENDING
   APPROVED

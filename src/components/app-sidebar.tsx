@@ -38,10 +38,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [username, setName] = useState(session?.user?.name || "");
   const [useremail, setEmail] = useState(session?.user?.email || "");
 
-  console.log("status " + status);
-  console.log("session " + session);
-
-  // mock
+  // data for sidebar
   const data = {
     user: {
       name: username,
@@ -125,7 +122,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     ],
   };
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="icon" {...props} >
       <SidebarHeader className="flex items-center">
         <Image src="/img/Logo.png" alt="Loading" width={100} height={50} />
         <Divider />
@@ -136,7 +133,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter>
         <NavUser user={data.user} />
       </SidebarFooter>
-      <SidebarRail />
     </Sidebar>
   );
 }

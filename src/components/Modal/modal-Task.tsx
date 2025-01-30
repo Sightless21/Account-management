@@ -32,7 +32,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Control } from "react-hook-form";
 import { z } from "zod";
-import { ColumnType } from "./DnDKanBan/types";
+import { ColumnType } from "../DnDKanBan/types";
 import { useTaskStore } from "@/hooks/useTaskStore";
 import { toast } from "sonner";
 

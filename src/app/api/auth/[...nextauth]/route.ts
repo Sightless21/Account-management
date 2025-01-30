@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
@@ -14,19 +13,20 @@ export const authOptions = {
         email: { label: "Email", type: "email", placeholder: "john@doe.com" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         if (!credentials) return null;
         const user = await prisma.client.findUnique({
           where: { email: credentials.email },
         });
+        // console.log("user : ", user); ✅ Debug
 
         if (
           user &&
           (await bcrypt.compare(credentials.password, user.hashedPassword))
         ) {
           return {
-            id: user.id,
-            name: user.firstName + " " + user.lastName,
+            id: user.id.toString(),
+            name: `${user.firstName} ${user.lastName}`,
             email: user.email,
           };
         } else {
@@ -46,15 +46,19 @@ export const authOptions = {
         token.name = user.name;
         token.email = user.email;
       }
+      // console.log("JWT Token : ",token) ✅ Debug
       return token;
     },
     session: async ({ session, token }: { token: any; session: any }) => {
+      // console.log("Token in session callback:", token); ✅ Debug
       if (session.user) {
-        session.user.id = token.id;
+        session.user.id = token.id as string;
         session.user.name = token.name;
         session.user.email = token.email;
       }
+      // console.log("Session after setting id:", JSON.stringify(session, null, 2)); // ✅ Debug ค่า session
       return session;
+      
     },
   },
 };

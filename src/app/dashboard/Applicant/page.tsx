@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import * as React from "react";
-import ModalApplicant from "@/components/modal-Applicant";
+import ModalApplicant from "@/components/Modal/modal-Applicant";
 import { ApplicantBoard } from "@/components/DnDApplicant/ApplicantBoard";
 import {
     Card,

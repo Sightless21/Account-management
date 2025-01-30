@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input"; // นำเข้า Input
 import { ChevronDown } from "lucide-react";
-import { ModalProject } from "@/components/modal-project";
-import { RadialChart } from "@/components/radialchart-text";
+import { ModalProject } from "@/components/Modal/modal-project";
+import { RadialChart } from "@/components/Chart/radialchart-text";
 import { useProjectStore } from "@/hooks/useProjectStore";
 import { toast } from "sonner";
 

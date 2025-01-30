@@ -52,7 +52,7 @@ export default function SignIn() {
         return false;
       }
 
-      console.log(result);
+      console.log("result : " ,result?.status);
       router.push("/dashboard");
       toast.success("Successfully Login");
     } catch (error) {

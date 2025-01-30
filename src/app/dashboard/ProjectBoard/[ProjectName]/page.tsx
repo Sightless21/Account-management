@@ -1,7 +1,7 @@
 "use client";
 import { KanBanBoard } from "@/components/DnDKanBan/KanBanBoard";
 import { useProjectStore } from "@/hooks/useProjectStore";
-import ModalTask from "@/components/modal-Task";
+import ModalTask from "@/components/Modal/modal-Task";
 import { Button } from "@/components/ui/button";
 import { useRouter, useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";

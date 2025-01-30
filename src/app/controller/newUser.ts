@@ -3,6 +3,8 @@
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 
+type Role = 'EMPLOYEE' | 'MANAGER' | 'HR' ; // Define the Role type
+
 interface FormData {
   firstName: string;
   lastName: string;
@@ -10,10 +12,12 @@ interface FormData {
   phone: string;
   password: string;
   confirmpassword: string;
+  role: Role;
 }
 
 export async function createUser(formData: FormData) {
-  const user = await prisma.client.findUnique({
+  console.log("Received formData:", formData); // Debugging
+  const user = await prisma.user.findUnique({
     where: {
       email: formData.email,
     },
@@ -21,13 +25,15 @@ export async function createUser(formData: FormData) {
   if (user) {
     return alert("User already exist please type again");
   } else {
-    await prisma.client.create({
+    await prisma.user.create({
       data: {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
-        phone: formData.phone,
         hashedPassword: await bcrypt.hashSync(formData.password, 10),
+        phone: formData.phone,
+        isVerity: false,
+        role: formData.role as Role,
       },
     });
   }

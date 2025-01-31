@@ -1,54 +1,48 @@
 "use client";
+import React, { useEffect } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-// import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { toast } from "sonner";
+import { useUserStore } from "@/hooks/useUserStroe";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { data: session, status } = useSession()
-  
-  /* | --------- you can get user id from session  ---------|
-     |                                                      |
-     |                                                      |
-     | console.log("User logined ID :",session?.user?.id);  |
-     |                                                      |
-     -------------------------------------------------------*/
-
+  const { data: session, status } = useSession();
+  const id = session?.user?.id;
+  const { user, fetchUser } = useUserStore();
   const router = useRouter();
 
+  // ดึงข้อมูลเมื่อ id เปลี่ยนและ status เป็น authenticated
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/");
-      toast.error("Please try login again. Your session has expired or you are not logged in.");
+      toast.error("Session expired or you are not logged in.", {
+        position: "top-center",
+      });
+      return;
     }
-  }, [router, status]);
+
+    if (id && !user) { // ดึงข้อมูลเฉพาะเมื่อ id และ user ยังไม่ได้รับการตั้งค่า
+      fetchUser(id);
+    }
+  }, [id, status, user, fetchUser, router]);
 
   return (
     <section>
       <SidebarProvider defaultOpen={true} open={true}>
-        <AppSidebar collapsible="icon" variant="inset"/>
+        <AppSidebar collapsible="icon" variant="inset" />
         <SidebarInset>
           <div className="mt-4 flex items-center gap-2 px-4">
             <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-              Hello :
+              Hello : {user?.firstName?.toUpperCase()} {user?.lastName?.toUpperCase()}
             </h3>
-            <p className="text-xl text-muted-foreground">
-              {session?.user?.name
-                ?.split(" ")
-                .map((n) => n.charAt(0).toUpperCase() + n.slice(1))
-                .join(" ")}
-            </p>
           </div>
-          <div className="mt-2">
-            {children}
-          </div>
+          <div className="mt-2">{children}</div>
         </SidebarInset>
       </SidebarProvider>
     </section>

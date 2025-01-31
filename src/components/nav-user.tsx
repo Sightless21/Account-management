@@ -30,23 +30,23 @@ export function NavUser({
   user,
 }: {
   user: {
-    name: string;
-    email: string;
-    avatar: string;
+    name?: string;
+    email?: string;
+    avatar?: string;
   };
 }) {
   const { isMobile } = useSidebar();
 
   // Get the initials of the user
   const fullName = user.name;
-  function getInitials(fullName: string) {
-    const names = fullName.split(" "); // Split the full name by space
-    const initials = names.map((name) => name[0].toUpperCase()).join(""); // Take the first letter of each name
-    return initials;
-  }
+  // function getInitials(fullName: string) {
+  //   const names = fullName.split(" "); // Split the full name by space
+  //   const initials = names.map((name) => name[0].toUpperCase()).join(""); // Take the first letter of each name
+  //   return initials;
+  // }
 
-  const initials = getInitials(fullName);
-  const router = useRouter();
+  // const initials = getInitials(fullName);
+
 
   return (
     <SidebarMenu>
@@ -60,7 +60,7 @@ export function NavUser({
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />
                 <AvatarFallback className="rounded-lg">
-                  {initials}
+                  {/* {initials} */}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
@@ -81,7 +81,7 @@ export function NavUser({
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user.avatar} alt={user.name} />
                   <AvatarFallback className="rounded-lg">
-                    {initials}
+                    {/* {initials} */}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">

@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   typescript: {
-    ignoreBuildErrors: true, // 🚨 ปิด Type Checking ตอน Build
+    // ignoreBuildErrors: true, // 🚨 ปิด Type Checking ตอน Build
   },
 };
 

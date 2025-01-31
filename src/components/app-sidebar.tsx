@@ -1,11 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 "use client";
 
 // react + next
 import Image from "next/image";
-import React, { useState } from "react";
-import { Session } from "next-auth";
-import { useSession } from "next-auth/react";
+import React from "react";
 
 // icons
 import {
@@ -24,25 +22,18 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarRail,
 } from "@/components/ui/sidebar";
 
 // mui components
 import Divider from "@mui/joy/Divider";
+import { useUserStore } from "@/hooks/useUserStroe";
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  // fecth api
-  const { data: session, status } = useSession() as {
-    data: Session | null;
-    status: string;
-  };
-  const [username, setName] = useState(session?.user?.name || "");
-  const [useremail, setEmail] = useState(session?.user?.email || "");
-
+  const { user } = useUserStore();
   // data for sidebar
   const data = {
     user: {
-      name: username,
-      email: useremail,
+      name: user?.firstName + " " + user?.lastName,
+      email: user?.email,
       avatar: "",
     },
     navMain: [
@@ -114,7 +105,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         icon: ServerCog,
         items: [
           {
-            title: "New user",
+            title: "Create New User",
             url: "/NewUser",
           },
         ],

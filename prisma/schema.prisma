@@ -16,7 +16,7 @@ model User {
   hashedPassword String
   phone          String
   role           Role      @default(EMPLOYEE)
-  isVerity       Boolean @default(false)
+  isVerify       Boolean   @default(false)
   employee       Employee? @relation("UserEmployee")
   employeeId     String?   @db.ObjectId
   createdAt      DateTime  @default(now())

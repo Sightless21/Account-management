@@ -265,7 +265,6 @@ export default function ModalApplicant({
   // เพิ่ม state สำหรับควบคุมโหมด
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isEditing, setIsEditing] = useState(mode === "edit");
-
   const { control, formState } = form;
   const { isValid } = formState; // ✅ ดึงค่า isValid จาก formState
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -282,12 +281,9 @@ export default function ModalApplicant({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log("🚀 Form Data:", values); // ✅ ตรวจสอบค่าก่อนส่ง API
     setTasks([...applicant, values]);
-
     if (isSubmitting) return;
     setIsSubmitting(true);
-
     console.log("Mode is:", currentMode);
-
     try {
       if (currentMode === "create") {
         toast.promise(
@@ -313,7 +309,6 @@ export default function ModalApplicant({
         setCurrentMode("view");
         setIsReadyToSave(false);
       }
-
       form.reset(); // Reset fields to default values
       setTasks([]);
     } finally {

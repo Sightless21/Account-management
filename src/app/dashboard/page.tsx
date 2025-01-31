@@ -1,16 +1,17 @@
-import axios from "axios";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Button } from "@/components/ui/button";
+import { redirect } from "next/navigation";
 
 async function fetchUser(userID: string) {
   try {
-    const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/user/${userID}`, {
-      headers: {
-        "Cache-Control": "no-store", // ป้องกัน cache
-      },
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/user/${userID}`, {
+      next: { revalidate: 60 }, // Cache 60 วินาที ถ้าอยากให้ no-cache ใช้ { cache: "no-store" }
     });
-    return data;
+
+    if (!res.ok) throw new Error("Failed to fetch user");
+
+    return await res.json();
   } catch (error) {
     console.error("Error fetching user:", error);
     return null;
@@ -21,10 +22,14 @@ export default async function Page() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
-    return <p className="text-red-500">You are not logged in.</p>;
+    return redirect("/");
   }
 
   const user = await fetchUser(session.user.id);
+
+  if (!user?.isVerify) {
+    return redirect("/verify");
+  }
 
   return (
     <div>
@@ -32,9 +37,6 @@ export default async function Page() {
       <p>User ID: {session.user.id}</p>
       <p>Role: {session.user.role}</p>
       <p>Verify: {user?.isVerify ? "True" : "False"}</p>
-
-      {/* แสดงปุ่ม Verify หาก user ยังไม่ยืนยันตัวตน */}
-      {!user?.isVerify && <Button>Verify</Button>}
 
       {/* แสดงปุ่มตาม Role */}
       {session.user.role === "ADMIN" && <Button>Admin</Button>}

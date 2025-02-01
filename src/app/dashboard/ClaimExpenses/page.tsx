@@ -12,7 +12,7 @@ export default function Page() {
   return (
     <>
       {/* <pre>{JSON.stringify(session, null, 2)}</pre> */}
-      <p>{sessionUser?.user?.name}</p>
+      <p>{sessionUser?.user?.id}</p>
     </>
   );
 }

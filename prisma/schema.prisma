@@ -45,7 +45,7 @@ model Employee {
   person    Person
   birthdate DateTime
   info      Info
-  documents Document[] @relation("EmployeeDocuments") // ✅ เพิ่ม Relation Name
+  documents Document[] @relation("EmployeeDocuments")
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   userId    String     @unique @db.ObjectId
@@ -54,9 +54,9 @@ model Employee {
 
 // 📌 ENUM สำหรับสถานะของ Applicant (ผู้สมัคร)
 enum ApplicantStatus {
-  NEW // ผู้สมัครใหม่
-  PENDING_INTERVIEW // อยู่ระหว่างรอสัมภาษณ์
-  INTERVIEW_PASSED // สัมภาษณ์ผ่าน
+  NEW 
+  PENDING_INTERVIEW
+  INTERVIEW_PASSED
 }
 
 // 📌 ENUM สำหรับ Role (RBAC)

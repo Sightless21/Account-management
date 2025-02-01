@@ -99,7 +99,9 @@ export default function Page() {
                             </SelectContent>
                         </Select>
                         {/* 📝 Button เพิ่ม applicant */}
-                        <ModalApplicant mode="create"  />
+                        <ModalApplicant mode={"create"}  />
+                        <ModalApplicant mode={"edit"}  />
+                        <ModalApplicant mode={"view"}  />
                         {/* 📝 Button ตารางทดลองงาน */}
                         <Button variant={"outline"} onClick={handleProbationPage}>
                             Probationary Officer Table <TableOfContents />

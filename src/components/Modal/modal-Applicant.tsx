@@ -392,6 +392,7 @@ export default function ModalApplicant({
                 </div>
               </CardContent>
             </Card>
+
             {/* Documents and Personal Information */}
             <div className="col-span-2 grid grid-cols-5 gap-3">
               {/* Documents Card */}
@@ -496,6 +497,7 @@ export default function ModalApplicant({
                 </CardContent>
               </Card>
             </div>
+            
             {/* Submit and Cancel Buttons */}
             <div className="col-span-2 grid">
               <div className="flex justify-end gap-2">

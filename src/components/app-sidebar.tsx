@@ -25,7 +25,6 @@ import {
 } from "@/components/ui/sidebar";
 
 // mui components
-import Divider from "@mui/joy/Divider";
 import { useUserStore } from "@/hooks/useUserStroe";
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useUserStore();
@@ -116,7 +115,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar collapsible="icon" {...props} >
       <SidebarHeader className="flex items-center">
         <Image src="/img/Logo.png" alt="Loading" width={100} height={50} />
-        <Divider />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />

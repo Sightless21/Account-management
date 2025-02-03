@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 async function fetchUser(userID: string) {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/user/${userID}`, {
-      next: { revalidate: 60 }, // Cache 60 วินาที ถ้าอยากให้ no-cache ใช้ { cache: "no-store" }
+      cache: "no-store", // Cache 60 วินาที ถ้าอยากให้ no-cache ใช้ { cache: "no-store" }
     });
 
     if (!res.ok) throw new Error("Failed to fetch user");

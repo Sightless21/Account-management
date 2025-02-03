@@ -1,4 +1,3 @@
-// Server Component
 import SignInForm from "@/components/signinbox";
 
 export default function SignInPage() {

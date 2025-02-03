@@ -66,7 +66,7 @@ export default function Page() {
                 Applicant Board
             </div>
             <Card>
-                <CardHeader className="mt-2 flex flex-row gap-3 p-2">
+                <CardHeader className="flex flex-row gap-3 p-2">
                     <div className="flex flex-row gap-3">
                         {/* 🔍 Input สำหรับค้นหา applicant name */}
                         <Input
@@ -100,8 +100,6 @@ export default function Page() {
                         </Select>
                         {/* 📝 Button เพิ่ม applicant */}
                         <ModalApplicant mode={"create"}  />
-                        <ModalApplicant mode={"edit"}  />
-                        <ModalApplicant mode={"view"}  />
                         {/* 📝 Button ตารางทดลองงาน */}
                         <Button variant={"outline"} onClick={handleProbationPage}>
                             Probationary Officer Table <TableOfContents />

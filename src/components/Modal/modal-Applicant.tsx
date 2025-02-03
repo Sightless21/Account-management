@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 // 1. External Libraries (เรียงตามตัวอักษร)
-import { useEffect, useMemo, useState } from "react";
+import { JSX, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -501,29 +501,36 @@ export default function ModalApplicant({
             {/* Submit and Cancel Buttons */}
             <div className="col-span-2 grid">
               <div className="flex justify-end gap-2">
-                {currentMode === "create" && (
-                  <Button
-                    type="submit"
-                    disabled={!isValid}
-                    onClick={() => form.handleSubmit(onSubmit)()}
-                  >
-                    <TiTick /> Create Applicant
-                  </Button>
-                )}
-                {currentMode === "edit" && (
-                  <Button
-                    type="submit"
-                    disabled={!isValid}
-                    onClick={() => setIsReadyToSave(true)}
-                  >
-                    <TiTick /> Save Changes
-                  </Button>
-                )}
-                {currentMode === "view" && (
-                  <Button type="button" onClick={() => setCurrentMode("edit")}>
-                    <TiEdit /> Edit
-                  </Button>
-                )}
+                {(() => {
+                  const modeButtons: Record<string, JSX.Element> = {
+                    create: (
+                      <Button
+                        type="submit"
+                        disabled={!isValid}
+                        onClick={() => form.handleSubmit(onSubmit)()}
+                      >
+                        <TiTick /> Create Applicant
+                      </Button>
+                    ),
+                    edit: (
+                      <Button
+                        type="submit"
+                        disabled={!isValid}
+                        onClick={() => setIsReadyToSave(true)}
+                      >
+                        <TiTick /> Save Changes
+                      </Button>
+                    ),
+                    view: (
+                      <Button type="button" onClick={() => setCurrentMode("edit")}>
+                        <TiEdit /> Edit
+                      </Button>
+                    ),
+                  };
+
+                  return modeButtons[currentMode] || null;
+                })()}
+
                 <DialogClose asChild>
                   <Button type="button" variant="destructive">
                     <TiCancel /> Close

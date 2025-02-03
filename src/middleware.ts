@@ -16,7 +16,7 @@ export async function middleware(req: NextRequest) {
     const decoded = await getToken({ req, secret: secretKey });
     // console.log(decoded); // ✅ Debug
     const { id } = decoded as {id: string}
-    console.log("🔹 User ID:", id);
+    console.log("🔹 Form Middleware User ID:", id);
 
     if (!decoded) {
       throw new Error("Invalid token");

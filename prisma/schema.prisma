@@ -42,19 +42,19 @@ model Applicant {
 // 📌 Model พนักงาน (1:1 กับ User)
 model Employee {
   id        String     @id @default(auto()) @map("_id") @db.ObjectId
-  person    Person
+  person    Person? 
   birthdate DateTime
-  info      Info
+  info      Info? 
   documents Document[] @relation("EmployeeDocuments")
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   userId    String     @unique @db.ObjectId
-  user      User       @relation(fields: [userId], references: [id], name: "UserEmployee")
+  user      User?      @relation(fields: [userId], references: [id], name: "UserEmployee")
 }
 
 // 📌 ENUM สำหรับสถานะของ Applicant (ผู้สมัคร)
 enum ApplicantStatus {
-  NEW 
+  NEW
   PENDING_INTERVIEW
   INTERVIEW_PASSED
 }
@@ -100,7 +100,7 @@ type Address {
 // 📌 เอกสารแนบ
 model Document {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
+  name        String?
   applicantId String?    @db.ObjectId
   employeeId  String?    @db.ObjectId // ✅ เพิ่มฟิลด์นี้เพื่อรองรับ Employee
   applicant   Applicant? @relation(fields: [applicantId], references: [id], onDelete: Cascade)

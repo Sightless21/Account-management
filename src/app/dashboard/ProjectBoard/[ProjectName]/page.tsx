@@ -1,11 +1,12 @@
 "use client";
 import { KanBanBoard } from "@/components/DnDKanBan/KanBanBoard";
 import { useProjectStore } from "@/hooks/useProjectStore";
-import ModalTask from "@/components/Modal/modal-Task";
+// import ModalTask from "@/components/Modal/modal-Task";
 import { Button } from "@/components/ui/button";
 import { useRouter, useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { ChevronLeft } from "lucide-react";
+import { TaskModal } from "@/components/Modal/modal-test";
 import {
   Card,
   CardContent,
@@ -100,17 +101,13 @@ export default function Page() {
                   <SelectItem value="LOW">Low </SelectItem>
                 </SelectContent>
               </Select>
-              <ModalTask
-                mode="create"
-                projectId={projectId}
-                projectName={projectName || undefined}
-                defaultValues={{
-                  projectName: projectName || "",
+              <TaskModal mode="create" setLoading={setLoading} defaultValues={{
                   taskName: "",
                   description: "",
+                  priority:"",
+                  assignees:[]
                 }}
-                setLoading={setLoading} // 🟡 ส่งไปใช้ตอนสร้าง Task
-              />
+                projectId={projectId}/>
             </div>
           </CardHeader>
           <CardContent>

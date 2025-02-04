@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input"; // นำเข้า Input
 import { ChevronDown } from "lucide-react";
-import { ModalProject } from "@/components/Modal/modal-project";
+import { ModalProject } from "@/components/Modal/modal-Project";
 import { RadialChart } from "@/components/Chart/radialchart-text";
 import { useProjectStore } from "@/hooks/useProjectStore";
 import { toast } from "sonner";
@@ -168,21 +168,22 @@ export default function Page() {
    */
   const totalPages = Math.ceil(filteredProjects.length / projectsPerPage);
 
+   const projectnum = paginatedProjects.length === 0 ? true : false;
   return (
     <div className="ml-3 mr-3 flex flex-col gap-4">
-      <div className="flex items-center justify-between border-b pb-2 text-3xl font-semibold">
-        Project Board
-      </div>
-
       <div className="container">
-        <Card className="flex flex-col">
+        <Card className="flex flex-col h-full">
           <CardHeader className="items-center">
             <CardTitle>Overall Process Board</CardTitle>
           </CardHeader>
 
           <CardContent>
             <div className="mb-4 flex items-center justify-end gap-3">
-              <ModalProject createProject={handleAddProject} />
+              {projectnum ? (
+                ""
+              ) : (
+                <ModalProject createProject={handleAddProject} />
+              )}
               {/* Dropdown สำหรับการกรองโปรเจค */}
               <Input
                 type="text"
@@ -203,7 +204,7 @@ export default function Page() {
               {/* Dropdown สำหรับการเรียงลำดับ */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="flex items-center gap-2">
+                  <Button variant="outline" className="flex items-center gap-2 w-44">
                     {sortOption}
                     <ChevronDown className="h-4 w-4" />
                   </Button>

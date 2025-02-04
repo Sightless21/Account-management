@@ -39,7 +39,7 @@ export async function POST(
   try {
     const data = await request.json();
 
-    if (!data.taskName || !data.status || !data.priority || !data.description) {
+    if (!data.taskName || !data.status || !data.priority || !data.description || !data.assignmets) {
       return NextResponse.json(
         { error: "All fields are required" },
         { status: 400 },
@@ -62,6 +62,7 @@ export async function POST(
         status: data.status,
         priority: data.priority,
         description: data.description,
+        assignmets: data.assignmets,
         projectId: id, //ForeignKey
       },
     });
@@ -109,6 +110,7 @@ export async function PATCH(
         taskName: data.taskName,
         status: data.status,
         priority: data.priority,
+        assignmets: data.assignmets,
         description: data.description,
       },
     });

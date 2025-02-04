@@ -108,7 +108,7 @@ const ModalTask = ({
   const [currentMode, setCurrentMode] = useState<"view" | "edit" | "create">(mode);
   const [priority, setPriority] = useState<string>(defaultValues?.priority || "LOW");
   const [project] = useState<string>(projectName || "");
-  const { createTask, updateTasks} = useTaskStore();
+  const { createTask, updateTasks } = useTaskStore();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     mode: "onChange",
@@ -135,7 +135,7 @@ const ModalTask = ({
           status: (values.status || "todo") as ColumnType,
           priority: values.priority || "LOW",
           projectId: project,
-        }),{
+        }), {
           loading: "Creating task...",
           success: "Task created",
           error: "Failed to create task",
@@ -148,7 +148,7 @@ const ModalTask = ({
           status: (values.status || "todo") as ColumnType,
           priority: values.priority || "LOW",
           projectId: projectId || "",
-        }),{
+        }), {
           loading: "Updating task...",
           success: "Task updated",
           error: "Failed to update task",

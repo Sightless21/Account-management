@@ -109,6 +109,7 @@ export const Column = ({
             <Card
               key={c.id}
               {...c}
+              assignees={c.assignmets}
               handleDragStart={(e) => handleDragStart(e, c, column)}
               projectID={projectID}
               projectName={projectName}

@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useUserStore } from "@/hooks/useUserStroe";
+import { DigitalClock } from "@/components/digital-clock";
 
 export default function DashboardLayout({
   children,
@@ -37,12 +38,13 @@ export default function DashboardLayout({
       <SidebarProvider defaultOpen={true} open={true}>
         <AppSidebar collapsible="icon" variant="inset" />
         <SidebarInset>
-          <div className="mt-4 flex items-center gap-2 px-4">
+          <div className="mt-4 flex items-center gap-2 px-4 justify-between">
             <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
               Hello : {user?.firstName?.toUpperCase()} {user?.lastName?.toUpperCase()}
             </h3>
+            <DigitalClock />
           </div>
-          <div className="mt-2">{children}</div>
+          <div className="mt-2 h-full">{children}</div>
         </SidebarInset>
       </SidebarProvider>
     </section>

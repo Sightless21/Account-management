@@ -1,281 +1,223 @@
-"use client";
-import React, { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from "@/components/ui/dialog";
+'use client';
+import { useEffect, useState, } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, Control } from "react-hook-form";
-import { z } from "zod";
-import { ColumnType } from "../DnDKanBan/types";
+import { useForm } from "react-hook-form";
 import { useTaskStore } from "@/hooks/useTaskStore";
+import { ColumnType } from "../DnDKanBan/types";
 import { toast } from "sonner";
+import { z } from "zod";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuLabel,
+    DropdownMenuRadioGroup,
+    DropdownMenuRadioItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import FormTextareaWithCount from "../ui/FormTextareaWithCount";
 
-interface TaskProps {
-  defaultValues: z.infer<typeof formSchema>;
-  projectId?: string | null;
-  projectName?: string;
-  mode?: "view" | "edit" | "create";
-  setLoading?: (loading: boolean) => void;
-}
-interface FieldProps {
-  name: keyof z.infer<typeof formSchema>;
-  label: string;
-  placeholder: string;
-  disabled?: boolean;
-  control: Control<z.infer<typeof formSchema>>;
-  multiline?: boolean;
-}
-
-const formSchema = z.object({
-  id: z.string().optional(),
-  projectName: z
-    .string()
-    .min(2, { message: "Project name must be at least 2 characters." }),
-  taskName: z
-    .string()
-    .min(2, { message: "Task name must be at least 2 characters." }),
-  description: z
-    .string()
-    .min(2, { message: "Description must be at least 2 characters." }),
-  status: z.string().optional(),
-  priority: z.string().optional(),
-});
-
-const Field = ({
-  name,
-  label,
-  placeholder,
-  disabled,
-  control,
-  multiline = false,
-}: FieldProps) => (
-  <FormField
-    control={control}
-    name={name}
-    render={({ field }) => (
-      <FormItem>
-        <FormLabel>{label}</FormLabel>
-        <FormControl>
-          {multiline ? (
-            <Textarea
-              placeholder={placeholder}
-              {...field}
-              disabled={disabled}
-            />
-          ) : (
-            <Input placeholder={placeholder} {...field} disabled={disabled} />
-          )}
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-    )}
-  />
-);
-
-const ModalTask = ({
-  defaultValues,
-  mode = "create",
-  projectId,
-  projectName,
-  setLoading,
-}: TaskProps) => {
-  const [currentMode, setCurrentMode] = useState<"view" | "edit" | "create">(mode);
-  const [priority, setPriority] = useState<string>(defaultValues?.priority || "LOW");
-  const [project] = useState<string>(projectName || "");
-  const { createTask, updateTasks } = useTaskStore();
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    mode: "onChange",
-    defaultValues: defaultValues || {
-      id: "",
-      projectName: project,
-      taskName: "",
-      description: "",
-      status: "todo",
-      priority: "LOW",
-    },
-  });
-  const { isValid } = form.formState;
-
-  const handleModeSwitch = (mode: "view" | "edit" | "create") => setCurrentMode(mode);
-  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
-    try {
-      setLoading?.(true);
-      if (currentMode === "create") {
-        await toast.promise(createTask(projectId || "", {
-          ...values,
-          id: values.id || "",
-          status: (values.status || "todo") as ColumnType,
-          priority: values.priority || "LOW",
-          projectId: project,
-        }), {
-          loading: "Creating task...",
-          success: "Task created",
-          error: "Failed to create task",
-        });
-        form.reset();
-      } else if (currentMode === "edit") {
-        await toast.promise(updateTasks({
-          ...values,
-          id: values.id || "",
-          status: (values.status || "todo") as ColumnType,
-          priority: values.priority || "LOW",
-          projectId: projectId || "",
-        }), {
-          loading: "Updating task...",
-          success: "Task updated",
-          error: "Failed to update task",
-        })
-        setCurrentMode("view");
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading?.(false); // ✅ ตั้งค่า loading = false หลังจากเสร็จสิ้น
-    }
-  };
-
-  const fieldData = [
-    {
-      name: "projectName",
-      label: "Project Name",
-      placeholder: "New Project",
-      disabled: true,
-    },
-    { name: "taskName", label: "Task Name", placeholder: "New Task" },
-    {
-      name: "description",
-      label: "Description",
-      placeholder:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.",
-      multiline: true,
-    },
-  ];
-
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        {currentMode === "view" || currentMode === "edit" ? (
-          <Button variant="link">View Task</Button>
-        ) : (
-          <Button variant="default">Create Task</Button>
-        )}
-      </DialogTrigger>
-      <DialogContent className="min-h-28 sm:w-[700px]">
-        <DialogHeader>
-          <DialogTitle>
-            {currentMode === "view"
-              ? "View Task"
-              : currentMode === "edit"
-                ? "Edit Task"
-                : "Create Task"}
-          </DialogTitle>
-          <DialogDescription>
-            {currentMode === "view"
-              ? "View the task details."
-              : currentMode === "edit"
-                ? "Edit the task details."
-                : "Fill in the form below to create a new task."}
-          </DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-4"
-          >
-            {fieldData.map(
-              ({ name, label, placeholder, multiline, disabled }) => (
-                <Field
-                  key={name}
-                  name={name as keyof z.infer<typeof formSchema>}
-                  label={label}
-                  placeholder={placeholder}
-                  disabled={disabled ?? currentMode === "view"}
-                  control={form.control}
-                  multiline={multiline}
-                />
-              ),
-            )}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button disabled={currentMode === "view"} variant="outline">
-                  {priority || "Select Priority"}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56">
-                <DropdownMenuLabel>Priority</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuRadioGroup
-                  onValueChange={(value) => {
-                    setPriority(value);
-                    form.setValue("priority", value);
-                  }}
-                >
-                  <DropdownMenuRadioItem value="HIGH">
-                    High
-                  </DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="MEDIUM">
-                    Medium
-                  </DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="LOW">Low</DropdownMenuRadioItem>
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <DialogFooter>
-              {currentMode === "view" && (
-                <Button
-                  variant="outline"
-                  onClick={() => handleModeSwitch("edit")}
-                >
-                  Edit
-                </Button>
-              )}
-              {currentMode === "edit" && (
-                <Button
-                  variant="outline"
-                  onClick={() => handleModeSwitch("view")}
-                >
-                  Cancel
-                </Button>
-              )}
-              {currentMode !== "view" && (
-                <Button type="submit" disabled={!isValid}>
-                  {currentMode === "create" ? "Create" : "Save"}
-                </Button>
-              )}
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
-  );
+type TaskModalProps = {
+    mode: "create" | "edit" | "view";
+    defaultValues?: z.infer<typeof formSchema>;
+    projectId?: string | null;
+    setLoading?: (loading: boolean) => void
 };
 
-export default ModalTask;
+const formSchema = z.object({
+    id: z.string().optional(),
+    taskName: z.string().min(2, { message: "Task name must be at least 2 characters." }),
+    description: z.string(),
+    priority: z.string(),
+    status: z.enum(["todo", "doing", "done"]).optional(),
+    assignments: z.array(z.string().optional()).default([]),
+});
+
+export function TaskModal({ defaultValues, mode, projectId, setLoading }: TaskModalProps) {
+    const [currentMode, setCurrentMode] = useState<"view" | "edit" | "create">(mode);
+    const [priority, setPriority] = useState<string>(defaultValues?.priority || "LOW");
+    const [charCount, setCharCount] = useState(0);
+    const [showAlert, setShowAlert] = useState(false);
+    const { createTask, updateTasks } = useTaskStore();
+
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        mode: "onChange",
+        defaultValues: defaultValues || {
+            id: "",
+            taskName: "",
+            description: "",
+            priority: "LOW",
+            status: "todo",
+            assignments: [],
+        },
+    });
+
+    // Handle description character count
+    useEffect(() => {
+        const description = form.watch("description");
+        setCharCount(description?.length || 0);
+    }, [form]);
+
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        if (currentMode === "view") {
+            return; // ไม่ทำงานหากอยู่ในโหมด view
+        }
+        console.log("submit form: ", values);
+        const card = {
+            projectId: projectId || "",
+            id: values.id || "",
+            taskName: values.taskName.trim(),
+            description: values.description.trim(),
+            priority: values.priority,
+            status: (values.status as ColumnType) || "todo",
+        };
+        console.log("card form: ", card);
+        // เรียก API หรือฟังก์ชันการทำงานอื่น ๆ ตามโหมด
+        if (currentMode === "create") {
+            if (charCount > 300) {
+                setShowAlert(true);
+                return;
+            }
+            if (!projectId) {
+                toast.error("Project ID is required");
+                return;
+            }
+            toast.promise(createTask(projectId, card), {
+                loading: "Creating task...",
+                success: "Task created",
+                error: "Error creating task"
+            })
+        } else if (currentMode === "edit") {
+            if (setLoading) setLoading(false);
+            toast.promise(updateTasks(card), {
+                loading: "Updating task...",
+                success: "Task updated",
+                error: "Error updating task"
+            })
+        }
+    };
+
+    return (
+        <>
+            <Dialog>
+                <DialogTrigger asChild>
+                    {currentMode === "view" || currentMode === "edit" ? (
+                        <Button variant="link" onClick={() => setCurrentMode("view")}>View Task</Button>
+                    ) : (
+                        <Button variant="default">Create Task</Button>
+                    )}
+                </DialogTrigger>
+                <DialogContent className="w-[900px]">
+                    <DialogHeader>
+                        <DialogTitle>{currentMode === "view" ? "View Task" : currentMode === "edit" ? "Edit Task" : "Create Task"}</DialogTitle>
+                    </DialogHeader>
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                            <FormField
+                                control={form.control}
+                                name="taskName"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Task Name</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                placeholder="Enter task name"
+                                                {...field}
+                                                disabled={currentMode === "view"}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="description"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Description</FormLabel>
+                                        <FormControl>
+                                            <FormTextareaWithCount
+                                                form={form}
+                                                disabled={currentMode === "view"}
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button disabled={currentMode === "view"} variant="outline">
+                                        {priority || "Select Priority"}
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-56">
+                                    <DropdownMenuLabel>Priority</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuRadioGroup
+                                        onValueChange={(value) => {
+                                            setPriority(value);
+                                            form.setValue("priority", value);
+                                        }}
+                                    >
+                                        <DropdownMenuRadioItem value="HIGH">
+                                            High
+                                        </DropdownMenuRadioItem>
+                                        <DropdownMenuRadioItem value="MEDIUM">
+                                            Medium
+                                        </DropdownMenuRadioItem>
+                                        <DropdownMenuRadioItem value="LOW">Low</DropdownMenuRadioItem>
+                                    </DropdownMenuRadioGroup>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                            <DialogFooter>
+                                {currentMode === "view" ? (
+                                    <Button type="button" onClick={() => setCurrentMode("edit")}>Edit</Button>
+                                ) : currentMode === "create" ? (
+                                    <Button type="submit">Create</Button>
+                                ) : (
+                                    <>
+                                        <Button type="submit">Save Changes</Button>
+                                        <Button type="button" variant="outline" onClick={() => setCurrentMode("view")}>
+                                            Cancel
+                                        </Button>
+                                    </>
+                                )}
+                            </DialogFooter>
+                        </form>
+                    </Form>
+                </DialogContent>
+            </Dialog>
+
+            <AlertDialog open={showAlert} onOpenChange={setShowAlert}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Description Too Long</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            The description cannot exceed 300 characters. Please shorten it.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogAction onClick={() => setShowAlert(false)}>OK</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </>
+    );
+}

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter, useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { ChevronLeft } from "lucide-react";
-import { TaskModal } from "@/components/Modal/modal-test";
+import { TaskModal } from "@/components/Modal/modal-Task";
 import {
   Card,
   CardContent,
@@ -105,7 +105,7 @@ export default function Page() {
                   taskName: "",
                   description: "",
                   priority:"",
-                  assignees:[]
+                  assignments:[]
                 }}
                 projectId={projectId}/>
             </div>

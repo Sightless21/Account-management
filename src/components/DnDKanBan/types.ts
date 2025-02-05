@@ -8,5 +8,4 @@ export interface CardType {
   status: ColumnType;
   description: string;
   priority: string;
-  assignmets: string[];
 }

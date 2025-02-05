@@ -6,7 +6,7 @@ import { MdDragIndicator } from "react-icons/md";
 import { Badge } from "@/components/ui/badge";
 import { CardType } from "./types";
 import { DropIndicator } from "./DropIndicator";
-import { TaskModal } from "../Modal/modal-test";
+import { TaskModal } from "@/components/Modal/modal-Task";
 
 type CardProps = CardType & {
   projectID: string | null;

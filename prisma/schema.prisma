@@ -70,7 +70,6 @@ model Task {
   projectId   String?    @db.ObjectId
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
-  assignmets  String[]
 }
 
 enum TaskStatus {

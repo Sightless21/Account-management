@@ -52,7 +52,7 @@ export function DatePickerWithPresets({
 
   // ฟังก์ชันอัปเดตเดือนและปีเมื่อเปลี่ยน dropdown
   const updateCalendarDate = (month: number, year: number) => {
-    const newDate = setYear(startOfMonth(addMonths(new Date(), month)), year);
+    const newDate = setYear(startOfMonth(new Date(year, month)), year);
     setSelectedDate(newDate);
   };
 

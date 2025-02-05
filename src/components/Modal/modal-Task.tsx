@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState, } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -43,7 +43,6 @@ const formSchema = z.object({
     description: z.string(),
     priority: z.string(),
     status: z.enum(["todo", "doing", "done"]).optional(),
-    assignments: z.array(z.string().optional()).default([]),
 });
 
 export function TaskModal({ defaultValues, mode, projectId, setLoading }: TaskModalProps) {
@@ -62,7 +61,6 @@ export function TaskModal({ defaultValues, mode, projectId, setLoading }: TaskMo
             description: "",
             priority: "LOW",
             status: "todo",
-            assignments: [],
         },
     });
 
@@ -186,15 +184,30 @@ export function TaskModal({ defaultValues, mode, projectId, setLoading }: TaskMo
                                     </DropdownMenuRadioGroup>
                                 </DropdownMenuContent>
                             </DropdownMenu>
-                            <DialogFooter>
+                            <DialogFooter className="gap-2">
                                 {currentMode === "view" ? (
-                                    <Button type="button" onClick={() => setCurrentMode("edit")}>Edit</Button>
+                                    <Button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            setCurrentMode("edit");
+                                        }}
+                                    >
+                                        Edit
+                                    </Button>
                                 ) : currentMode === "create" ? (
                                     <Button type="submit">Create</Button>
                                 ) : (
                                     <>
                                         <Button type="submit">Save Changes</Button>
-                                        <Button type="button" variant="outline" onClick={() => setCurrentMode("view")}>
+                                        <Button
+                                            type="button"
+                                            variant="destructive"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                setCurrentMode("view");
+                                            }}
+                                        >
                                             Cancel
                                         </Button>
                                     </>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
+import { FormField, FormItem, FormControl, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 
 
@@ -25,7 +25,6 @@ const FormTextareaWithCount = ({ form, name = "description", maxChars = 300, dis
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Description</FormLabel>
           <FormControl>
             <div className="relative">
               <div className={`border rounded-md ${charCount > maxChars ? 'border-red-500' : ''}`}>

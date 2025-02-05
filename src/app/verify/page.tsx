@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
-import VerifyForm from "@/components/verify-form.tsx";
+import VerifyForm from "@/components/verify-form";
 
 export default async function Page() {
     const session = await getServerSession(authOptions);

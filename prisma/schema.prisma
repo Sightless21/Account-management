@@ -138,3 +138,14 @@ model Document {
   applicant   Applicant? @relation(fields: [applicantId], references: [id], onDelete: Cascade)
   employee    Employee?  @relation(fields: [employeeId], references: [id], onDelete: Cascade, name: "EmployeeDocuments") // ✅ เพิ่ม relation ตรงนี้
 }
+
+// 📌 จองห้อง 
+model Roombooking {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  username  String
+  startTime String
+  endTime   String
+  date      DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

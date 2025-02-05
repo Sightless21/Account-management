@@ -98,14 +98,13 @@ export default function Page() {
                   <SelectItem value=" ">All</SelectItem>
                   <SelectItem value="HIGH">High</SelectItem>
                   <SelectItem value="MEDIUM">Medium</SelectItem>
-                  <SelectItem value="LOW">Low </SelectItem>
+                  <SelectItem value="LOW">Low</SelectItem>
                 </SelectContent>
               </Select>
               <TaskModal mode="create" setLoading={setLoading} defaultValues={{
                   taskName: "",
                   description: "",
-                  priority:"",
-                  assignments:[]
+                  priority:""
                 }}
                 projectId={projectId}/>
             </div>

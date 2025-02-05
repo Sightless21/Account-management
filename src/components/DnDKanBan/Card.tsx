@@ -12,7 +12,6 @@ type CardProps = CardType & {
   projectID: string | null;
   projectName: string | null;
   handleDragStart: (e: DragEvent, card: CardType) => void;
-  assignees?: string[],
 };
 
 export const Card = ({
@@ -22,13 +21,11 @@ export const Card = ({
   projectID,
   description,
   priority,
-  assignees,
   handleDragStart,
 }: CardProps) => {
   const data = {
     taskName : taskName,
     id,
-    assignees: assignees || [],
     status : status,
     description: description,
     priority : priority,
@@ -61,7 +58,6 @@ export const Card = ({
             description,
             priority,
             projectId: projectID || "",
-            assignmets: []
           })
         }
         className="mt-2 flex cursor-grab snap-center flex-col items-start justify-between rounded border border-neutral-700 bg-white hover:bg-neutral-300 active:cursor-grabbing"

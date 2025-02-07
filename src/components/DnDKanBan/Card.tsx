@@ -6,7 +6,7 @@ import { MdDragIndicator } from "react-icons/md";
 import { Badge } from "@/components/ui/badge";
 import { CardType } from "./types";
 import { DropIndicator } from "./DropIndicator";
-import ModalTask from "../modal-Task";
+import { TaskModal } from "@/components/Modal/modal-Task";
 
 type CardProps = CardType & {
   projectID: string | null;
@@ -16,7 +16,6 @@ type CardProps = CardType & {
 
 export const Card = ({
   taskName,
-  projectName,
   id,
   status,
   projectID,
@@ -25,12 +24,11 @@ export const Card = ({
   handleDragStart,
 }: CardProps) => {
   const data = {
-    taskName,
+    taskName : taskName,
     id,
-    status,
-    description,
-    priority,
-    projectName: projectName,
+    status : status,
+    description: description,
+    priority : priority,
   };
   function getPriorityColor(priority: string) {
     switch (priority) {
@@ -77,17 +75,18 @@ export const Card = ({
           </div>
         </div>
         <div className="flex w-full items-center gap-2 px-2 py-1">
-          <p className="flex items-end text-sm text-muted-foreground">
-            {description}
-          </p>
+          <p
+            className="text-sm text-muted-foreground whitespace-pre-wrap break-words leading-normal"
+            style={{ wordBreak: "break-word", overflowWrap: "break-word", display: "inline" }}
+            dangerouslySetInnerHTML={{ __html: description }}
+          />
         </div>
         <div className="flex w-full items-center justify-between gap-2 p-2">
           <Badge className="bg-slate-200">{getPriorityColor(priority)}</Badge>
-          <ModalTask
-            mode="view"
-            defaultValues={{ ...data, projectName: data.projectName ?? "" }}
+          <TaskModal
+            mode={"view"}
+            defaultValues={{ ...data }}
             projectId={projectID}
-            projectName={data.projectName ?? ""}
           />
         </div>
       </motion.div>

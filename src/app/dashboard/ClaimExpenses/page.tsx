@@ -3,6 +3,8 @@ import * as React from "react";
 import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 
+
+//TODO : สร้างหน้า ClaimExpenses
 export default function Page() {
   //const session = getServerSession(authOptions)
   const { data: sessionUser } = useSession() as {
@@ -12,7 +14,7 @@ export default function Page() {
   return (
     <>
       {/* <pre>{JSON.stringify(session, null, 2)}</pre> */}
-      <p>{sessionUser?.user?.name}</p>
+      <p>{sessionUser?.user?.id}</p>
     </>
   );
 }

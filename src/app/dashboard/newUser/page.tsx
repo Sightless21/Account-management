@@ -1,5 +1,6 @@
 import { NewUser } from "@/components/new-user";
 
+//DONE : New User Pages
 export default function Page() {
   return (
     <div className="ml-3 mr-3 flex flex-col gap-4">

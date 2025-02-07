@@ -1,11 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 // react + next
 import Image from "next/image";
-import React, { useState } from "react";
-import { Session } from "next-auth";
-import { useSession } from "next-auth/react";
+import React from "react";
 
 // icons
 import {
@@ -24,28 +21,17 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarRail,
 } from "@/components/ui/sidebar";
+import { User } from "@/types/users"
 
-// mui components
-import Divider from "@mui/joy/Divider";
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  // fecth api
-  const { data: session, status } = useSession() as {
-    data: Session | null;
-    status: string;
-  };
-  const [username, setName] = useState(session?.user?.name || "");
-  const [useremail, setEmail] = useState(session?.user?.email || "");
+//DONE : Appsidebar
+export function AppSidebar({ user , ...props }: React.ComponentProps<typeof Sidebar> & { user?: User }) {
 
-  console.log("status " + status);
-  console.log("session " + session);
-
-  // mock
+  // data for sidebar
   const data = {
     user: {
-      name: username,
-      email: useremail,
+      name: user?.firstName + " " + user?.lastName,
+      email: user?.email,
       avatar: "",
     },
     navMain: [
@@ -72,8 +58,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             url: "/MeetingRoom",
           },
           {
-            title: "Leave of absence",
-            url: "/LeaveOfAbsence",
+            title: "Day off tracking",
+            url: "/DayOff",
           },
           {
             title: "Reserve a car",
@@ -117,7 +103,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         icon: ServerCog,
         items: [
           {
-            title: "New user",
+            title: "Create New User",
             url: "/NewUser",
           },
         ],
@@ -125,10 +111,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     ],
   };
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="icon" {...props} >
       <SidebarHeader className="flex items-center">
         <Image src="/img/Logo.png" alt="Loading" width={100} height={50} />
-        <Divider />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
@@ -136,7 +121,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter>
         <NavUser user={data.user} />
       </SidebarFooter>
-      <SidebarRail />
     </Sidebar>
   );
 }

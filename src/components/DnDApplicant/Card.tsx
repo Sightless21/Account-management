@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { DragEvent } from "react";
 import { IoPersonSharp } from "react-icons/io5";
 import { MdDragIndicator } from "react-icons/md";
-import ModalApplicant from "@/components/modal-Applicant";
+import ModalApplicant from "@/components/Modal/modal-Applicant";
 import { CardType } from "./types";
 
 type CardProps = CardType & {

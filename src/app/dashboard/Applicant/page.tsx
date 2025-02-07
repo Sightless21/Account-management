@@ -2,29 +2,19 @@
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import * as React from "react";
-import ModalApplicant from "@/components/modal-Applicant";
+import ModalApplicant from "@/components/Modal/modal-Applicant";
 import { ApplicantBoard } from "@/components/DnDApplicant/ApplicantBoard";
-import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-} from "@/components/ui/card";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { useApplicantStore } from "@/hooks/useApplicantStore";
+import { Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import { useApplicantData } from "@/hooks/useApplicantData";
 import { TableOfContents } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
+//DONE : Applicant Page (Drag and Drop Board)
 export default function Page() {
-    const { applicants, fetchApplicants } = useApplicantStore();
+    const { applicants, fetchApplicants } = useApplicantData();
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState(""); // 🔍 ค้นหา applicant name
     const [selectedPosition, setSelectedPosition] = useState(" "); // 🏷️ เลือก position
@@ -66,7 +56,7 @@ export default function Page() {
                 Applicant Board
             </div>
             <Card>
-                <CardHeader className="mt-2 flex flex-row gap-3 p-2">
+                <CardHeader className="flex flex-row gap-3 p-2">
                     <div className="flex flex-row gap-3">
                         {/* 🔍 Input สำหรับค้นหา applicant name */}
                         <Input
@@ -99,7 +89,7 @@ export default function Page() {
                             </SelectContent>
                         </Select>
                         {/* 📝 Button เพิ่ม applicant */}
-                        <ModalApplicant mode="create"  />
+                        <ModalApplicant mode={"create"}  />
                         {/* 📝 Button ตารางทดลองงาน */}
                         <Button variant={"outline"} onClick={handleProbationPage}>
                             Probationary Officer Table <TableOfContents />

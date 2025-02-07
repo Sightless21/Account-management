@@ -1,51 +1,70 @@
 "use client";
+import React, { useEffect } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { toast } from "sonner";
+import { useUserData } from "@/hooks/useUserData";
+import { DigitalClock } from "@/components/digital-clock";
+import { Skeleton } from "@/components/ui/skeleton";
 
+//DONE : create auth
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { data: session, status } = useSession() as {
-    data: Session | null;
-    status: string;
-  };
-  console.log("status " + status);
-
+  const { status } = useSession();
+  const { data: user, isLoading, error } = useUserData();
   const router = useRouter();
 
+  // ดึงข้อมูลเมื่อ id เปลี่ยนและ status เป็น authenticated
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/");
-      toast.error("Please try login again. Your session has expired or you are not logged in.");
+      toast.error("Session expired or you are not logged in.", {
+        position: "top-center",
+      });
+      return;
     }
-  }, [router, status]);
+  }, [status, user, router]);
+
+  if (error) {
+    toast.error("Session expired or you are not logged in. please tryagain", {
+      position: "top-center",
+    });
+  }
+
+  if (isLoading) {
+    return (
+      <section>
+        <SidebarProvider defaultOpen={true} open={true}>
+          <AppSidebar collapsible="icon" variant="inset" />
+          <SidebarInset>
+            <div className="mt-4 flex items-center gap-2 px-4 justify-between">
+              <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+                <Skeleton className="h-4 w-[250px]" />
+              </h3>
+            </div>
+          </SidebarInset>
+        </SidebarProvider>
+      </section>
+    );
+  }
 
   return (
     <section>
       <SidebarProvider defaultOpen={true} open={true}>
-        <AppSidebar collapsible="icon" variant="inset" />
+        <AppSidebar collapsible="icon" variant="inset" user={user} />
         <SidebarInset>
-          <div className="mt-4 flex items-center gap-2 px-4">
+          <div className="mt-4 flex items-center gap-2 px-4 justify-between">
             <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-              Hello :
+              Hello : {user?.firstName?.toUpperCase()} {user?.lastName?.toUpperCase()}
             </h3>
-            <p className="text-xl text-muted-foreground">
-              {session?.user?.name
-                ?.split(" ")
-                .map((n) => n.charAt(0).toUpperCase() + n.slice(1))
-                .join(" ")}
-            </p>
+            <DigitalClock />
           </div>
-          <div className="mt-2">
-            {children}
-          </div>
+          <div className="mt-2 h-full">{children}</div>
         </SidebarInset>
       </SidebarProvider>
     </section>

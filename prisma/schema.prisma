@@ -7,74 +7,97 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// 📌 Model สำหรับผู้สมัคร
-model Applicant {
-  id            String          @id @default(auto()) @map("_id") @db.ObjectId
-  person        Person
-  birthdate     DateTime
-  info          Info
-  itemsMilitary String
-  itemsMarital  String
-  itemsDwelling String
-  documents     Document[]
-  status        ApplicantStatus
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-}
-
-// 📌 Model พนักงาน (อัปเดตให้รองรับการเพิ่มจากผู้สมัคร)
-model Employee {
-  id             String        @id @default(auto()) @map("_id") @db.ObjectId
-  firstName      String
-  lastName       String
-  email          String        @unique
-  phoneNumber    String
-  hashedPassword String
-  role           Role          @default(EMPLOYEE)
-  dateOfBirth    DateTime?
-  address        String?
-  position       String?
-  nationality    String?
-  ethnicity      String?
-  religion       String?
-  militaryStatus String?
-  maritalStatus  String?
-  dwelling       String?
-  Leave          Leave[]       @relation(name: "EmpNeedLeave")
-  Expenses       Expense[]     @relation(name: "EmpNeedExpenses")
-  RoomBooking    RoomBooking[] @relation(name: "EmpRoombooking")
-  CarBooking     CarBooking[]  @relation(name: "EmpCarbooking")
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  clientId       String?       @db.ObjectId
-  Client         Client[]      @relation(name: "oneEmptoOneClient")
-}
-
-enum Role {
-  ADMIN
-  HR
-  EMPLOYEE
-}
-
-// 📌 Model สำหรับ Client
-model Client {
+// 📌 Model สำหรับผู้ใช้ (Client + Employee รวมกัน)
+model User {
   id             String    @id @default(auto()) @map("_id") @db.ObjectId
   firstName      String
   lastName       String
-  hashedPassword String
   email          String    @unique
+  hashedPassword String
   phone          String
-  employee       Employee? @relation(fields: [employeeId], references: [id], name: "oneEmptoOneClient")
+  role           Role      @default(EMPLOYEE)
+  isVerify       Boolean   @default(false)
+  employee       Employee? @relation("UserEmployee")
   employeeId     String?   @db.ObjectId
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 }
 
+// 📌 Model สำหรับผู้สมัคร
+model Applicant {
+  id                    String          @id @default(auto()) @map("_id") @db.ObjectId
+  person                Person
+  birthdate             DateTime
+  info                  Info
+  itemsMilitary         String
+  itemsMarital          String
+  itemsDwelling         String
+  documents             Document[]
+  status                ApplicantStatus
+  convertedToEmployeeAt DateTime? // ✅ เช็คว่าเคยถูกโอนเป็น Employee แล้วหรือไม่
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+}
+
+// 📌 Model พนักงาน (1:1 กับ User)
+model Employee {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  person    Person?
+  birthdate DateTime
+  info      Info?
+  documents Document[] @relation("EmployeeDocuments")
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  userId    String     @unique @db.ObjectId
+  user      User?      @relation(fields: [userId], references: [id], name: "UserEmployee")
+}
+
+model Project {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  projectName String   @unique
+  task        Task[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Task {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  taskName    String
+  description String
+  status      TaskStatus @default(todo)
+  priority    Priority   @default(LOW)
+  Project     Project?   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId   String?    @db.ObjectId
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+enum TaskStatus {
+  todo
+  doing
+  done
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
 // 📌 ENUM สำหรับสถานะของ Applicant (ผู้สมัคร)
 enum ApplicantStatus {
-  NEW // ผู้สมัครใหม่
-  PENDING_INTERVIEW // อยู่ระหว่างรอสัมภาษณ์
-  INTERVIEW_PASSED // สัมภาษณ์ผ่าน
+  NEW
+  PENDING_INTERVIEW
+  INTERVIEW_PASSED
+}
+
+// 📌 ENUM สำหรับ Role (RBAC)
+enum Role {
+  ADMIN
+  HR
+  INTERVIEWER
+  MANAGER
+  EMPLOYEE
 }
 
 // 📌 โครงสร้างข้อมูลผู้สมัคร
@@ -108,112 +131,51 @@ type Address {
 
 // 📌 เอกสารแนบ
 model Document {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  applicantId String    @db.ObjectId
-  applicant   Applicant @relation(fields: [applicantId], references: [id], onDelete: Cascade)
-}
-
-// KabanTask
-model KanbanTask {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
-  projectName String
-  taskName    String
-  description String
-  status      TaskStatus @default(todo)
-  priority    Priority   @default(LOW)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  name        String?
+  applicantId String?    @db.ObjectId
+  employeeId  String?    @db.ObjectId // ✅ เพิ่มฟิลด์นี้เพื่อรองรับ Employee
+  applicant   Applicant? @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+  employee    Employee?  @relation(fields: [employeeId], references: [id], onDelete: Cascade, name: "EmployeeDocuments") // ✅ เพิ่ม relation ตรงนี้
 }
 
-model Project {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  projectName String   @unique
-  task        Task[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model Task {
-  id          String     @id @default(auto()) @map("_id") @db.ObjectId
-  taskName    String
-  description String
-  status      TaskStatus @default(todo)
-  priority    Priority   @default(LOW)
-  Project     Project?   @relation(fields: [projectId], references: [id] ,onDelete: Cascade)
-  projectId   String?    @db.ObjectId
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-}
-
-enum TaskStatus {
-  todo
-  doing
-  done
-}
-
-enum Priority {
-  LOW
-  MEDIUM
-  HIGH
-}
-
-// end Kabantask
-
-model Leave {
-  id        String      @id @default(auto()) @map("_id") @db.ObjectId
-  user      Employee    @relation(fields: [userId], references: [id], name: "EmpNeedLeave")
-  userId    String      @db.ObjectId
-  startDate DateTime
-  endDate   DateTime
-  reason    String
-  status    LeaveStatus @default(PENDING)
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-}
-
-enum LeaveStatus {
-  PENDING
-  APPROVED
-  REJECTED
-}
-
-model RoomBooking {
+// 📌 จองห้อง 
+model Roombooking {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  user      Employee @relation(fields: [userId], references: [id], name: "EmpRoombooking")
-  userId    String   @db.ObjectId
-  room      String
-  startTime DateTime
-  endTime   DateTime
+  username  String
+  startTime String
+  endTime   String
+  date      DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model CarBooking {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  user      Employee @relation(fields: [userId], references: [id], name: "EmpCarbooking")
-  userId    String   @db.ObjectId
-  car       String
-  startTime DateTime
-  endTime   DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// 📌 แจ้งลา
+model Dayoff {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String
+  employeeName String
+  leaveType    LeaveType
+  date         DateDayoff
+  status       DayoffStatus
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 }
 
-// เบิกค่าใช้จ่าย
-model Expense {
-  id          String        @id @default(auto()) @map("_id") @db.ObjectId
-  user        Employee      @relation(fields: [userId], references: [id], name: "EmpNeedExpenses")
-  userId      String        @db.ObjectId
-  amount      Float
-  description String
-  status      ExpenseStatus @default(PENDING)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+type DateDayoff {
+  from DateTime
+  to   DateTime
 }
 
-enum ExpenseStatus {
-  PENDING
-  APPROVED
-  REJECTED
+enum DayoffStatus {
+  Pending
+  Approved
+  Rejected
+}
+
+enum LeaveType {
+  Vacation
+  Sick
+  Personal
+  Maternity
 }

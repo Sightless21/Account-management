@@ -4,15 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export type Applicant = {
-  id: string;
-  name: string;
-  position: string;
-  createdAt: string;
-  status: string;
-};
-
-// ปรับ columns ให้รับ handleNotPass เป็นพารามิเตอร์
+//FIXME : Applocant type move to Type Folder
 export const columns = (
   handleNotPass: (id: string) => void,
 ): ColumnDef<{

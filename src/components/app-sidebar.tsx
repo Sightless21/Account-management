@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/sidebar";
 import { User } from "@/types/users"
 
-//FIXME
+//DONE : Appsidebar
 export function AppSidebar({ user , ...props }: React.ComponentProps<typeof Sidebar> & { user?: User }) {
 
   // data for sidebar

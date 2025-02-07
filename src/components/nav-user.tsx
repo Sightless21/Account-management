@@ -1,9 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-// react + next
-import { useRouter } from "next/navigation";
-
 // icons
 import { ChevronsUpDown, LogOut } from "lucide-react";
 
@@ -38,14 +35,14 @@ export function NavUser({
   const { isMobile } = useSidebar();
 
   // Get the initials of the user
-  const fullName = user.name;
-  // function getInitials(fullName: string) {
-  //   const names = fullName.split(" "); // Split the full name by space
-  //   const initials = names.map((name) => name[0].toUpperCase()).join(""); // Take the first letter of each name
-  //   return initials;
-  // }
+  const fullName = user.name as string;
+  function getInitials(fullName: string) {
+    const names = fullName.split(" "); // Split the full name by space
+    const initials = names.map((name) => name[0].toUpperCase()).join(""); // Take the first letter of each name
+    return initials;
+  }
 
-  // const initials = getInitials(fullName);
+  const initials = getInitials(fullName);
 
 
   return (
@@ -60,7 +57,7 @@ export function NavUser({
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />
                 <AvatarFallback className="rounded-lg">
-                  {/* {initials} */}
+                  {initials} 
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">

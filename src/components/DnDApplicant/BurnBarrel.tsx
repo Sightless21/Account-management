@@ -2,11 +2,11 @@
 import { useState, DragEvent } from "react";
 import { FaFire } from "react-icons/fa";
 import { FiTrash } from "react-icons/fi";
-import { useApplicantStore } from "@/hooks/useApplicantStore";
+import { useApplicantData } from "@/hooks/useApplicantData";
 
 const BurnBarrel = () => {
   const [active, setActive] = useState(false);
-  const { fetchApplicants, deleteApplicant } = useApplicantStore();
+  const { fetchApplicants, deleteApplicant } = useApplicantData();
   const handleDragOver = (e: DragEvent) => {
     e.preventDefault();
     setActive(true);

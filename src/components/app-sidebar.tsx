@@ -1,4 +1,3 @@
-
 "use client";
 
 // react + next
@@ -23,11 +22,11 @@ import {
   SidebarFooter,
   SidebarHeader,
 } from "@/components/ui/sidebar";
+import { User } from "@/types/users"
 
-// mui components
-import { useUserStore } from "@/hooks/useUserStroe";
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user } = useUserStore();
+//FIXME
+export function AppSidebar({ user , ...props }: React.ComponentProps<typeof Sidebar> & { user?: User }) {
+
   // data for sidebar
   const data = {
     user: {
@@ -59,8 +58,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             url: "/MeetingRoom",
           },
           {
-            title: "Leave of absence",
-            url: "/LeaveOfAbsence",
+            title: "Day off tracking",
+            url: "/DayOff",
           },
           {
             title: "Reserve a car",

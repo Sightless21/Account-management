@@ -1,21 +1,20 @@
 "use client"
-
 import React ,{useState , useMemo, useEffect} from "react"
 import { CalendarIcon } from "lucide-react"
 import { format } from "date-fns"
-
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { BookingDialog } from "@/components/ui/booking-dialog"
-import { BookingTable } from "@/components/ui/booking-table"
-import type { Booking } from "@/types/booking"
+import { BookingDialog } from "@/components/Modal/modal-Booking"
+import { BookingTable } from "@/components/Table/booking-table"
+import type { Booking } from "@/types/bookings"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import  { useRoombookingStore }  from "@/hooks/useRoombookingStore"
+import  { useRoombookingStore }  from "@/store/useRoombookingStore"
 import { toast } from "sonner"
 
+//FIXME : Room Booking Page enchance ui or table
 export default function RoomBooking() {
   const {bookings,fetchRoombookings,createRoombooking,updateRoombooking,deleteRoombooking } = useRoombookingStore();
 

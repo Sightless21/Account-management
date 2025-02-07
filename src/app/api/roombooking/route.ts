@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {prisma} from "@/lib/prisma";
 
+//DONE : Room Booking endpoint (GET POST)
 export async function GET() {
   try {
     const allRoomBooking = await prisma.roombooking.findMany();

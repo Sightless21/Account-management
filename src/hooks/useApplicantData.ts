@@ -1,11 +1,12 @@
 import { create } from "zustand";
 import axios from "axios";
-import { formSchema } from "@/schema/formSchema";
+import { formApplicantSchema } from "@/schema/formApplicant";
 import { z } from "zod";
 
-type ApplicantType = z.infer<typeof formSchema>; // ใช้ infer schema แทน CardType
+type ApplicantType = z.infer<typeof formApplicantSchema>; // ใช้ infer schema แทน CardType
 
-export type CardType = z.infer<typeof formSchema> & {
+//DONE : Applicant Zustand
+export type CardType = z.infer<typeof formApplicantSchema> & {
   id: string;
   order: number;
   createdAt: string; // ✅ เปลี่ยนจาก Date เป็น string
@@ -21,7 +22,7 @@ interface ApplicantStore {
   deleteApplicant: (id: string) => Promise<void>;
 }
 
-export const useApplicantStore = create<ApplicantStore>((set) => ({
+export const useApplicantData = create<ApplicantStore>((set) => ({
   applicants: [],
 
   // ฟังก์ชันดึงข้อมูล applicant จาก API
@@ -38,7 +39,7 @@ export const useApplicantStore = create<ApplicantStore>((set) => ({
       await axios.post("/api/applicant", newApplicant, {
         headers: { "Content-Type": "application/json" },
       });
-      await useApplicantStore.getState().fetchApplicants(); // ดึงข้อมูลใหม่
+      await useApplicantData.getState().fetchApplicants(); // ดึงข้อมูลใหม่
     } catch (error) {
       console.error("Error adding applicant:", error);
     }
@@ -61,7 +62,7 @@ export const useApplicantStore = create<ApplicantStore>((set) => ({
       }));
   
       // ✅ รอ fetchApplicants() ให้เสร็จก่อน เพื่อให้ state เป็นค่าล่าสุด
-      await useApplicantStore.getState().fetchApplicants();
+      await useApplicantData.getState().fetchApplicants();
     } catch (error) {
       console.error("❌ Error updating applicant:", error);
     }
@@ -77,7 +78,7 @@ export const useApplicantStore = create<ApplicantStore>((set) => ({
     try {
       await axios.delete(`/api/applicant/${id}`);
       console.log(`Successfully deleted applicant with ID: ${id}`);
-      await useApplicantStore.getState().fetchApplicants(); // ดึงข้อมูลใหม่
+      await useApplicantData.getState().fetchApplicants(); // ดึงข้อมูลใหม่
     } catch (error) {
       console.error("Error deleting applicant:", error);
     }

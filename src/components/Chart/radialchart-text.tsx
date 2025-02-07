@@ -22,8 +22,8 @@ import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { Pencil, Trash } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useProjectStore } from "@/hooks/useProjectStore";
 import { toast } from "sonner";
+import { useDeleteProject, useUpdateProject } from "@/hooks/useProjectData";
 
 interface RadialChartProps {
   data: { name: string; value: number; fill: string }[];
@@ -44,56 +44,47 @@ export function RadialChart({
   description,
   footerText,
 }: RadialChartProps) {
-  const { updateNameProject, deleteProject } = useProjectStore();
   const [isEditing, setIsEditing] = useState(false);
   const [newTitle, setNewTitle] = useState(title);
-
-  const handleSave = async () => {
-    setIsEditing(false); // ปิดโหมด edit
+  const { mutate: deleteProject,isPending } = useDeleteProject();
+  const { mutate: updateProject, isPending: isUpdating } = useUpdateProject();
+  
+  const handleSave = () => {
+    setIsEditing(false);
     if (newTitle.trim() !== "" && newTitle !== title) {
-      try {
-        // ยิง API เพื่ออัปเดตชื่อ
-        toast.promise(updateNameProject(projectID, newTitle), {
+      toast.promise(
+        new Promise((resolve, reject) => {
+          updateProject({ id: projectID, NewNameProject: newTitle }, { onSuccess: resolve, onError: reject });
+        }),
+        {
           loading: "Updating project name...",
-          success: "Successfully update project name",
+          success: "Successfully updated project name",
           error: "Error updating project name",
-        })
-        console.log("Project name updated successfully");
-      } catch (error) {
-        console.error("Failed to update project name:", error);
-        setNewTitle(title); // ถ้าการอัปเดตล้มเหลว ให้ revert กลับ
-      }
-    } else if (newTitle.trim() === "") {
-      setNewTitle(title); // ถ้าค่าว่าง ให้ revert กลับ
+        }
+      );
     }
   };
+
   const router = useRouter();
 
   return (
-    <Card className="flex flex-col transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-2xl">
+    <Card className="flex flex-col w-[250px] transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-2xl">
       <CardHeader className="static items-center pb-0">
-        {isEditing ? (
+      {isEditing ? (
           <Input
             type="text"
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
             onBlur={handleSave}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSave();
-            }}
+            onKeyDown={(e) => e.key === "Enter" && handleSave()}
             className="w-full"
             autoFocus
+            disabled={isUpdating} // 🔹 ปิด input ระหว่างอัปเดต
           />
         ) : (
-          <div
-            className="group flex cursor-pointer items-center gap-2 hover:underline"
-            onClick={() => setIsEditing(true)}
-          >
+          <div className="group flex cursor-pointer items-center gap-2 hover:underline" onClick={() => setIsEditing(true)}>
             <CardTitle>{title}</CardTitle>
-            <Pencil
-              size={20}
-              className="text-muted-foreground transition-colors group-hover:text-foreground"
-            />
+            <Pencil size={20} className="text-muted-foreground transition-colors group-hover:text-foreground" />
           </div>
         )}
         <CardDescription>{description}</CardDescription>
@@ -165,13 +156,24 @@ export function RadialChart({
         </Button>
         <div className="flex flex-row">
           <Button
-            variant={"ghost"}
+            variant="ghost"
             className="hover:bg-red-300"
-            onClick={() => toast.promise(deleteProject(projectID), {
-              loading: "Deleting project...",
-              success: "Successfully delete project",
-              error: "Error deleting project",
-            })}
+            disabled={isPending}
+            onClick={() => {
+              toast.promise(
+                new Promise((resolve, reject) => {
+                  deleteProject(projectID, {
+                    onSuccess: resolve,
+                    onError: reject,
+                  });
+                }),
+                {
+                  loading: "Deleting project...",
+                  success: "Successfully deleted project",
+                  error: "Error deleting project",
+                }
+              );
+            }}
           >
             <Trash />
           </Button>

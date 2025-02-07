@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 
+//FIXME : change this to used the react query to fetch user from backend
 interface RoombookingState {
   bookings: RoombookingType[];
   fetchRoombookings: () => Promise<void>;

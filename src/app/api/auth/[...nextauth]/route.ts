@@ -5,7 +5,8 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 
-type CustomUser = {
+//DONE :  NextAuth config endpoint 
+interface CustomUser  {
   id: string;
   role: string;
   firstName?: string;

@@ -1,10 +1,8 @@
 "use client";
 import { KanBanBoard } from "@/components/DnDKanBan/KanBanBoard";
-import { useProjectStore } from "@/hooks/useProjectStore";
-// import ModalTask from "@/components/Modal/modal-Task";
 import { Button } from "@/components/ui/button";
 import { useRouter, useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { ChevronLeft } from "lucide-react";
 import { TaskModal } from "@/components/Modal/modal-Task";
 import {
@@ -21,8 +19,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
 
+// Import Zustand store
+import { useTasksUIStore } from "@/store/useTasksUIStore";
+import { useProjects } from "@/hooks/useProjectData"
+
+//DONE : Project Board page isLoading is Error
 export default function Page() {
   const router = useRouter();
   const params = useParams();
@@ -30,36 +32,18 @@ export default function Page() {
     typeof params?.ProjectName === "string"
       ? decodeURIComponent(params.ProjectName)
       : null;
-  const { projects, fetchProjects } = useProjectStore();
-  const [projectId, setProjectId] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState(""); // 🔍 ค้นหา Task
-  const [selectedPriority, setSelectedPriority] = useState(" "); // 🏷️ เลือก Priority
-  const [loading, setLoading] = useState(false); // 🟡 สถานะโหลด
 
-  useEffect(() => {
-    setLoading(true); // เริ่มโหลด
-    toast.promise(fetchProjects().then(() => setLoading(false)), {
-      loading: "Loading data...",
-      success: "Data loaded successfully",
-      error: "Failed to load data",
-    })
-  }, [fetchProjects]);
+  // Zustand store states for UI
+  const { searchQuery, setSearchQuery, selectedPriority, setSelectedPriority, loading, setLoading } = useTasksUIStore();
+  const { data: projectsData } = useProjects();
+  
+  // Set projectId after fetching projects
+  const project = projectsData?.find(
+    (project) => project.projectName === projectName
+  );
+  const projectId = project?.id ?? null;
 
-  useEffect(() => {
-    // หาว่า ProjectName ตรงกับโปรเจกต์ใด และตั้งค่า ProjectId
-    if (projectName && projects.length > 0) {
-      const matchedProject = projects.find(
-        (project) => project.projectName === projectName,
-      );
-      if (matchedProject) {
-        setProjectId(matchedProject.id);
-        console.log("Matched Project ID:", matchedProject.id);
-      } else {
-        console.warn("No project found with the name:", projectName);
-      }
-    }
-  }, [projectName, projects]);
-
+  // Handle redirect back to Project page
   async function handleProjectPage() {
     router.push("/dashboard/ProjectBoard");
   }
@@ -104,7 +88,7 @@ export default function Page() {
               <TaskModal mode="create" setLoading={setLoading} defaultValues={{
                   taskName: "",
                   description: "",
-                  priority:""
+                  priority:"LOW"
                 }}
                 projectId={projectId}/>
             </div>
@@ -114,9 +98,6 @@ export default function Page() {
             <KanBanBoard
               projectID={projectId}
               projectName={projectName}
-              searchQuery={searchQuery}
-              selectedPriority={selectedPriority}
-              setLoading={setLoading} // 🟡 ส่งไปใช้ตอนสร้าง Task
             />
           </CardContent>
           <CardFooter>

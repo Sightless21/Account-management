@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Card from "./Card";
 import { CardType, ColumnType } from "./types";
 import axios from "axios";
-import { useApplicantStore } from "@/hooks/useApplicantStore"; // นำเข้า Zustand Store
+import { useApplicantData } from "@/hooks/useApplicantData"; // นำเข้า Zustand Store
 
 type ColumnProps = {
   title: string;
@@ -21,7 +21,7 @@ export const Column = ({
   column,
 }: ColumnProps) => {
   const [active, setActive] = useState(false);
-  const { updateApplicantStatus } = useApplicantStore();
+  const { updateApplicantStatus } = useApplicantData();
 
   const handleDragStart = (
     e: React.DragEvent<Element>,

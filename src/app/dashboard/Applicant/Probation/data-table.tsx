@@ -32,6 +32,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
 }
 
+//DONE : Data Table applicant
 export function DataTable<TData, TValue>({
   columns,
   data,

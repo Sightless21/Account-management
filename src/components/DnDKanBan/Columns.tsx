@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { CardType, ColumnType } from "./types";
 import { Card } from "./Card";
 import { DropIndicator } from "./DropIndicator";
-import { useTaskStore } from "@/hooks/useTaskStore";
+import { useUpdateTask } from "@/hooks/useProjectData";
 
 type ColumnProps = {
   title: string;
@@ -27,7 +27,7 @@ export const Column = ({
 }: ColumnProps) => {
   const [active, setActive] = useState(false);
   const [, setCards] = useState<CardType[]>(cards);
-  const { updateTasks } = useTaskStore();
+  const { mutateAsync: updateTask } = useUpdateTask();
 
   const handleDragStart = (
     e: React.DragEvent<Element>,
@@ -41,39 +41,46 @@ export const Column = ({
   const handleDragEnd = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setActive(false);
-
+  
     const cardId = e.dataTransfer.getData("cardId");
     const fromColumn = e.dataTransfer.getData("fromColumn") as ColumnType;
-
+  
     console.log("Dropped Card ID:", cardId);
     console.log("From Column:", fromColumn);
     console.log("To Column:", column);
-
+  
     if (!cardId || !fromColumn) {
       console.warn("Card ID is missing!");
       return;
     }
-
+  
     if (fromColumn === column) return; // ถ้าลากไปที่เดิม ไม่ต้องทำอะไร
-
-    let copy = [...cards]; // สร้าง copy ของ cards
-
+  
+    let copy = [...cards];
+  
     // ค้นหาการ์ดที่ถูกลาก
     let cardToTransfer = copy.find((c) => c.id === cardId);
     if (!cardToTransfer) return;
-
+  
     // เปลี่ยนสถานะของการ์ดให้เป็น Column ใหม่
     cardToTransfer = { ...cardToTransfer, status: column };
-
+  
     // ลบการ์ดจาก Column เดิม
     copy = copy.filter((c) => c.id !== cardId);
-
+  
     // เพิ่มเข้าไปที่ Column ใหม่
     copy.push(cardToTransfer);
-
-    // อัพเดท cards
-    updateTasks(cardToTransfer);
-    // อัพเดท cards ใหม่
+  
+    // อัพเดท Task ผ่าน API
+    updateTask({
+      id: cardId, // ✅ ใช้ `cardId` ของ Task
+      taskName: cardToTransfer.taskName,
+      status: column, // ✅ สถานะใหม่
+      priority: cardToTransfer.priority,
+      description: cardToTransfer.description,
+    });
+  
+    // อัพเดท state
     setCards(copy);
   };
 

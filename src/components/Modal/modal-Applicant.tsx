@@ -40,14 +40,14 @@ import {
 } from "../ui/form";
 
 // 3. Internal Hooks & Utilities
-import { useApplicantStore } from "@/hooks/useApplicantStore";
+import { useApplicantData } from "@/hooks/useApplicantData";
 
 // 4. Schemas & Constants
-import { formSchema } from "@/schema/formSchema";
+import { formApplicantSchema } from "@/schema/formApplicant";
 import { APPLICANT_FORM_FIELDS, APPLICANT_FORM_DEFAULT_VALUES } from "@/schema/formApplicant";
 interface ModalApplicantProps {
   mode: "create" | "edit" | "view";
-  defaultValues?: z.infer<typeof formSchema>;
+  defaultValues?: z.infer<typeof formApplicantSchema>;
 }
 const DIALOG_CONFIG = {
   create: {
@@ -73,18 +73,19 @@ const DIALOG_CONFIG = {
   },
 };
 
+//TEST
 export default function ModalApplicant({
   mode,
   defaultValues,
 }: ModalApplicantProps) {
   // Initialize form using useForm hook with Zod validation schema
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof formApplicantSchema>>({
+    resolver: zodResolver(formApplicantSchema),
     mode: "all", // ✅ ตรวจสอบ validation แบบเรียลไทม์
     defaultValues: defaultValues || APPLICANT_FORM_DEFAULT_VALUES
   });
   // State to store applicant data
-  const [applicants, setApplicants] = useState<z.infer<typeof formSchema>[]>([]);
+  const [applicants, setApplicants] = useState<z.infer<typeof formApplicantSchema>[]>([]);
   // ใช้ค่า mode จาก props โดยตรง
   const [currentMode, setCurrentMode] = useState(mode);
   const [isReadyToSave, setIsReadyToSave] = useState(false);
@@ -110,7 +111,7 @@ export default function ModalApplicant({
    * Handles form submission and updates applicant state.
    * @param values - Form values
    */
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formApplicantSchema>) {
     console.log("🚀 Form Data:", values); // ✅ ตรวจสอบค่าก่อนส่ง API
     setApplicants([...applicants, values]);
     if (!isValid) {
@@ -120,7 +121,7 @@ export default function ModalApplicant({
     try {
       if (currentMode === "create") {
         toast.promise(
-          useApplicantStore.getState().addApplicant(values),
+          useApplicantData.getState().addApplicant(values),
           {
             loading: "Creating applicant...",
             success: "Applicant created",
@@ -131,7 +132,7 @@ export default function ModalApplicant({
       } else if (currentMode === "edit" && isReadyToSave) {
         values.id = defaultValues?.id;
         toast.promise(
-          useApplicantStore.getState().updateApplicant(values),
+          useApplicantData.getState().updateApplicant(values),
           {
             loading: "Updating applicant...",
             success: "Applicant updated",

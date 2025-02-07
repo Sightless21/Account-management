@@ -4,27 +4,17 @@ import { useRouter } from "next/navigation";
 import * as React from "react";
 import ModalApplicant from "@/components/Modal/modal-Applicant";
 import { ApplicantBoard } from "@/components/DnDApplicant/ApplicantBoard";
-import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-} from "@/components/ui/card";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { useApplicantStore } from "@/hooks/useApplicantStore";
+import { Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import { useApplicantData } from "@/hooks/useApplicantData";
 import { TableOfContents } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
+//DONE : Applicant Page (Drag and Drop Board)
 export default function Page() {
-    const { applicants, fetchApplicants } = useApplicantStore();
+    const { applicants, fetchApplicants } = useApplicantData();
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState(""); // 🔍 ค้นหา applicant name
     const [selectedPosition, setSelectedPosition] = useState(" "); // 🏷️ เลือก position

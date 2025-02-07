@@ -1,22 +1,15 @@
 "use client";
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useUserStore } from "@/store/useUserStore"; // Zustand Store
 
 const formSchema = z.object({
   email: z.string().email().min(3).max(30),
@@ -34,6 +27,7 @@ export default function SignInForm() {
 
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const setUserID = useUserStore((state) => state.setUserID); // ✅ Zustand Action
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     startTransition(async () => {
@@ -47,6 +41,14 @@ export default function SignInForm() {
         if (result?.error) {
           toast.error("Invalid email or password");
           return;
+        }
+
+        // ✅ เรียก getSession() เพื่อดึง userID ใหม่
+        const session = await getSession();
+        // console.log("Updated Session:", session); //DEBUG
+
+        if (session?.user?.id) {
+          setUserID(session.user.id); // ✅ Set Zustand
         }
 
         toast.success("Login successful!");

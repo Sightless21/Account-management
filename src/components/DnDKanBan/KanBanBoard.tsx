@@ -1,48 +1,39 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { Board } from "./Board";
-import { useTaskStore } from "@/hooks/useTaskStore";
+import { useTasksUIStore } from "@/store/useTasksUIStore";
+import { useTask } from "@/hooks/useProjectData";
 
 interface KanBanBoardProps {
   projectName: string | null;
   projectID: string | null;
-  searchQuery?: string | null;
-  selectedPriority?: string | null;
-  setLoading?: (loading: boolean) => void; // 🟡 ใช้ควบคุมสถานะโหลด
 }
 
-export const KanBanBoard = ({
-  projectName,
-  projectID,
-  searchQuery,
-  selectedPriority,
-  setLoading,
-}: KanBanBoardProps) => {
-  const { tasks, fetchTasks } = useTaskStore();
+export const KanBanBoard = ({ projectName, projectID }: KanBanBoardProps) => {
+  // Zustand store สำหรับ UI state
+  const { searchQuery, selectedPriority } = useTasksUIStore();
 
-  useEffect(() => {
-    if (projectID) {
-      setLoading?.(true); // 🔄 เริ่มโหลด
-      fetchTasks(projectID).then(() => setLoading?.(false)); // ✅ โหลดเสร็จแล้ว
-    }
-  }, [projectID, fetchTasks, setLoading]);
+  // ✅ ใช้ projectID เพื่อดึง tasks เฉพาะของ project นั้น
+  const { data: tasks = [], isLoading } = useTask(projectID);
+
+  console.log("Tasks:", tasks);
 
   // 🔍 กรอง Task ตาม searchQuery และ selectedPriority
-  const filteredTasks = tasks.filter(
-    (task) =>
-      task.projectId === projectID &&
-      task.taskName.toLowerCase().includes(searchQuery ?? "".toLowerCase()) &&
-      (selectedPriority === " " || task.priority === selectedPriority),
-  );
+  const filteredTasks = tasks.filter((task) => {
+    return (
+      task.taskName.toLowerCase().includes(searchQuery?.toLowerCase() ?? "") &&
+      (selectedPriority === " " || task.priority === selectedPriority)
+    );
+  });
 
   return (
     <div className="mt-8 flex h-full w-full flex-col items-center justify-center gap-2 p-2">
-      <Board
-        data={filteredTasks}
-        projectName={projectName}
-        projectID={projectID}
-      />
+      {isLoading ? (
+        <p>Loading tasks...</p> // ✅ แสดงข้อความโหลด
+      ) : (
+        <Board data={filteredTasks} projectName={projectName} projectID={projectID} />
+      )}
     </div>
   );
 };

@@ -4,7 +4,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 // Actions
-import { createUser } from "@/app/controller/newUser";
+import { createUser } from "@/app/action/new-user";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -45,6 +45,8 @@ import {
 } from "@/components/ui/accordion";
 import { toast } from "sonner"
 
+
+//FIXME
 export const NewUser = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -75,7 +77,7 @@ export const NewUser = () => {
               type={type}
               placeholder={placeholder}
               {...field}
-              onBlur={field.onBlur}
+              onChange={(e) => field.onChange(e.target.value)} // ✅ แก้ไขให้บันทึกค่าได้ถูกต้อง
             />
           </FormControl>
           <FormMessage />
@@ -87,7 +89,7 @@ export const NewUser = () => {
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log("Value : ",values)
 
-    if(values.password !== values.confirmpassword) {
+    if(values.password !== values.confirmPassword) {
       toast.error("Password and Confirm Password does not match") 
       return
     }
@@ -151,7 +153,7 @@ export const NewUser = () => {
                 placeholder={PASSWORD_PLACEHOLDER}
               />
               <FormInput
-                name="confirmpassword"
+                name="confirmPassword"
                 label="Confirm Password"
                 control={form.control}
                 type="password"

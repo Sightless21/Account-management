@@ -2,11 +2,12 @@
 import React from "react";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
-import { useApplicantStore } from "@/hooks/useApplicantStore"; // นำเข้า Zustand Store
+import { useApplicantData } from "@/hooks/useApplicantData"; // นำเข้า Zustand Store
 import { toast } from "sonner";
 
+//DONE : Probation Applicants Table Page
 export default function Page() {
-  const { applicants, deleteApplicant } = useApplicantStore();
+  const { applicants, deleteApplicant } = useApplicantData();
 
   const handleNotPass = async (id: string) => {
     try {

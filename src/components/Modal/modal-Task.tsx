@@ -6,7 +6,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useTaskStore } from "@/hooks/useTaskStore";
+import { useUpdateTask, useCreateTask } from "@/hooks/useProjectData"
 import { ColumnType } from "../DnDKanBan/types";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -50,7 +50,8 @@ export function TaskModal({ defaultValues, mode, projectId, setLoading }: TaskMo
     const [priority, setPriority] = useState<string>(defaultValues?.priority || "LOW");
     const [charCount, setCharCount] = useState(0);
     const [showAlert, setShowAlert] = useState(false);
-    const { createTask, updateTasks } = useTaskStore();
+    const { mutateAsync: updateTask } = useUpdateTask();
+    const { mutateAsync: createTask } = useCreateTask();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -72,42 +73,62 @@ export function TaskModal({ defaultValues, mode, projectId, setLoading }: TaskMo
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         if (currentMode === "view") {
-            return; // ไม่ทำงานหากอยู่ในโหมด view
+          return; // ไม่ทำงานหากอยู่ในโหมด view
         }
+      
         console.log("submit form: ", values);
+      
         const card = {
-            projectId: projectId || "",
-            id: values.id || "",
-            taskName: values.taskName.trim(),
-            description: values.description.trim(),
-            priority: values.priority,
-            status: (values.status as ColumnType) || "todo",
+          projectId: projectId || "",
+          id: values.id || "",
+          taskName: values.taskName.trim(),
+          description: values.description.trim(),
+          priority: values.priority,
+          status: (values.status as ColumnType) || "todo",
         };
+      
         console.log("card form: ", card);
-        // เรียก API หรือฟังก์ชันการทำงานอื่น ๆ ตามโหมด
+      
         if (currentMode === "create") {
-            if (charCount > 300) {
-                setShowAlert(true);
-                return;
-            }
-            if (!projectId) {
-                toast.error("Project ID is required");
-                return;
-            }
-            toast.promise(createTask(projectId, card), {
-                loading: "Creating task...",
-                success: "Task created",
-                error: "Error creating task"
-            })
+          if (charCount > 300) {
+            setShowAlert(true);
+            return;
+          }
+          if (!projectId) {
+            toast.error("Project ID is required");
+            return;
+          }
+          const projectIdStr = projectId as string;
+          toast.promise(createTask({ id: projectIdStr, newTask: card }), {
+            loading: "Creating task...",
+            success: "Task created",
+            error: "Error creating task",
+          });
         } else if (currentMode === "edit") {
-            if (setLoading) setLoading(false);
-            toast.promise(updateTasks(card), {
-                loading: "Updating task...",
-                success: "Task updated",
-                error: "Error updating task"
-            })
+          if (setLoading) setLoading(false);
+      
+          if (!values.id) {
+            toast.error("Task ID is required");
+            return;
+          }
+      
+          const taskId = values.id; // ✅ ใช้ taskId แทน projectId
+          toast.promise(
+            updateTask({
+              id: taskId, // ✅ ต้องใช้ `id` เป็น Task ID
+              taskName: card.taskName,
+              description: card.description,
+              priority: card.priority,
+              status: card.status,
+            }),
+            {
+              loading: "Updating task...",
+              success: "Task updated",
+              error: "Error updating task",
+            }
+          );
         }
-    };
+      };
 
     return (
         <>

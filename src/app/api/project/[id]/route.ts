@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 //CRUD Task in Project
 
+//DONE : fetching Tasks endpoint 
 // ดึง Project และ Task ทั้งหมด
 export async function GET(
   request: Request,
@@ -87,9 +88,9 @@ export async function PATCH(
 
   try {
     const data = await request.json();
-
     console.log(data);
 
+    // ✅ เช็คว่า field สำคัญถูกส่งมาครบหรือไม่
     if (!data.taskName || !data.status || !data.priority || !data.description) {
       return NextResponse.json(
         { error: "All fields are required" },
@@ -97,16 +98,13 @@ export async function PATCH(
       );
     }
 
-    // ตรวจสอบว่า Task มีอยู่หรือไม่
-    const task = await prisma.task.findUnique({
-      where: { id },
-    });
-
+    // ✅ เช็คว่า task มีจริงไหม
+    const task = await prisma.task.findUnique({ where: { id } });
     if (!task) {
       return NextResponse.json({ error: "Task not found" }, { status: 404 });
     }
 
-    // อัปเดต Task
+    // ✅ อัปเดต Task
     const updateTask = await prisma.task.update({
       where: { id },
       data: {
@@ -133,12 +131,13 @@ export async function DELETE(
   { params }: { params: { id: string } },
 ) {
   const { id } = await params;
-
+  console.log("📌 ID", id);
   try {
     // ลบ Task
     const deleteTask = await prisma.task.delete({
       where: { id },
     });
+    console.log(deleteTask);
 
     return NextResponse.json(deleteTask, { status: 200 });
   } catch (error) {

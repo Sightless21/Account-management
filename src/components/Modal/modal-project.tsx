@@ -19,6 +19,7 @@ interface ModalProjectProps {
   createProject: (projectName: string) => void;
 }
 
+//DONE : Modal Project
 export function ModalProject({ createProject }: ModalProjectProps) {
   // สถานะสำหรับเก็บชื่อโปรเจกต์และสถานะการตรวจสอบ
   const [projectName, setProjectName] = useState("");

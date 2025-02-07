@@ -149,3 +149,33 @@ model Roombooking {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// 📌 แจ้งลา
+model Dayoff {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String
+  employeeName String
+  leaveType    LeaveType
+  date         DateDayoff
+  status       DayoffStatus
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+type DateDayoff {
+  from DateTime
+  to   DateTime
+}
+
+enum DayoffStatus {
+  Pending
+  Approved
+  Rejected
+}
+
+enum LeaveType {
+  Vacation
+  Sick
+  Personal
+  Maternity
+}

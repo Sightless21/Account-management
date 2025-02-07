@@ -27,7 +27,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import type { Booking } from "@/types/booking"
+import type { Booking } from "@/types/bookings"
 
 // Define the form schema using Zod
 const bookingFormSchema = z.object({

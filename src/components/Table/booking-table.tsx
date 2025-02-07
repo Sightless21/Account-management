@@ -3,7 +3,7 @@ import { PencilIcon, Trash2Icon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import type { Booking } from "@/types/booking"
+import type { Booking } from "@/types/bookings"
 
 interface BookingTableProps {
   bookings: Booking[]

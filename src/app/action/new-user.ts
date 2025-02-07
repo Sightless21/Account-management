@@ -1,9 +1,7 @@
 "use server";
-
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
-
-type Role = 'EMPLOYEE' | 'MANAGER' | 'HR' ; // Define the Role type
+import { Role } from "@/types/users"
 
 interface FormData {
   firstName: string;
@@ -11,10 +9,26 @@ interface FormData {
   email: string;
   phone: string;
   password: string;
-  confirmpassword: string;
+  confirmPassword: string;
   role: Role;
 }
 
+/**
+ * Create a new user in the database.
+ *
+ * @param {FormData} formData - The form data, with the following properties:
+ *   - firstName: The user's first name.
+ *   - lastName: The user's last name.
+ *   - email: The user's email.
+ *   - phone: The user's phone number.
+ *   - password: The user's password.
+ *   - confirmPassword: The user's password confirmation.
+ *   - role: The user's role, either 'EMPLOYEE', 'MANAGER', or 'HR'.
+ *
+ * @returns {void}
+ *
+ * @throws {Error} If the user already exists.
+ */
 export async function createUser(formData: FormData) {
   console.log("Received formData:", formData); // Debugging
   const user = await prisma.user.findUnique({
@@ -32,7 +46,7 @@ export async function createUser(formData: FormData) {
         email: formData.email,
         hashedPassword: await bcrypt.hashSync(formData.password, 10),
         phone: formData.phone,
-        isVerity: false,
+        isVerify: false,
         role: formData.role as Role,
       },
     });

@@ -10,6 +10,7 @@ async function fetchUser(userID: string) {
       cache: "no-store", // Cache 60 วินาที ถ้าอยากให้ no-cache ใช้ { cache: "no-store" }
     });
 
+
     if (!res.ok) throw new Error("Failed to fetch user");
 
     return await res.json();

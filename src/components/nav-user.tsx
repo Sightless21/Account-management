@@ -22,6 +22,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { signOut } from "next-auth/react";
+import { useUserStore } from "@/store/useUserStore";
 
 export function NavUser({
   user,
@@ -34,6 +35,7 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar();
 
+
   // Get the initials of the user
   const fullName = user.name as string;
   function getInitials(fullName: string) {
@@ -43,6 +45,7 @@ export function NavUser({
   }
 
   const initials = getInitials(fullName);
+  const { clearUserID } = useUserStore();
 
 
   return (
@@ -57,7 +60,7 @@ export function NavUser({
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />
                 <AvatarFallback className="rounded-lg">
-                  {initials} 
+                  {initials}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
@@ -89,7 +92,10 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => signOut({ callbackUrl: "/" })}
+              onClick={async () => {
+                await clearUserID();
+                await signOut({ callbackUrl: "/" });
+              }}
               className="cursor-pointer"
             >
               <LogOut className="mr-5" />

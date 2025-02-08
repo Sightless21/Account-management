@@ -1,21 +1,7 @@
 'use client';
 
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl,FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { PasswordInput } from "@/components/ui/password-input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -84,8 +70,8 @@ export default function VerifyForm({ userId }: VerifyFormProps) {
     return (
         <Card className="w-96">
             <CardHeader>
-                <CardTitle>Verify Form</CardTitle>
-                <CardDescription>Enter your information for verification. (You can edit this later)</CardDescription>
+                <CardTitle>Verify</CardTitle>
+                <CardDescription>You need to verify with create a new password for verification.</CardDescription>
             </CardHeader>
             <Form {...form}>
                 <form className="space-y-4">

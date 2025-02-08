@@ -3,7 +3,7 @@ import axios from "axios";
 import { Project, Task } from "@/types/projects";
 
 //DONE : Fetching Project React-Query
-const fetchProjects = async () => {
+export const fetchProjects = async () => {
   const response = await axios.get<Project[]>("/api/project");
   return response.data;
 };

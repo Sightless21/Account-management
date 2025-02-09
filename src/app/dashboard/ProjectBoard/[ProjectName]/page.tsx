@@ -5,21 +5,9 @@ import { useRouter, useParams } from "next/navigation";
 import React from "react";
 import { ChevronLeft } from "lucide-react";
 import { TaskModal } from "@/components/Modal/modal-Task";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-
 // Import Zustand store
 import { useTasksUIStore } from "@/store/useTasksUIStore";
 import { useProjects } from "@/hooks/useProjectData"
@@ -38,13 +26,10 @@ export default function Page() {
   const { data: projectsData } = useProjects();
   
   // Set projectId after fetching projects
-  const project = projectsData?.find(
-    (project) => project.projectName === projectName
-  );
-  const projectId = project?.id ?? null;
+  const projectId = (projectsData?.find((project) => project.projectName === projectName))?.id ?? null;
 
   // Handle redirect back to Project page
-  async function handleProjectPage() {
+  async function handleProjectPage(): Promise<void> {
     router.push("/dashboard/ProjectBoard");
   }
 

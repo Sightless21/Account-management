@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma"; // 📌 นำเข้า Prisma Client
 
 //DONE : Applicant endpoint 
-export async function POST(request: Request) {
+export async function POST({ request }: { request: Request; }) {
   try {
     const data = await request.json();
     console.log("📌 Received Body:", data);

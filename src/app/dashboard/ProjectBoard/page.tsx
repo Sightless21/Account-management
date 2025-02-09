@@ -45,7 +45,7 @@ export default function Page() {
     };
   }, []);
 
-  const handleAddProject = async (projectName: string) => {
+  async function handleAddProject(projectName: string) {
     try {
       const newProject = {
         id: "",
@@ -60,7 +60,7 @@ export default function Page() {
     } catch (error) {
       console.error("Error adding project:", error);
     }
-  };
+  }
 
   // 📌 รีเฟรชข้อมูลทุกครั้งที่หน้า Page นี้ถูกเปิด
   useEffect(() => {
@@ -112,7 +112,7 @@ export default function Page() {
       <div className="container">
         <Card className="flex flex-col h-full">
           <CardHeader className="items-center">
-            <CardTitle>Overall Process Board</CardTitle>
+            <CardTitle>Overall Project Process</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="mb-4 flex items-center justify-end gap-3">

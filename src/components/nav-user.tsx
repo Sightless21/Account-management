@@ -34,6 +34,7 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar();
 
+
   // Get the initials of the user
   const fullName = user.name as string;
   function getInitials(fullName: string) {
@@ -43,7 +44,6 @@ export function NavUser({
   }
 
   const initials = getInitials(fullName);
-
 
   return (
     <SidebarMenu>
@@ -57,7 +57,7 @@ export function NavUser({
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />
                 <AvatarFallback className="rounded-lg">
-                  {initials} 
+                  {initials}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
@@ -88,10 +88,7 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => signOut({ callbackUrl: "/" })}
-              className="cursor-pointer"
-            >
+            <DropdownMenuItem onClick={async () => { signOut({ callbackUrl: "/" })}} className="cursor-pointer">
               <LogOut className="mr-5" />
               <span>Logout</span>
             </DropdownMenuItem>

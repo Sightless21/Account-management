@@ -1,7 +1,7 @@
 "use server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
-import { Role } from "@/types/users"
+import { Role } from "@/types/users";
 
 interface FormData {
   firstName: string;
@@ -13,42 +13,43 @@ interface FormData {
   role: Role;
 }
 
-/**
- * Create a new user in the database.
- *
- * @param {FormData} formData - The form data, with the following properties:
- *   - firstName: The user's first name.
- *   - lastName: The user's last name.
- *   - email: The user's email.
- *   - phone: The user's phone number.
- *   - password: The user's password.
- *   - confirmPassword: The user's password confirmation.
- *   - role: The user's role, either 'EMPLOYEE', 'MANAGER', or 'HR'.
- *
- * @returns {void}
- *
- * @throws {Error} If the user already exists.
- */
 export async function createUser(formData: FormData) {
-  console.log("Received formData:", formData); // Debugging
-  const user = await prisma.user.findUnique({
-    where: {
-      email: formData.email,
-    },
-  });
-  if (user) {
-    return alert("User already exist please type again");
-  } else {
+  try {
+    console.log("Received formData:", formData); // Debugging
+
+    // ตรวจสอบว่ารหัสผ่านตรงกันหรือไม่
+    if (formData.password !== formData.confirmPassword) {
+      return { success: false, message: "Passwords do not match." };
+    }
+
+    // ตรวจสอบว่าผู้ใช้มีอยู่แล้วหรือไม่
+    const existingUser = await prisma.user.findUnique({
+      where: { email: formData.email },
+    });
+
+    if (existingUser) {
+      return { success: false, message: "User already exists." };
+    }
+
+    // เข้ารหัสรหัสผ่าน
+    const hashedPassword = await bcrypt.hash(formData.password, 10);
+
+    // สร้างผู้ใช้ใหม่
     await prisma.user.create({
       data: {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
-        hashedPassword: await bcrypt.hashSync(formData.password, 10),
+        hashedPassword,
         phone: formData.phone,
         isVerify: false,
         role: formData.role as Role,
       },
     });
+
+    return { success: true, message: "User created successfully." };
+  } catch (error) {
+    console.error("Error creating user:", error);
+    return { success: false, message: "An error occurred while creating the user." };
   }
 }

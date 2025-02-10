@@ -25,12 +25,12 @@ import {
 import { User } from "@/types/users"
 
 //DONE : Appsidebar
-export function AppSidebar({ user , ...props }: React.ComponentProps<typeof Sidebar> & { user?: User }) {
+export function AppSidebar({ user , ...props }: React.ComponentProps<typeof Sidebar> & { user?: User | null }) {
 
   // data for sidebar
   const data = {
     user: {
-      name: user?.firstName + " " + user?.lastName,
+      name: user?.firstName as string + " " + user?.lastName as string,
       email: user?.email,
       avatar: "",
     },

@@ -2,7 +2,7 @@ import { NextResponse, NextRequest, } from "next/server";
 import { ObjectId } from "mongodb";
 import { prisma } from "@/lib/prisma";
 
-//FIXME
+//DONE : Update Document
 interface Document {
   id: string;
   name: string;
@@ -41,7 +41,10 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
     const updatedDocuments = existingDocuments
       .filter((doc) => documentNames.includes(doc.name))
-      .map((doc) => ({ id: doc.id, name: doc.name }));
+      .map((doc) => ({
+        id: doc.id,
+        name: doc.name ?? "", // หาก name เป็น null ให้ใช้ค่าว่างแทน
+      }));
 
     await Promise.all([
       deleteDocuments(documentsToDelete),
@@ -91,9 +94,14 @@ async function deleteDocuments(documentIds: string[]) {
 async function updateDocuments(updatedDocuments: Document[]) {
   if (updatedDocuments.length === 0) return;
   await Promise.all(
-    updatedDocuments.map(({ id, name }) =>
-      prisma.document.update({ where: { id }, data: { name } }),
-    ),
+    updatedDocuments.map(({ id, name }) => {
+      // ตรวจสอบว่า name เป็น string หรือไม่
+      if (name === null) {
+        console.warn(`Document with id ${id} has null name. Skipping update.`);
+        return Promise.resolve(); // ข้ามการอัปเดต
+      }
+      return prisma.document.update({ where: { id }, data: { name } });
+    }),
   );
 }
 

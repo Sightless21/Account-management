@@ -1,25 +1,27 @@
 "use client";
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback , useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { ChevronDown } from "lucide-react";
-import { ModalProject } from "@/components/Modal/modal-Project";
+import { ModalProject } from "@/components/Modal/modal-project";
 import { RadialChart } from "@/components/Chart/radialchart-text";
 import { toast } from "sonner";
 import { Project, ChartData } from "@/types/projects";
 import { useProjectUIStore } from "@/store/useProjectUIStore";
-import { useProjects , useCreateProject } from "@/hooks/useProjectData";
+import { useProjects, useCreateProject } from "@/hooks/useProjectData";
+import { useQueryClient } from "@tanstack/react-query";
 
 //DONE : Project Board
 export default function Page() {
   const { sortOption, searchQuery, currentPage, setSortOption, setSearchQuery, setCurrentPage } = useProjectUIStore();
   const { data: projects } = useProjects();
-  const { mutateAsync: createProject }= useCreateProject();
+  const { mutateAsync: createProject } = useCreateProject();
+  const queryClient = useQueryClient();
 
   const generateChartData = useCallback((project: Project): ChartData => {
-    const doneTasks = project.task?.filter((task) => task.status === "done",).length;
+    const doneTasks = project.task?.filter((task) => task.status === "done").length;
     const totalTasks = project.task?.length;
     const donePercentage = totalTasks > 0 ? (doneTasks / totalTasks) * 100 : 0;
     const doneAngle = (donePercentage * 360) / 100;
@@ -43,7 +45,7 @@ export default function Page() {
     };
   }, []);
 
-  const handleAddProject = async (projectName: string) => {
+  async function handleAddProject(projectName: string) {
     try {
       const newProject = {
         id: "",
@@ -58,7 +60,13 @@ export default function Page() {
     } catch (error) {
       console.error("Error adding project:", error);
     }
-  };
+  }
+
+  // 📌 รีเฟรชข้อมูลทุกครั้งที่หน้า Page นี้ถูกเปิด
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["projects"] });
+    queryClient.invalidateQueries({ queryKey: ["tasks"] });
+  }, [queryClient]);
 
   // 📌 เรียงลำดับโครงการตามเงื่อนไขที่เลือก
   const sortedProjects = useMemo(() => {
@@ -87,6 +95,7 @@ export default function Page() {
       project.projectName.toLowerCase().includes(searchQuery.toLowerCase()),
     );
   }, [sortedProjects, searchQuery]);
+
   const projectsPerPage = 7;
   const paginatedProjects = useMemo(() => {
     const startIndex = (currentPage - 1) * projectsPerPage;
@@ -97,12 +106,13 @@ export default function Page() {
 
   const totalPages = Math.ceil(filteredProjects.length / projectsPerPage);
   const projectnum = paginatedProjects.length === 0 ? true : false;
+
   return (
     <div className="ml-3 mr-3 flex flex-col gap-4">
       <div className="container">
         <Card className="flex flex-col h-full">
           <CardHeader className="items-center">
-            <CardTitle>Overall Process Board</CardTitle>
+            <CardTitle>Overall Project Process</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="mb-4 flex items-center justify-end gap-3">
@@ -111,7 +121,6 @@ export default function Page() {
               ) : (
                 <ModalProject createProject={handleAddProject} />
               )}
-              {/* Dropdown สำหรับการกรองโปรเจค */}
               <Input
                 type="text"
                 placeholder="Search Project..."
@@ -128,7 +137,6 @@ export default function Page() {
                 </Button>
               )}
 
-              {/* Dropdown สำหรับการเรียงลำดับ */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="flex items-center gap-2 w-44">
@@ -148,7 +156,6 @@ export default function Page() {
               </DropdownMenu>
             </div>
 
-            {/* แสดง Project */}
             <div className="flex flex-wrap justify-center gap-7">
               {paginatedProjects.length === 0 ? (
                 <div className="flex h-96 w-full flex-col items-center justify-center gap-5">
@@ -171,7 +178,6 @@ export default function Page() {
               )}
             </div>
 
-            {/* Pagination */}
             <div className="mt-4 flex justify-center gap-2">
               <Button variant="outline" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
                 Previous

@@ -24,6 +24,7 @@ import { Pencil, Trash } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useDeleteProject, useUpdateProject } from "@/hooks/useProjectData";
+import { useQueryClient } from "@tanstack/react-query"; // นำเข้า useQueryClient
 
 interface RadialChartProps {
   data: { name: string; value: number; fill: string }[];
@@ -48,13 +49,21 @@ export function RadialChart({
   const [newTitle, setNewTitle] = useState(title);
   const { mutate: deleteProject,isPending } = useDeleteProject();
   const { mutate: updateProject, isPending: isUpdating } = useUpdateProject();
+
+  const queryClient = useQueryClient();  // เรียกใช้ queryClient เพื่อ invalidate queries
   
   const handleSave = () => {
     setIsEditing(false);
     if (newTitle.trim() !== "" && newTitle !== title) {
       toast.promise(
         new Promise((resolve, reject) => {
-          updateProject({ id: projectID, NewNameProject: newTitle }, { onSuccess: resolve, onError: reject });
+          updateProject({ id: projectID, NewNameProject: newTitle }, { 
+            onSuccess: () => {
+              resolve("Successfully updated project name");
+              queryClient.invalidateQueries({ queryKey: ['projects'] }); // รีเฟรชข้อมูลหลังอัปเดต
+            }, 
+            onError: reject 
+          });
         }),
         {
           loading: "Updating project name...",

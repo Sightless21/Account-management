@@ -4,13 +4,13 @@ import { Card, CardContent } from "@/components/ui/card"
 import { useState, useRef, useEffect } from "react"
 
 const allTabs = [
-  { name: "My Leave", roles: ["employee", "manager", "hr"] },
-  { name: "Requests", roles: ["manager", "hr"] },
-  { name: "Reports", roles: ["manager"] },
-]
+  { name: "My Leave", roles: ["EMPLOYEE", "MANAGER", "HR","ADMIN"] },
+  { name: "Requests", roles: ["MANAGER", "HR","ADMIN"] },
+  { name: "Reports", roles: ["MANAGER","ADMIN"] },
+] // config role base here
 
 export default function Menutabs(
-  { userRole , onTabChange}: { userRole: "employee" | "manager" | "hr", onTabChange: (tabName: string) => void  }
+  { userRole , onTabChange}: { userRole: "EMPLOYEE" | "MANAGER" | "HR" | "ADMIN", onTabChange: (tabName: string) => void  }
 ) {
   const tabs = allTabs.filter(tab => tab.roles.includes(userRole)).map(tab => tab.name)
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)

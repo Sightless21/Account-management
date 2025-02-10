@@ -17,7 +17,7 @@ import { Input } from "../ui/input"
 
 // Actions
 import { LeaveStatus, LeaveType } from "@/types/day-off"
-// import { useUserStore } from "@/hooks/useUserData"
+import { useSession } from "next-auth/react"
 import { useUserData } from "@/hooks/useUserData"
 import { useCreateDayOff } from "@/hooks/useDayOffData"
 
@@ -40,10 +40,11 @@ const formSchema = z.object({
 
 //FIXME
 export function DayoffModal() {
+  const {data: session } = useSession()
   const [open, setOpen] = React.useState(false)
   const [leaveTypeOptions] = React.useState(leaveTypes)
   const [date, setDate] = React.useState<{ from: Date | undefined; to: Date | undefined; } | undefined>(/* initial value */);
-  const { data: user } = useUserData();
+  const { data: user } = useUserData(session?.user.id as string);
   const userinfo = user
   const { mutate: createDayOff } = useCreateDayOff();
   const form = useForm<z.infer<typeof formSchema>>({

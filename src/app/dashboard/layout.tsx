@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useSession } from "next-auth/react";
@@ -12,8 +12,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { status } = useSession();
-  const { data: user, isLoading, error } = useUserData();
+  const { data: session, status } = useSession();
+  const userID = session?.user?.id;
+  const { data: user, isLoading } = useUserData(userID || "");
   const router = useRouter();
   const pathname = usePathname();
   const [loading, setLoading] = useState(false);
@@ -35,30 +36,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return () => clearTimeout(timer);
   }, [pathname]);
 
-  // Handle errors
-  useEffect(() => {
-    if (error) {
-      toast.error("Session expired or you are not logged in. Please try again.", {
-        position: "top-center",
-      });
-    }
-  }, [error, router]);
-
-  // Memoize user data to avoid unnecessary re-renders
-  const memoizedUser = useMemo(() => user, [user]);
-
   // Loading state for UI
-  if (loading) {
+  if (loading || isLoading || !user) {
     return (
       <section>
         <SidebarProvider defaultOpen={true} open={true}>
-          <AppSidebar collapsible="icon" variant="inset" user={memoizedUser} />
+          <AppSidebar collapsible="icon" variant="inset" user={user ?? null} />
           <SidebarInset>
             <div className="mt-4 flex items-center gap-2 px-4 justify-between">
-              <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-                Hello : {memoizedUser?.firstName?.toUpperCase()} {memoizedUser?.lastName?.toUpperCase()}
-              </h3>
-              <DigitalClock/>
+              {isLoading ? (
+                <Skeleton className="h-full w-full m-3" />
+              ) : (
+                <h3 className="text-2xl font-semibold tracking-tight">
+                  Hello : {user?.firstName?.toUpperCase()} {user?.lastName?.toUpperCase()}
+                </h3>
+              )}
+              <DigitalClock />
             </div>
             <Skeleton className="h-full w-full m-3 " />
           </SidebarInset>
@@ -70,14 +63,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <section>
       <SidebarProvider defaultOpen={true} open={true}>
-        <AppSidebar collapsible="icon" variant="inset" user={memoizedUser} />
+        <AppSidebar collapsible="icon" variant="inset" user={user ?? null} />
         <SidebarInset>
           <div className="mt-4 flex items-center gap-2 px-4 justify-between">
-            <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-              Hello : {memoizedUser?.firstName?.toUpperCase()} {memoizedUser?.lastName?.toUpperCase()}
+            <h3 className="text-2xl font-semibold tracking-tight">
+              Hello : {user?.firstName?.toUpperCase()} {user?.lastName?.toUpperCase()}
             </h3>
           </div>
-          <DigitalClock/>
+          <DigitalClock />
           <AnimatePresence mode="wait">
             <motion.div
               key={pathname}

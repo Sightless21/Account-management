@@ -22,7 +22,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { signOut } from "next-auth/react";
-import { useUserStore } from "@/store/useUserStore";
 
 export function NavUser({
   user,
@@ -45,8 +44,6 @@ export function NavUser({
   }
 
   const initials = getInitials(fullName);
-  const { clearUserID } = useUserStore();
-
 
   return (
     <SidebarMenu>
@@ -91,13 +88,7 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={async () => {
-                await clearUserID();
-                await signOut({ callbackUrl: "/" });
-              }}
-              className="cursor-pointer"
-            >
+            <DropdownMenuItem onClick={async () => { signOut({ callbackUrl: "/" })}} className="cursor-pointer">
               <LogOut className="mr-5" />
               <span>Logout</span>
             </DropdownMenuItem>

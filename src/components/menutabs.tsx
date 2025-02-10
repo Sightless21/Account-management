@@ -5,8 +5,7 @@ import { useState, useRef, useEffect } from "react"
 
 const allTabs = [
   { name: "My Leave", roles: ["EMPLOYEE", "MANAGER", "HR","ADMIN"] },
-  { name: "Requests", roles: ["MANAGER", "HR","ADMIN"] },
-  { name: "Reports", roles: ["MANAGER","ADMIN"] },
+  { name: "Reports", roles: ["MANAGER","ADMIN","HR"] },
 ] // config role base here
 
 export default function Menutabs(

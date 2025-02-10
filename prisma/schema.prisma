@@ -169,8 +169,8 @@ type DateDayoff {
 
 enum DayoffStatus {
   Pending
-  Approved
-  Rejected
+  Accepted
+  Declined
 }
 
 enum LeaveType {

@@ -40,7 +40,7 @@ const formSchema = z.object({
 
 //FIXME
 export function DayoffModal() {
-  const {data: session } = useSession()
+  const { data: session } = useSession()
   const [open, setOpen] = React.useState(false)
   const [leaveTypeOptions] = React.useState(leaveTypes)
   const [date, setDate] = React.useState<{ from: Date | undefined; to: Date | undefined; } | undefined>(/* initial value */);
@@ -50,6 +50,9 @@ export function DayoffModal() {
   const form = useForm<z.infer<typeof formSchema>>({
     mode: "onChange",
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      employee: userinfo?.firstName + " " + userinfo?.lastName as string,
+    }
   })
 
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -58,12 +61,13 @@ export function DayoffModal() {
       userId: userinfo?.id as string,
       employeeName: userinfo?.firstName + " " + userinfo?.lastName as string,
       leaveType: values.leaveType.type as LeaveType,
+      status: "Pending" as LeaveStatus,
       date: {
         from: values.dateRange.from as Date,
         to: values.dateRange.to as Date
       },
-      status: "Pending" as LeaveStatus,
     }
+    console.log(formatData)
     createDayOff(formatData)
     setOpen(false)
   }
@@ -170,7 +174,7 @@ export function DayoffModal() {
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
+                    <PopoverContent className="w-auto p-0" align="center" sideOffset={5}>
                       <Calendar
                         initialFocus
                         mode="range"

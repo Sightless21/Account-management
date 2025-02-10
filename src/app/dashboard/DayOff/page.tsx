@@ -4,8 +4,8 @@ import Menutabs from "@/components/menutabs"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { DayoffModal } from "@/components/Modal/modal-DayOff"
 import DemoTable from "@/components/Table/leave-table/MyleaveTable"
-import { useSession } from "next-auth/react";
-import { Role } from "@/types/users";
+// import { useSession } from "next-auth/react";
+// import { Role } from "@/types/users";
 
 
 //TODO : 
@@ -20,13 +20,12 @@ export default function Page() {
           <CardTitle>Employee Leave of Absence Tracking</CardTitle>
           <CardDescription>Employee Leave of Absence Tracking System</CardDescription>
           <div className="flex gap-12">
-            <Menutabs userRole={"MANAGER"} onTabChange={setActiveTab} />
+            <Menutabs userRole={"ADMIN"} onTabChange={setActiveTab} />
             <DayoffModal />
           </div>
         </CardHeader>
         <CardContent>
           {activeTab === "My Leave" && <DemoTable userRole={"EMPLOYEE"}/>}
-          {activeTab === "Requests" && <p>แสดงข้อมูล Requests</p>}
           {activeTab === "Reports" && <p>แสดงข้อมูล Reports</p>}
         </CardContent>
       </Card>

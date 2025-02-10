@@ -2,25 +2,13 @@
 
 import { ColumnDef, Row } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
+import { DayoffType, UserRole } from "@/types/day-off"
 import { TrashIcon, PencilIcon, CheckCircle, XCircle } from "lucide-react"
 
-export type DayOff = {
-  id: string
-  employeeName: string
-  leaveType: string
-  date: {
-    from: Date
-    to: Date
-  }
-  status: "Pending" | "Accepted" | "Declined"
-}
-
-export type UserRole = "EMPLOYEE" | "HR" | "MANAGER" | "ADMIN"
-
 type ActionButtonsProps = {
-  row: Row<DayOff>
-  onEdit?: (data: DayOff) => void
-  onDelete?: (data: DayOff) => void
+  row: Row<DayoffType>
+  onEdit?: (data: DayoffType) => void
+  onDelete?: (data: DayoffType) => void
 }
 
 const ActionButtons = ({ row, onEdit, onDelete }: ActionButtonsProps) => (
@@ -49,9 +37,9 @@ const ActionButtons = ({ row, onEdit, onDelete }: ActionButtonsProps) => (
 )
 
 type ApprovalButtonsProps = {
-  row: Row<DayOff>
-  onApprove?: (data: DayOff) => void
-  onReject?: (data: DayOff) => void
+  row: Row<DayoffType>
+  onApprove?: (data: DayoffType) => void
+  onReject?: (data: DayoffType) => void
 }
 
 const ApprovalButtons = ({ row, onApprove, onReject }: ApprovalButtonsProps) => (
@@ -82,13 +70,13 @@ const ApprovalButtons = ({ row, onApprove, onReject }: ApprovalButtonsProps) => 
 export const getColumns = (
   role: UserRole,
   handlers: {
-    onEdit?: (data: DayOff) => void
-    onDelete?: (data: DayOff) => void
-    onApprove?: (data: DayOff) => void
-    onReject?: (data: DayOff) => void
+    onEdit?: (data: DayoffType) => void
+    onDelete?: (data: DayoffType) => void
+    onApprove?: (data: DayoffType) => void
+    onReject?: (data: DayoffType) => void
   }
-): ColumnDef<DayOff>[] => {
-  const baseColumns: ColumnDef<DayOff>[] = [
+): ColumnDef<DayoffType>[] => {
+  const baseColumns: ColumnDef<DayoffType>[] = [
     {
       accessorKey: "employeeName",
       header: "Employee Name",
@@ -99,20 +87,22 @@ export const getColumns = (
     },
     {
       accessorKey: "date",
-      header: "Date",
+      header: "Date (DD-MM-YYYY)",
       cell: ({ row }) => {
-        const date = row.original.date
-        return `${date.from.toLocaleDateString()} - ${date.to.toLocaleDateString()}`
+        const { from, to } = row.original.date || {}
+        const fromDate = from ? new Date(from).toLocaleDateString() : "N/A"
+        const toDate = to ? new Date(to).toLocaleDateString() : "N/A"
+         return `${fromDate} - ${toDate}`
       },
     },
   ]
 
-  const statusColumn: ColumnDef<DayOff> = {
+  const statusColumn: ColumnDef<DayoffType> = {
     accessorKey: "status",
     header: "Status",
   }
 
-  const actionColumn: ColumnDef<DayOff> = {
+  const actionColumn: ColumnDef<DayoffType> = {
     id: "actions",
     header: "Action",
     cell: ({ row }) => (
@@ -124,7 +114,7 @@ export const getColumns = (
     ),
   }
 
-  const approvalColumn: ColumnDef<DayOff> = {
+  const approvalColumn: ColumnDef<DayoffType> = {
     id: "approval",
     header: "Approve/Reject",
     cell: ({ row }) => (
@@ -143,7 +133,7 @@ export const getColumns = (
       return [...baseColumns, statusColumn, actionColumn, approvalColumn]
     case "MANAGER":
       return [...baseColumns, approvalColumn]
-      case "ADMIN":
+    case "ADMIN":
       return [...baseColumns, approvalColumn, actionColumn, approvalColumn]
     default:
       return baseColumns

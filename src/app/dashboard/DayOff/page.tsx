@@ -19,13 +19,13 @@ export default function Page() {
         <CardHeader>
           <CardTitle>Employee Leave of Absence Tracking</CardTitle>
           <CardDescription>Employee Leave of Absence Tracking System</CardDescription>
-          <div className="flex gap-12">
+          <div className="flex w-full justify-between">
             <Menutabs userRole={"ADMIN"} onTabChange={setActiveTab} />
             <DayoffModal />
           </div>
         </CardHeader>
         <CardContent>
-          {activeTab === "My Leave" && <DemoTable userRole={"EMPLOYEE"}/>}
+          {activeTab === "My Leave" && <DemoTable userRole={"ADMIN"}/>}
           {activeTab === "Reports" && <p>แสดงข้อมูล Reports</p>}
         </CardContent>
       </Card>

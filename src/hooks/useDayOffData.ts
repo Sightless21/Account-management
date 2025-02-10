@@ -16,13 +16,50 @@ export const useDayOff = () => {
   });
 };
 
-// Add new Day-off
 export const useCreateDayOff = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (newDayOff: DayoffType) => {
       const response = await axios.post("/api/dayoff", newDayOff);
       return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["dayoff"] });
+    },
+  });
+}
+
+export const useUpdateStatusDayOff = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      const response = await axios.patch(`/api/dayoff/`, { id, status });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["dayoff"] });
+    },
+  });
+};
+
+export const useUpdateDayOff = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, newData }: { id: string; newData: Partial<DayoffType> }) => {
+      const response = await axios.patch(`/api/dayoff/${id}`, newData);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["dayoff"] });
+    },
+  });
+};
+
+export const useDeleteDayOff = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      await axios.delete(`/api/dayoff/`, { data: { id } });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["dayoff"] });

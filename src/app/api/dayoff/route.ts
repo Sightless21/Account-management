@@ -50,3 +50,42 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+export async function PATCH(req: NextRequest) {
+  const body = await req.json();
+  console.log("📌 Received Body:", body);
+
+  try {
+    const updatedLeave = await prisma.dayoff.update({
+      where: { id: body.id }, // ตรวจสอบ id ที่ Prisma คาดหวัง
+      data: { 
+        status: body.status || "Pending" 
+      },
+    });
+
+    console.log("✅ Updated Leave:", updatedLeave);
+    return NextResponse.json(updatedLeave, { status: 200 });
+
+  } catch (error) {
+    console.error("❌ Error updating leave:", error);
+    return NextResponse.json({ error: "Error updating leave" }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  const body = await req.json();
+  console.log("📌 Received Body:", body);
+  try {
+    const deletedLeave = await prisma.dayoff.delete({
+      where: { id: body.id },
+    });
+    console.log("✅ Deleted Leave:", deletedLeave);
+    return NextResponse.json(deletedLeave, { status: 200 });
+  } catch (error) {
+    console.error("Error deleting leave:", error);
+    return NextResponse.json(
+      { error: "Error deleting leave" },
+      { status: 500 },
+    );
+  }
+}

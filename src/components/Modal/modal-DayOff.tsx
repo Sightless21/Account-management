@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { format, parseISO } from "date-fns"
-import { CalendarIcon, Check, ChevronsUpDown, BadgePlus } from "lucide-react"
+import { CalendarIcon, Check, ChevronsUpDown, BadgePlus, PencilIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
@@ -13,13 +13,19 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { Input } from "../ui/input"
+import { Input } from "@/components/ui/input"
 
 // Actions
-import { LeaveStatus, LeaveType } from "@/types/day-off"
+import { LeaveType } from "@/types/day-off"
 import { useSession } from "next-auth/react"
 import { useUserData } from "@/hooks/useUserData"
-import { useCreateDayOff } from "@/hooks/useDayOffData"
+import { useCreateDayOff, useUpdateDayOff } from "@/hooks/useDayOffData"
+import { DayoffType } from "@/types/day-off"
+
+type DayoffModalProps = {
+  defaultValue?: DayoffType;
+  mode?: "edit";
+};
 
 const leaveTypes = [
   { value: "Vacation", label: "Vacation" },
@@ -27,67 +33,116 @@ const leaveTypes = [
   { value: "Personal", label: "Personal Leave" },
   { value: "Maternity", label: "Maternity Leave" },
 ]
+export const leaveTypeSchema = z.enum(["Vacation", "Sick", "Personal", "Maternity"]);
+export const leaveStatusSchema = z.enum(["Pending", "Accepted", "Declined"]);
+export const userRoleSchema = z.enum(["EMPLOYEE", "HR", "MANAGER", "ADMIN"]);
+
 const formSchema = z.object({
-  employee: z.string().min(1, "Please enter an employee name."),
+  id: z.string().optional(),
+  employeeName: z.string().min(1, "Please enter an employee name."),
   leaveType: z.object({
     type: z.enum(["Vacation", "Sick", "Personal", "Maternity"]),
   }),
-  dateRange: z.object({
-    from: z.date().optional(), // ✅ อนุญาตให้เป็น undefined ได้
-    to: z.date().optional(),   // ✅ อนุญาตให้เป็น undefined ได้
+  date: z.object({
+    from: z.date({
+      required_error: "Please select a start date",
+    }),
+    to: z.date({
+      required_error: "Please select an end date",
+    }),
   }),
+  status: z.enum(["Pending", "Accepted", "Declined"]),
 });
 
-//FIXME
-export function DayoffModal() {
+export function DayoffModal({ defaultValue, mode }: DayoffModalProps) {
   const { data: session } = useSession()
   const [open, setOpen] = React.useState(false)
   const [leaveTypeOptions] = React.useState(leaveTypes)
-  const [date, setDate] = React.useState<{ from: Date | undefined; to: Date | undefined; } | undefined>(/* initial value */);
-  const { data: user } = useUserData(session?.user.id as string);
+  const [date, setDate] = React.useState<{ from: Date | undefined; to: Date | undefined } | undefined>(
+    defaultValue ? {
+      from: defaultValue.date.from ? new Date(defaultValue.date.from) : undefined,
+      to: defaultValue.date.to ? new Date(defaultValue.date.to) : undefined,
+    } : undefined
+  );
+  const { data: user } = useUserData(session?.user.id as string)
   const userinfo = user
-  const { mutate: createDayOff } = useCreateDayOff();
+  const { mutate: createDayOff } = useCreateDayOff()
+  const { mutate: updateDayOff } = useUpdateDayOff()
+  // console.log("defaultValue", defaultValue)
+
   const form = useForm<z.infer<typeof formSchema>>({
     mode: "onChange",
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      employee: userinfo?.firstName + " " + userinfo?.lastName as string,
-    }
-  })
+    defaultValues: defaultValue ? {
+      id: defaultValue.id || "",
+      employeeName: defaultValue.employeeName,
+      leaveType: { type: defaultValue.leaveType }, // Wrap in object to match schema
+      date: {
+        from: defaultValue.date.from ? new Date(defaultValue.date.from) : undefined,
+        to: defaultValue.date.to ? new Date(defaultValue.date.to) : undefined,
+      },
+      status: defaultValue.status,
+    } : {
+      employeeName: userinfo?.firstName + " " + userinfo?.lastName as string,
+      leaveType: { type: "Vacation" },  // ใส่ค่าเริ่มต้น
+      date: { from: new Date(), to: new Date() },  // ใส่ค่าเริ่มต้น
+      status: "Pending",  // ใส่ค่าเริ่มต้น
+    },
+  });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    const formatData = {
-      id: "",
-      userId: userinfo?.id as string,
-      employeeName: userinfo?.firstName + " " + userinfo?.lastName as string,
-      leaveType: values.leaveType.type as LeaveType,
-      status: "Pending" as LeaveStatus,
-      date: {
-        from: values.dateRange.from as Date,
-        to: values.dateRange.to as Date
-      },
+    console.log("values", values)
+    // Ensure dates are defined before proceeding
+    if (!values.date.from || !values.date.to) {
+      return; // Or show an error message
     }
-    console.log(formatData)
-    createDayOff(formatData)
-    setOpen(false)
-  }
+    const formatData = {
+      id: defaultValue?.id || "",
+      userId: userinfo?.id as string,
+      employeeName: values.employeeName,
+      leaveType: values.leaveType.type,
+      status: values.status,
+      date: {
+        from: values.date.from,
+        to: values.date.to,
+      },
+    };
 
+    //DONE : API calling 
+    if (mode === "edit") {
+      updateDayOff({ id: formatData.id, newData: formatData });
+    } else {
+      createDayOff(formatData);
+      form.reset();
+    }
+    setOpen(false);
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={"default"}><BadgePlus />Add New Leave</Button>
+        {mode === "edit" ? (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+          >
+            <PencilIcon className="h-4 w-4" />
+          </Button>
+        ) : <Button variant={"default"}>
+          <BadgePlus /> Add New Leave
+        </Button>}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[678px] w-[90vw]">
         <DialogHeader>
-          <DialogTitle>Add New Leave of Absence</DialogTitle>
+          <DialogTitle>{mode === "edit" ? "Edit Leave of Absence" : "Add New Leave of Absence"}</DialogTitle>
           <DialogDescription>Enter the details for the employee&apos;s leave of absence.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="employee"
+              name="employeeName"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Employee</FormLabel>
@@ -123,9 +178,7 @@ export function DayoffModal() {
                       <Command>
                         <CommandInput placeholder="Search leave type..." />
                         <CommandList>
-                          <CommandEmpty>
-                            No leave types found.
-                          </CommandEmpty>
+                          <CommandEmpty>No leave types found.</CommandEmpty>
                           <CommandGroup>
                             {leaveTypeOptions.map((type) => (
                               <CommandItem
@@ -148,7 +201,7 @@ export function DayoffModal() {
             />
             <FormField
               control={form.control}
-              name="dateRange"
+              name="date"
               render={({ }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Date Range</FormLabel>
@@ -181,20 +234,13 @@ export function DayoffModal() {
                         defaultMonth={date?.from ?? new Date()}
                         selected={date}
                         onSelect={(newDate) => {
-                          if (newDate && newDate.from) setDate({ from: newDate.from, to: newDate.to }); else setDate(undefined);
-                          // ✅ อัปเดต React Hook Form ให้ค่าเป็น `string`
-                          form.setValue("dateRange", {
-                            from: newDate?.from
-                              ? parseISO(format(newDate.from, "yyyy-MM-dd'T'HH:mm:ss'Z'"))
-                              : new Date(), // ✅ กำหนดค่า default
-
-                            to: newDate?.to
-                              ? parseISO(format(newDate.to, "yyyy-MM-dd'T'HH:mm:ss'Z'"))
-                              : new Date(), // ✅ กำหนดค่า default
-                          });
-
-                          // ✅ บังคับตรวจสอบค่าใหม่
-                          form.trigger("dateRange");
+                          if (newDate && newDate.from) setDate({ from: newDate.from, to: newDate.to })
+                          else setDate(undefined)
+                          form.setValue("date", {
+                            from: newDate?.from ? parseISO(format(newDate.from, "yyyy-MM-dd'T'HH:mm:ss'Z'")) : new Date(),
+                            to: newDate?.to ? parseISO(format(newDate.to, "yyyy-MM-dd'T'HH:mm:ss'Z'")) : new Date(),
+                          })
+                          form.trigger("date")
                         }}
                         numberOfMonths={2}
                       />
@@ -205,7 +251,7 @@ export function DayoffModal() {
               )}
             />
             <DialogFooter>
-              <Button type="submit">Add Leave</Button>
+              <Button type="submit">{mode === "edit" ? "Update Leave" : "Add Leave"}</Button>
             </DialogFooter>
           </form>
         </Form>

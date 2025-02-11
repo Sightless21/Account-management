@@ -28,7 +28,7 @@ export const KanBanBoard = ({ projectName, projectID }: KanBanBoardProps) => {
   });
 
   return (
-    <div className="mt-8 flex h-full w-full flex-col items-center justify-center gap-2 p-2">
+    <div className="flex h-full w-full flex-col items-center justify-center gap-2 p-2">
       {isLoading ? (
         <p>Loading tasks...</p> // ✅ แสดงข้อความโหลด
       ) : (

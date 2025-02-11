@@ -51,12 +51,12 @@ export default function Page() {
     }
 
     return (
-        <div className="m-3 flex flex-col gap-4">
+        <div className="m-3 flex flex-col gap-4 ">
             <Card>
                 <CardHeader className="flex flex-col gap-3 p-2">
                     <CardTitle className="flex text-2xl justify-center">Applicant Board</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="h-full mb-3">
                     <div className="flex flex-row gap-3 ml-4">
                         {/* 🔍 Input สำหรับค้นหา applicant name */}
                         <Input

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Menutabs from "@/components/menutabs"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { DayoffModal } from "@/components/Modal/modal-DayOff"
-import DemoTable from "@/components/Table/leave-table/MyleaveTable"
+import DayOffTable from "@/components/Table/leave-table/DayoffTable"
 // import { useSession } from "next-auth/react";
 // import { Role } from "@/types/users";
 
@@ -25,7 +25,7 @@ export default function Page() {
           </div>
         </CardHeader>
         <CardContent>
-          {activeTab === "My Leave" && <DemoTable userRole={"ADMIN"}/>}
+          {activeTab === "Leave History" && <DayOffTable userRole={"ADMIN"}/>}
           {activeTab === "Reports" && <p>แสดงข้อมูล Reports</p>}
         </CardContent>
       </Card>

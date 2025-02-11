@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-//FIXME : Applocant type move to Type Folder
+//DONE : Applocant type move to Type Folder
 export const columns = (
   handleNotPass: (id: string) => void,
 ): ColumnDef<{

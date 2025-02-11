@@ -87,7 +87,7 @@ export const Column = ({
 
   return (
     <div
-      className={`h-[500px] w-72 shrink-0 rounded-md border ${headingBgColor}`}
+      className={`h-[550px] w-72 shrink-0 rounded-md border ${headingBgColor}`}
     >
       <div className={`flex items-center justify-between rounded-t-md p-2`}>
         <h3 className={`font-medium decoration-4 ${headingColor}`}>{title}</h3>
@@ -99,15 +99,9 @@ export const Column = ({
         onDrop={handleDragEnd}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        className={`h-[458px] w-full overflow-auto border-t-2 border-dotted p-4 transition-colors ${active ? "bg-neutral-800/20" : "bg-neutral-800/0"}`}
+        className={`h-[500px] w-full overflow-auto border-t-2 border-dotted p-4 transition-colors ${active ? "bg-neutral-800/20" : "bg-neutral-800/0"}`}
       >
-        {filteredCards.map((c) => (
-          <Card
-            key={c.id}
-            {...c}
-            handleDragStart={(e) => handleDragStart(e, c, column)}
-          />
-        ))}
+        {filteredCards.map((c) => (<Card key={c.id} {...c} handleDragStart={(e) => handleDragStart(e, c, column)} />))}
       </div>
     </div>
   );

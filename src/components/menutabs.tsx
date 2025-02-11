@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { useState, useRef, useEffect } from "react"
 
 const allTabs = [
-  { name: "My Leave", roles: ["EMPLOYEE", "MANAGER", "HR","ADMIN"] },
+  { name: "Leave History", roles: ["EMPLOYEE", "MANAGER", "HR","ADMIN"] },
   { name: "Reports", roles: ["MANAGER","ADMIN","HR"] },
 ] // config role base here
 

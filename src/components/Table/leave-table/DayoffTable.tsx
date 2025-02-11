@@ -15,11 +15,11 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-interface DemoTableProps {
+interface DayOffTableProps {
   userRole: UserRole
 }
 
-export default function DemoTable({ userRole }: DemoTableProps) {
+export default function DayOffTable({ userRole }: DayOffTableProps) {
   const { data: dayOffData, isLoading, error } = useDayOff()
   const { mutate: deleteDayOff } = useDeleteDayOff()
   const { mutate: updateDayOff } = useUpdateDayOff()

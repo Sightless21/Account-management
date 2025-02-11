@@ -96,7 +96,7 @@ export default function Page() {
     );
   }, [sortedProjects, searchQuery]);
 
-  const projectsPerPage = 7;
+  const projectsPerPage = 8;
   const paginatedProjects = useMemo(() => {
     const startIndex = (currentPage - 1) * projectsPerPage;
     return filteredProjects
@@ -110,12 +110,12 @@ export default function Page() {
   return (
     <div className="ml-3 mr-3 flex flex-col gap-4">
       <div className="container">
-        <Card className="flex flex-col h-full">
+        <Card className="flex flex-col h-full mb-3">
           <CardHeader className="items-center">
             <CardTitle>Overall Project Process</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="mb-4 flex items-center justify-end gap-3">
+            <div className="mb-4 mr-2 flex items-center justify-end gap-3">
               {projectnum ? (
                 ""
               ) : (

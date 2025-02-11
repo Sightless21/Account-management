@@ -23,7 +23,7 @@ export const ApplicantBoard = ({
     );
   });
   return (
-    <div className="mt-8 flex h-full w-full flex-col items-center justify-center gap-2 p-2">
+    <div className="mt-2 flex h-full w-full flex-col items-center justify-center gap-2 p-2">
       <Board data={filteredApplicants} />
     </div>
   );

@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import * as React from "react";
 import ModalApplicant from "@/components/Modal/modal-Applicant";
 import { ApplicantBoard } from "@/components/DnDApplicant/ApplicantBoard";
-import { Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import { Card, CardTitle, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useApplicantData } from "@/hooks/useApplicantData";
 import { TableOfContents } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -24,7 +24,7 @@ export default function Page() {
         setLoading(true);
         fetchApplicants()
             .then(() => {
-                toast.success("Data loaded successfully",{
+                toast.success("Data loaded successfully", {
                     duration: 500
                 });
             })
@@ -52,12 +52,12 @@ export default function Page() {
 
     return (
         <div className="m-3 flex flex-col gap-4">
-            <div className="mr-3 flex scroll-m-20 items-center justify-between border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-                Applicant Board
-            </div>
             <Card>
-                <CardHeader className="flex flex-row gap-3 p-2">
-                    <div className="flex flex-row gap-3">
+                <CardHeader className="flex flex-col gap-3 p-2">
+                    <CardTitle className="flex text-2xl justify-center">Applicant Board</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex flex-row gap-3 ml-4">
                         {/* 🔍 Input สำหรับค้นหา applicant name */}
                         <Input
                             type="text"
@@ -89,14 +89,12 @@ export default function Page() {
                             </SelectContent>
                         </Select>
                         {/* 📝 Button เพิ่ม applicant */}
-                        <ModalApplicant mode={"create"}  />
+                        <ModalApplicant mode={"create"} />
                         {/* 📝 Button ตารางทดลองงาน */}
                         <Button variant={"outline"} onClick={handleProbationPage}>
                             Probationary Officer Table <TableOfContents />
                         </Button>
                     </div>
-                </CardHeader>
-                <CardContent>
                     <ApplicantBoard
                         data={applicants}
                         searchQuery={searchQuery}

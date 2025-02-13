@@ -1,5 +1,5 @@
-export interface Booking {
-  id: string
+export interface RoombookingType  {
+  id: string 
   username: string
   date: Date
   startTime: string

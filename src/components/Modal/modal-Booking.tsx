@@ -1,104 +1,101 @@
-import * as React from "react"
-import { CalendarIcon } from "lucide-react"
+import React, { useState } from "react"
+import { BadgePlus, CalendarIcon, PencilIcon } from "lucide-react"
 import { format } from "date-fns"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import type { Booking } from "@/types/bookings"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import type { RoombookingType } from "@/types/room-bookings"
+import { roomBookingFormSchema } from "@/schema/formRoomBooking"
+import { useUserData } from "@/hooks/useUserData"
+import { useSession } from "next-auth/react"
+import { useCreateRoomBooking, useUpdateRoomBooking } from "@/hooks/useRoomBookingData"
 
-// Define the form schema using Zod
-const bookingFormSchema = z.object({
-  username: z.string().min(1, "Name is required"),
-  date: z.date({
-    required_error: "Please select a date",
-  }),
-  startTime: z.string({
-    required_error: "Please select a start time",
-  }),
-  endTime: z.string({
-    required_error: "Please select an end time",
-  }),
-}).refine((data) => {
-  const start = parseInt(data.startTime.split(":")[0])
-  const end = parseInt(data.endTime.split(":")[0])
-  return end > start
-}, {
-  message: "End time must be after start time",
-  path: ["endTime"],
-})
-
-type BookingFormValues = z.infer<typeof bookingFormSchema>
+type BookingFormValues = z.infer<typeof roomBookingFormSchema>
 
 interface BookingDialogProps {
-  open: boolean
-  defaultvalues?: Booking
-  onOpenChange: (open: boolean) => void
-  booking?: Booking
-  onSave: (bookingData: Partial<Booking>) => void
-  title: string
-  description: string
+  mode?: "edit"
+  defaultvalue?: RoombookingType
 }
 
-export function BookingDialog({ open, onOpenChange, booking, onSave, title, description,}: BookingDialogProps) {
-  console.log("This is a default values: ",booking)
-  const defaultDate = booking?.date ? new Date(booking.date) : undefined
+export function BookingDialog({ defaultvalue, mode }: BookingDialogProps) {
+  const { data: session } = useSession()
+  const [open, setOpen] = useState(false)
+  const { data: user } = useUserData(session?.user.id as string)
+  const userinfo = user
+  const { mutate: createRoomBooking } = useCreateRoomBooking()
+  const { mutate: updateRoomBooking } = useUpdateRoomBooking()
+
 
   const form = useForm<BookingFormValues>({
-    resolver: zodResolver(bookingFormSchema),
-    mode: "all",
-    defaultValues: {
-      username: booking?.username || "",
-      date: defaultDate,
-      startTime: booking?.startTime || "",
-      endTime: booking?.endTime || "",
+    resolver: zodResolver(roomBookingFormSchema),
+    mode: "onChange",
+    defaultValues: defaultvalue ? {
+      username: defaultvalue?.username || "",
+      date: defaultvalue.date ? new Date(defaultvalue.date) : undefined,
+      startTime: defaultvalue?.startTime || "",
+      endTime: defaultvalue?.endTime || "",
+    } : {
+      username: userinfo?.firstName + " " + userinfo?.lastName as string,
+      date: new Date(),
+      startTime: new Date().toISOString(),
+      endTime: new Date().toISOString(),
     },
   })
 
-  React.useEffect(() => {
-    if (booking) {
-      form.reset({
-        username: booking.username || "",
-        date: booking.date ? new Date(booking.date) : undefined,
-        startTime: booking.startTime || "",
-        endTime: booking.endTime || "",
-      })
-    }
-  }, [booking, form])
 
-  const onSubmit = (data: BookingFormValues) => {
-    onSave(data)
-    onOpenChange(false)
+  const onSubmit = (value: BookingFormValues) => {
+    console.log("Values :",value)
+    if (!value.date || !value.startTime || !value.endTime){
+      return;
+    }
+
+    const formatData = {
+      id: defaultvalue?.id || "",
+      username : value?.username,
+      date: value?.date || new Date(),
+      startTime : value?.startTime || "",
+      endTime : value?.endTime || "",
+    }
+    console.log("Format Data :",formatData)
+
+    if (mode === "edit") {
+      updateRoomBooking(formatData)
+    } else {
+      createRoomBooking(formatData)
+      form.reset()
+    }
+    setOpen(false)
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        {mode === "edit" ? (
+          <Button
+            variant={"outline"}
+            size="icon"
+            className="h-8 w-8"
+          >
+            <PencilIcon className="h-4 w-4" />
+          </Button>
+        ) :
+          <Button variant={"default"}>
+            <BadgePlus /> Booking Meeting Room
+          </Button>
+        }
+      </DialogTrigger>
       <DialogContent className="sm:max-w-[678px] w-[90vw]">
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
+          <DialogTitle>{mode === "edit" ? "Edit RoomBooking": "Meeting room booking"}</DialogTitle>
+          <DialogDescription>Enter the details for the room booking.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -177,7 +174,6 @@ export function BookingDialog({ open, onOpenChange, booking, onSave, title, desc
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="endTime"
@@ -205,14 +201,14 @@ export function BookingDialog({ open, onOpenChange, booking, onSave, title, desc
             </div>
 
             <DialogFooter>
-              <Button type="button" variant={"destructive"} onClick={() => onOpenChange(false)}>
-                Cancel
-              </Button>
-              <Button type="submit">Save</Button>
+              <DialogClose asChild>
+                <Button variant={"destructive"}>Cancel</Button>
+              </DialogClose>
+              <Button type="submit">{mode === "edit" ? "Update Booking" : "Booking Meeting Room"}</Button>
             </DialogFooter>
           </form>
         </Form>
       </DialogContent>
-    </Dialog>
+    </Dialog >
   )
 }

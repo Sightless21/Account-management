@@ -165,7 +165,7 @@ export const getColumns = (
     case "EMPLOYEE":
       return [...baseColumns, statusColumn, actionColumn]
     case "HR":
-      return [...baseColumns, statusColumn, actionColumn, approvalColumn]
+      return [...baseColumns, approvalColumn, statusColumn, actionColumn, ]
     case "MANAGER":
       return [...baseColumns, approvalColumn, statusColumn]
     case "ADMIN":

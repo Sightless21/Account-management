@@ -3,12 +3,12 @@ import React, { useState } from "react";
 import Menutabs from "@/components/menutabs"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { DayoffModal } from "@/components/Modal/modal-DayOff"
-import DayOffTable from "@/components/Table/Dayoff-table/DayoffTable"
+import DayOffTable from "@/components/Table/DayOff-table/DayoffTable"
 // import { useSession } from "next-auth/react";
 // import { Role } from "@/types/users";
 
 
-//TODO : 
+//TODO : Reports Dayoff MANAGER , HR interface 
 export default function Page() {
   const [activeTab, setActiveTab] = useState("Leave History");
   // const {data : session , status} = useSession() //get role form session

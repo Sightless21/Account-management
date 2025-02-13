@@ -179,3 +179,43 @@ enum LeaveType {
   Personal
   Maternity
 }
+
+model CarReservation {
+  id           String          @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String // ผู้จอง
+  employeeName String // ชื่อพนักงาน
+  date         DateTime // วันที่จอง
+  destination  String //ไปที่ไหน
+  startTime    String // เวลาเริ่มต้น เช่น "09:00"
+  endTime      String // เวลาสิ้นสุด เช่น "11:00"
+  tripStatus   TripStatus // สถานะของการเดินทาง
+  status       CarAvailability
+  carId        String          @db.ObjectId
+  car          Car             @relation(fields: [carId], references: [id])
+}
+
+model Car {
+  id           String           @id @default(auto()) @map("_id") @db.ObjectId
+  name         String //ชื่อรถ
+  plate        String           @unique //ทะเบียน
+  type         CarType // ประเภทรถ
+  reservations CarReservation[]
+}
+
+enum CarType {
+  SEDAN // รถเก๋ง
+  SUV // รถ SUV
+  VAN // รถตู้
+}
+
+enum CarAvailability {
+  AVAILABLE
+  IN_USE
+  MAINTENANCE
+}
+
+enum TripStatus {
+  ONGOING // กำลังเดินทาง
+  COMPLETED // สิ้นสุดการเดินทาง
+  CANCELLED // ยกเลิก
+}

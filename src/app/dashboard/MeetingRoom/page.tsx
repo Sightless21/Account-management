@@ -1,7 +1,7 @@
 "use client"
 import React from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import BookingRoomTable from "@/components/Table/bookingRoom-table/BookingRoomTable"
+import BookingRoomTable from "@/components/Table/BookingRoom-table/BookingRoomTable"
 
 //FIXME : Room Booking Page enchance ui or table
 export default function RoomBooking() {
@@ -11,10 +11,10 @@ export default function RoomBooking() {
       <Card className="p-2 h-full">
         <CardHeader>
           <CardTitle>Meeting Room Booking</CardTitle>
-          <CardDescription>Manage your room booking.</CardDescription>
+          <CardDescription>Manage your meeting room bookings and tracking system.</CardDescription>
         </CardHeader>
         <CardContent className="p-2">
-          <div className="w-full mx-auto p-2 space-y-4">
+          <div className="mx-auto space-y-4">
             <BookingRoomTable />
           </div>
         </CardContent>

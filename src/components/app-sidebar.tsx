@@ -62,12 +62,12 @@ export function AppSidebar({ user , ...props }: React.ComponentProps<typeof Side
             url: "/DayOff",
           },
           {
-            title: "Reserve a car",
-            url: "/ReserveACar",
+            title: "Car Reservation",
+            url: "/CarReservation",
           },
           {
-            title: "Claim expenses",
-            url: "/ClaimExpenses",
+            title: "Reimbursement",
+            url: "/Reimbursement",
           },
         ],
       },

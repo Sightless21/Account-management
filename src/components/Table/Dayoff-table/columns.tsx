@@ -30,7 +30,7 @@ const ActionButtons = ({ row, onEdit, onDelete }: ActionButtonsProps) => (
     )}
     {onDelete && (
       <Button
-        variant="ghost"
+        variant={"outline"}
         size="icon"
         onClick={() => onDelete(row.original)}
         className="h-8 w-8 text-red-500"

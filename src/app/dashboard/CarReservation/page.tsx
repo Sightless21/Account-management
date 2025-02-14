@@ -2,6 +2,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import CarReservationTable from "@/components/Table/CarReservation-table/CarReservationTable"
+import { CarReservationDrawer } from "@/components/Drawer/drawer-CarReservation"
 
 //TODO : สร้างหน้า CarReservation
 export default function CarReservation() {
@@ -12,6 +13,9 @@ export default function CarReservation() {
         <CardHeader>
           <CardTitle>Car Reservation</CardTitle>
           <CardDescription>Car Reservation and tracking system.</CardDescription>
+          <div className="flex">
+            <CarReservationDrawer />
+          </div>
         </CardHeader>
         <CardContent>
           <CarReservationTable />

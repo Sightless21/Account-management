@@ -13,7 +13,7 @@ export interface Car {
 }
 
 export interface CarReservationType {
-  id:           string;
+  id:           string | null | undefined;
   userId:       string;
   employeeName: string;
   date: {

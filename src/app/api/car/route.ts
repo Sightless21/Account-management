@@ -23,9 +23,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
   try {
+
     // ตรวจสอบว่ามีรถที่ทะเบียนเดียวกันอยู่ในฐานข้อมูลหรือไม่
     const existingCar = await prisma.car.findUnique({
-      where: { plate: body.plate },
+      where: { plate: body.plate.trim() },
     });
 
     if (existingCar) {

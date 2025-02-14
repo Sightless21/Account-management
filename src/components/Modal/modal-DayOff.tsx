@@ -122,7 +122,7 @@ export function DayoffModal({ defaultValue, mode }: DayoffModalProps) {
       <DialogTrigger asChild>
         {mode === "edit" ? (
           <Button
-            variant="ghost"
+            variant={"outline"}
             size="icon"
             className="h-8 w-8"
           >

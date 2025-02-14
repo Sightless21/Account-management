@@ -70,13 +70,13 @@ export const columns: ColumnDef<CarReservationType>[] = [
     header: "Destination",
   },
   {
-    accessorKey: "car",
-    header: "Car",
+    accessorKey: "plate",
+    header: "Plate",
     cell: ({ row }) => {
       const { car } = row.original;
       return (
         <div className="flex items-center space-x-1">
-          <span>{car.name}</span>
+          <span>{car.plate}</span>
         </div>
       );
     }
@@ -100,7 +100,7 @@ export const columns: ColumnDef<CarReservationType>[] = [
             <Tooltip>
               <TooltipTrigger asChild>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-8 w-8 p-0">
+                  <Button variant={"outline"} className="h-8 w-8 p-0">
                     <span className="sr-only">Open menu</span>
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>

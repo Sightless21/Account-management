@@ -7,7 +7,20 @@ export const fetchCars = async () => {
   return response.data;
 };
 
-export const useCar = () => {
+export const fetchCarInfo = async ({id} : {id : string}) => {
+  const response = await axios.get<Car>(`/api/car/${id}`)
+  return response.data
+}
+
+export const useCarInfo = ({id} : {id : string}) => {
+  return useQuery({
+    queryKey: ["car",id],
+    queryFn: () => fetchCarInfo({id}),
+    enabled: !!id,
+  })
+}
+
+export const useCars = () => {
   return useQuery({
     queryKey: ["cars"],
     queryFn: fetchCars,

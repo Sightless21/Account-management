@@ -1,14 +1,14 @@
 import { z } from "zod";
 
 export const formCarSchema = z.object({
-  id: z.string().optional(),
+  id: z.string().nullable(),
   name: z.string().min(1, "Name is required"),
   plate: z.string().min(1, "Plate is required"),
   type: z.enum(["SEDAN", "SUV", "VAN"]),
 })
 
 export const formCarReservationSchema = z.object({
-  id: z.string().optional(),
+  id: z.string().nullable(),
   userId: z.string().min(1, "User ID is required"),
   employeeName: z.string().min(1, "Employee name is required"),
   date: z.object({
@@ -26,7 +26,7 @@ export const formCarReservationSchema = z.object({
   endTime: z.string({
     required_error: "Please select an end time",
   }),
-  carId: z.string().min(1, "Car ID is required"),
+  carId: z.string().min(1, "Car ID is required").nullable(),
   tripStatus: z.enum(["ONGOING", "COMPLETED", "CANCELLED"]),
   car: formCarSchema,
 })

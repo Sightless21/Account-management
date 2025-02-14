@@ -5,7 +5,10 @@ import { prisma } from "@/lib/prisma";
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   const { id } = await params;
   try {
-    const carReservation = await prisma.car.findUnique({ where: { id } });
+    const carReservation = await prisma.carReservation.findUnique({ 
+      where: { id }, 
+      include: { car: true }
+    });
     return NextResponse.json(carReservation, { status: 200 });
   } catch (error) {
     console.error("Error fetching car reservation:", error);
@@ -19,7 +22,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   const { id } = await params;
   try {
-    const deletedCarReservation = await prisma.car.delete({ where: { id } });
+    const deletedCarReservation = await prisma.carReservation.delete({ where: { id } });
     return NextResponse.json(deletedCarReservation, { status: 200 });
   } catch (error) {
     console.error("Error deleting car reservation:", error);
@@ -31,31 +34,27 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = await params;
+  const { id } = params; // ✅ ใช้ params.id โดยตรง
+  if (!id) {
+    return NextResponse.json({ error: "Missing reservation ID" }, { status: 400 });
+  }
+
   try {
     const data = await req.json();
     console.log("📌 Received Body: ", data);
-    // ตรวจสอบว่ามีรถที่ชื่อเดียวกันหรือไม่ (ตรวจสอบชื่อก่อน)
-    let car = await prisma.car.findFirst({
-      where: {
-        plate: data.car.plate,  // ตรวจสอบชื่อรถ
-      },
+
+    // ตรวจสอบป้ายทะเบียนให้ไม่มีช่องว่างเกิน
+    const normalizedPlate = data.car.plate.trim();
+
+    const car = await prisma.car.findFirst({
+      where: { plate: normalizedPlate },
     });
 
-    // ถ้าไม่มีรถในฐานข้อมูล, ให้สร้างรถใหม่
     if (!car) {
-      car = await prisma.car.create({
-        data: {
-          name: data.car.name,
-          plate: data.car.plate,
-          type: data.car.type,
-        },
-      });
-      console.log("✅ Created New Car:", car);
-    } else {
-      console.log("⚠️ Car with this name already exists:", car);
+      return NextResponse.json({ error: "Car creation failed" }, { status: 500 });
     }
 
+    // อัปเดตข้อมูล
     const updatedCarReservation = await prisma.carReservation.update({
       where: { id },
       data: {
@@ -69,15 +68,12 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
         endTime: data.endTime,
         tripStatus: data.tripStatus,
         carId: car.id,
-        car: data.car,
-      }
+      },
     });
+
     return NextResponse.json(updatedCarReservation, { status: 200 });
   } catch (error) {
-    console.error("Error updating car reservation:", error);
-    return NextResponse.json(
-      { error: "Error updating car reservation" },
-      { status: 500 },
-    );
+    console.error("❌ Error updating car reservation:", error);
+    return NextResponse.json({ error: "Error updating car reservation" }, { status: 500 });
   }
 }

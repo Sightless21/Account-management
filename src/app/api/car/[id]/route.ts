@@ -1,6 +1,19 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse, NextRequest } from "next/server";
 
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  const { id } = await params;
+  try {
+    const car = await prisma.car.findUnique({ where: { id } });
+    return NextResponse.json(car, { status: 200 })
+  } catch (error) {
+    console.error("Error get car:", error)
+    return NextResponse.json(
+      { error: "Error get a car" },
+      { status: 500 }
+    )
+  }
+}
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   const { id } = await params;
   try {
@@ -16,36 +29,16 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = await params;
+  const { id } = params;
   try {
     const data = await req.json();
-    console.log("📌 Received Body: ",data);
-    // ตรวจสอบว่ามีรถที่ชื่อเดียวกันหรือไม่ (ตรวจสอบชื่อก่อน)
-    let car = await prisma.car.findFirst({
-      where: {
-        plate: data.car.plate,  // ตรวจสอบชื่อรถ
-      },
-    });
-
-    // ถ้าไม่มีรถในฐานข้อมูล, ให้สร้างรถใหม่
-    if (!car) {
-      car = await prisma.car.create({
-        data: {
-          name: data.car.name,
-          plate: data.car.plate,
-          type: data.car.type,
-        },
-      });
-      console.log("✅ Created New Car:", car);
-    } else {
-      console.log("⚠️ Car with this name already exists:", car);
-    }
+    console.log("📌 Received Body: ", data);
 
     const updatedCar = await prisma.car.update({
       where: { id },
       data: {
         name: data.name,
-        plate: data.plate,
+        plate: data.plate.trim(),
         type: data.type,
       },
     });

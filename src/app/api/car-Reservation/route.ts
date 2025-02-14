@@ -3,7 +3,11 @@ import { NextResponse, NextRequest } from "next/server";
 
 export async function GET() {
   try {
-    const allCarReservation = await prisma.carReservation.findMany();
+    const allCarReservation = await prisma.carReservation.findMany({
+      include: {
+        car: true,
+      },
+    });
     return NextResponse.json(allCarReservation, { status: 200 });
   } catch (error) {
     console.error("Error fetching car reservation:", error);
@@ -19,28 +23,17 @@ export async function POST(req: NextRequest) {
   console.log("📌 Received Body:", body);
 
   try {
-    // ตรวจสอบว่ามีรถที่ชื่อเดียวกันหรือไม่ (ตรวจสอบชื่อก่อน)
-    let car = await prisma.car.findFirst({
+
+    const car = await prisma.car.findFirst({
       where: {
-        plate: body.car.plate,  // ตรวจสอบชื่อรถ
+        plate: body.car.plate.trim(),  
       },
     });
 
-    // ถ้าไม่มีรถในฐานข้อมูล, ให้สร้างรถใหม่
     if (!car) {
-      car = await prisma.car.create({
-        data: {
-          name: body.car.name,
-          plate: body.car.plate,
-          type: body.car.type,
-        },
-      });
-      console.log("✅ Created New Car:", car);
-    } else {
-      console.log("⚠️ Car with this name already exists:", car);
+      return NextResponse.json({ error: "Car creation failed" }, { status: 500 });
     }
 
-    // สร้างการจองรถ
     const newCarReservation = await prisma.carReservation.create({
       data: {
         userId: body.userId,
@@ -53,10 +46,9 @@ export async function POST(req: NextRequest) {
         startTime: body.startTime,
         endTime: body.endTime,
         tripStatus: body.tripStatus,
-        carId: car.id, // ใช้ carId ที่สร้างหรือค้นพบ
+        carId: car.id,
       },
     });
-
     console.log("✅ Created Car Reservation:", newCarReservation);
     return NextResponse.json(newCarReservation, { status: 200 });
   } catch (error) {

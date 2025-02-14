@@ -23,7 +23,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     // ตรวจสอบว่ามีรถที่ชื่อเดียวกันหรือไม่ (ตรวจสอบชื่อก่อน)
     let car = await prisma.car.findFirst({
       where: {
-        name: data.car.name,  // ตรวจสอบชื่อรถ
+        plate: data.car.plate,  // ตรวจสอบชื่อรถ
       },
     });
 

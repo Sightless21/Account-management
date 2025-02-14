@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     // ตรวจสอบว่ามีรถที่ชื่อเดียวกันหรือไม่ (ตรวจสอบชื่อก่อน)
     let car = await prisma.car.findFirst({
       where: {
-        name: body.car.name,  // ตรวจสอบชื่อรถ
+        plate: body.car.plate,  // ตรวจสอบชื่อรถ
       },
     });
 
@@ -45,13 +45,15 @@ export async function POST(req: NextRequest) {
       data: {
         userId: body.userId,
         employeeName: body.employeeName,
-        date: new Date(body.date),
+        date: {
+          from: new Date(body.date.from),
+          to: new Date(body.date.to),
+        },
         destination: body.destination,
         startTime: body.startTime,
         endTime: body.endTime,
-        status: body.status,
-        carId: car.id, // ใช้ carId ที่สร้างหรือค้นพบ
         tripStatus: body.tripStatus,
+        carId: car.id, // ใช้ carId ที่สร้างหรือค้นพบ
       },
     });
 

@@ -74,7 +74,7 @@ export default function BookingRoomTable() {
           </PopoverContent>
         </Popover>
         {/* add components */}
-        <BookingDialog/>
+        <BookingDialog />
       </div>
       <DataTable columns={columns} data={filteredBookings || []} />
     </div>

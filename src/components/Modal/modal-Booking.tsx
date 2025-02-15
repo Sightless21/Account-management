@@ -33,7 +33,6 @@ export function BookingDialog({ defaultvalue, mode }: BookingDialogProps) {
   const { mutate: createRoomBooking } = useCreateRoomBooking()
   const { mutate: updateRoomBooking } = useUpdateRoomBooking()
 
-
   const form = useForm<BookingFormValues>({
     resolver: zodResolver(roomBookingFormSchema),
     mode: "onChange",
@@ -50,9 +49,7 @@ export function BookingDialog({ defaultvalue, mode }: BookingDialogProps) {
     },
   })
 
-
   const onSubmit = (value: BookingFormValues) => {
-    console.log("Values :",value)
     if (!value.date || !value.startTime || !value.endTime){
       return;
     }
@@ -64,7 +61,6 @@ export function BookingDialog({ defaultvalue, mode }: BookingDialogProps) {
       startTime : value?.startTime || "",
       endTime : value?.endTime || "",
     }
-    console.log("Format Data :",formatData)
 
     if (mode === "edit") {
       updateRoomBooking(formatData)
@@ -78,19 +74,21 @@ export function BookingDialog({ defaultvalue, mode }: BookingDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {mode === "edit" ? (
-          <Button
-            variant={"outline"}
-            size="icon"
-            className="h-8 w-8"
-          >
-            <PencilIcon className="h-4 w-4" />
-          </Button>
-        ) :
-          <Button variant={"default"}>
-            <BadgePlus /> Booking Meeting Room
-          </Button>
-        }
+        <div>
+          {mode === "edit" ? (
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
+            >
+              <PencilIcon className="h-4 w-4" />
+            </Button>
+          ) : (
+            <Button variant="default">
+              <BadgePlus /> Booking Meeting Room
+            </Button>
+          )}
+        </div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[678px] w-[90vw]">
         <DialogHeader>
@@ -99,6 +97,7 @@ export function BookingDialog({ defaultvalue, mode }: BookingDialogProps) {
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* Rest of the form fields remain the same */}
             <FormField
               control={form.control}
               name="username"
@@ -202,13 +201,13 @@ export function BookingDialog({ defaultvalue, mode }: BookingDialogProps) {
 
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant={"destructive"}>Cancel</Button>
+                <Button variant="destructive">Cancel</Button>
               </DialogClose>
               <Button type="submit">{mode === "edit" ? "Update Booking" : "Booking Meeting Room"}</Button>
             </DialogFooter>
           </form>
         </Form>
       </DialogContent>
-    </Dialog >
+    </Dialog>
   )
 }

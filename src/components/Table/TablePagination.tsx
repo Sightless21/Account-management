@@ -11,8 +11,6 @@ interface TablePaginationProps<TData> {
 
 export function TablePagination<TData>({ table }: TablePaginationProps<TData>) {
   return (
-
-
     <div className="flex items-center justify-between px-2">
       <div className="flex-1 text-sm text-muted-foreground">
         Page {table.getState().pagination.pageIndex + 1} of{" "}
@@ -21,7 +19,7 @@ export function TablePagination<TData>({ table }: TablePaginationProps<TData>) {
       <TooltipProvider>
         <div className="flex items-center space-x-2">
           <Tooltip>
-            <TooltipTrigger>
+            <TooltipTrigger asChild>
               <Button
                 variant="outline"
                 className="hidden h-8 w-8 p-0 lg:flex"
@@ -37,7 +35,7 @@ export function TablePagination<TData>({ table }: TablePaginationProps<TData>) {
             </TooltipContent>
           </Tooltip>
           <Tooltip>
-            <TooltipTrigger>
+            <TooltipTrigger asChild>
               <Button
                 variant="outline"
                 className="h-8 w-8 p-0"
@@ -53,7 +51,7 @@ export function TablePagination<TData>({ table }: TablePaginationProps<TData>) {
             </TooltipContent>
           </Tooltip>
           <Tooltip>
-            <TooltipTrigger>
+            <TooltipTrigger asChild>
               <Button
                 variant="outline"
                 className="h-8 w-8 p-0"
@@ -69,7 +67,7 @@ export function TablePagination<TData>({ table }: TablePaginationProps<TData>) {
             </TooltipContent>
           </Tooltip>
           <Tooltip>
-            <TooltipTrigger>
+            <TooltipTrigger asChild>
               <Button
                 variant="outline"
                 className="hidden h-8 w-8 p-0 lg:flex"

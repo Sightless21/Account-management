@@ -22,23 +22,3 @@ export default function RoomBooking() {
     </div>
   )
 }
-
-
-
-//NOTE
-{/* <BookingDialog
-      open={isAddDialogOpen}
-      onOpenChange={setIsAddDialogOpen}
-      onSave={handleAddBooking}
-      title="Add New Booking"
-      description="Create a new room booking. Fill in all the required information."
-    />
-
-    <BookingDialog
-      open={isEditDialogOpen}
-      onOpenChange={setIsEditDialogOpen}
-      booking={selectedBooking}
-      onSave={handleEditBooking}
-      title="Edit Booking"
-      description="Modify the booking details below."
-      /> */}

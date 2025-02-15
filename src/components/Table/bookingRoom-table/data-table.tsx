@@ -12,8 +12,6 @@ import {
 } from "@tanstack/react-table"
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-// import { Button } from "@/components/ui/button"
-// import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
 import { TablePagination } from "@/components/Table/TablePagination"
 
 interface DataTableProps<TData, TValue> {

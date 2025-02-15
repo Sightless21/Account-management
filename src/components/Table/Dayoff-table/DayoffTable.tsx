@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { DayoffModal } from "@/components/Modal/modal-DayOff"
 
 interface DayOffTableProps {
   userRole: UserRole
@@ -159,6 +160,7 @@ export default function DayOffTable({ userRole }: DayOffTableProps) {
         >
           Reset
         </Button>
+        <DayoffModal />
       </div>
       <DataTable columns={columns} data={filteredData} />
     </div>

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Menutabs from "@/components/menutabs"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { DayoffModal } from "@/components/Modal/modal-DayOff"
+
 import DayOffTable from "@/components/Table/DayOff-table/DayoffTable"
 
 
@@ -19,7 +19,6 @@ export default function Page() {
           <CardDescription>Employee Leave of Absence Tracking System</CardDescription>
           <div className="flex w-full justify-between">
             <Menutabs userRole={"ADMIN"} onTabChange={setActiveTab} />
-            <DayoffModal />
           </div>
         </CardHeader>
         <CardContent>

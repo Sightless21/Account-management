@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input"
 import type { z } from "zod"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CalendarIcon, Clock } from "lucide-react"
+import { CalendarIcon, Clock, BadgePlus } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { useSession } from "next-auth/react"
@@ -92,7 +92,7 @@ export function CarReservationDrawer() {
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <Button variant="outline">Open Car Reservation</Button>
+        <Button variant={"default"}><BadgePlus />Create Car Reservation</Button>
       </DrawerTrigger>
       <DrawerContent>
         <Form {...form}>

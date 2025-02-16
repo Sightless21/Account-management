@@ -67,7 +67,7 @@ export function AppSidebar({ user , ...props }: React.ComponentProps<typeof Side
           },
           {
             title: "Reimbursement",
-            url: "/Reimbursement",
+            url: "/Expenses",
           },
         ],
       },

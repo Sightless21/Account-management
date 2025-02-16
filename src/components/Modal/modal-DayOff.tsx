@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import * as z from "zod"
 import { format, parseISO } from "date-fns"
 import { CalendarIcon, Check, ChevronsUpDown, BadgePlus, PencilIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -12,15 +13,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
 import { Input } from "@/components/ui/input"
-
-// Actions
 import { LeaveType } from "@/types/day-off"
 import { useSession } from "next-auth/react"
 import { useUserData } from "@/hooks/useUserData"
 import { useCreateDayOff, useUpdateDayOff } from "@/hooks/useDayOffData"
 import { DayoffType } from "@/types/day-off"
+import { useState } from "react"
 
 type DayoffModalProps = {
   defaultValue?: DayoffType;
@@ -56,9 +55,9 @@ const formSchema = z.object({
 
 export function DayoffModal({ defaultValue, mode }: DayoffModalProps) {
   const { data: session } = useSession()
-  const [open, setOpen] = React.useState(false)
-  const [leaveTypeOptions] = React.useState(leaveTypes)
-  const [date, setDate] = React.useState<{ from: Date | undefined; to: Date | undefined } | undefined>(
+  const [open, setOpen] = useState(false)
+  const [leaveTypeOptions] = useState(leaveTypes)
+  const [date, setDate] = useState<{ from: Date | undefined; to: Date | undefined } | undefined>(
     defaultValue ? {
       from: defaultValue.date.from ? new Date(defaultValue.date.from) : undefined,
       to: defaultValue.date.to ? new Date(defaultValue.date.to) : undefined,
@@ -123,15 +122,17 @@ export function DayoffModal({ defaultValue, mode }: DayoffModalProps) {
       <DialogTrigger asChild>
         {mode === "edit" ? (
           <Button
-            variant="ghost"
+            variant={"outline"}
             size="icon"
             className="h-8 w-8"
           >
             <PencilIcon className="h-4 w-4" />
           </Button>
-        ) : <Button variant={"default"}>
+        ) : 
+        <Button variant={"default"}>
           <BadgePlus /> Add New Leave
-        </Button>}
+        </Button>
+        }
       </DialogTrigger>
       <DialogContent className="sm:max-w-[678px] w-[90vw]">
         <DialogHeader>

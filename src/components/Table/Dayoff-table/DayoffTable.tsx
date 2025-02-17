@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { getColumns } from "./columns"
+import { getColumns } from "@/components/Table/Dayoff-table/columns"
 import type { UserRole, DayoffType } from "@/types/day-off"
-import { DataTable } from "./data-table"
+import { DataTable } from "@/components/Table/Dayoff-table/data-table"
 import { useDayOff, useDeleteDayOff, useUpdateDayOff, useUpdateStatusDayOff } from "@/hooks/useDayOffData"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"

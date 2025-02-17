@@ -30,6 +30,7 @@ export function BasicInfoFields({ control }: BasicInfoFieldsProps) {
           </FormItem>
         )}
       />
+
       <FormField
         control={control}
         name="transactionDate"
@@ -62,6 +63,7 @@ export function BasicInfoFields({ control }: BasicInfoFieldsProps) {
           </FormItem>
         )}
       />
+
       <FormField
         control={control}
         name="description"
@@ -77,25 +79,12 @@ export function BasicInfoFields({ control }: BasicInfoFieldsProps) {
       />
       <FormField
         control={control}
-        name="image"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Image Upload</FormLabel>
-            <FormControl>
-              <Input type="file" accept="image/*" onChange={(e) => field.onChange(e.target.files?.[0])} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={control}
         name="attachment"
         render={({ field }) => (
           <FormItem>
             <FormLabel>File Attachment</FormLabel>
             <FormControl>
-              <Input type="file" onChange={(e) => field.onChange(e.target.files?.[0])} />
+              <Input className="cursor-pointer hover:bg-slate-100" type="file" accept="image/*" onChange={(e) => field.onChange(e.target.files?.[0])} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -104,4 +93,3 @@ export function BasicInfoFields({ control }: BasicInfoFieldsProps) {
     </>
   )
 }
-

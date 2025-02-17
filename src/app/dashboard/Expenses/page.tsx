@@ -4,7 +4,6 @@ import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { ExpenseClaimForm } from "@/components/Sheet/ExpenseClaimForm";
 
-
 //TODO : สร้างหน้า ClaimExpenses
 export default function Page() {
   //const session = getServerSession(authOptions)
@@ -16,7 +15,7 @@ export default function Page() {
     <>
       {/* <pre>{JSON.stringify(session, null, 2)}</pre> */}
       <p>{sessionUser?.user?.id}</p>
-      <ExpenseClaimForm/>
+      <ExpenseClaimForm />
     </>
   );
 }

@@ -225,15 +225,23 @@ enum TripStatus {
 }
 
 model ExpenseClaim {
-  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  id                 String             @id @default(auto()) @map("_id") @db.ObjectId
+  employeeName       String
   title              String
   transactionDate    DateTime
   description        String
-  attachmentUrl      String?  // URL สำหรับเปิดดูไฟล์
-  attachmentPublicId String?  // เก็บ Public ID เพื่อใช้ลบไฟล์จาก Cloudinary
-  useForeignCurrency Boolean  @default(false)
-  country            String?  // ประเทศ
-  expenses           Json?    // รายละเอียดค่าใช้จ่าย
-  createdAt          DateTime @default(now())  
-  updatedAt          DateTime @updatedAt
+  status             ExpenseClaimStatus
+  attachmentUrl      String? // URL สำหรับเปิดดูไฟล์
+  attachmentPublicId String? // เก็บ Public ID เพื่อใช้ลบไฟล์จาก Cloudinary
+  useForeignCurrency Boolean            @default(false)
+  country            String? // ประเทศ
+  expenses           Json? // รายละเอียดค่าใช้จ่าย
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+}
+
+enum ExpenseClaimStatus {
+  Pending
+  Accepted
+  Declined
 }

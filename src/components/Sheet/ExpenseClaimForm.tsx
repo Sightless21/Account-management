@@ -7,18 +7,28 @@ import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Form } from "@/components/ui/form"
 import { expenseFormSchema, ExpenseFormValues } from "@/schema/expenseFormSchema"
-import { useExpenseForm } from "@/hooks/useExpenseForm"
+import { useExpenseFormDefault } from "@/hooks/useExpenseFormDefault"
 import { BasicInfoFields } from "@/components/Sheet/expense-form/BasicInfoFields"
 import { ForeignCurrencyFields } from "@/components/Sheet/expense-form/ForeignCurrencyFields"
 import { ExpenseTypeAccordion } from "@/components/Sheet/expense-form/ExpenseTypeAccordion"
 import { handleExpense } from "@/app/action/expense"
+import { useUserData } from "@/hooks/useUserData"
 import { toast } from "sonner"
+import { useSession } from "next-auth/react"
+import { useExpenses } from "@/hooks/useExpenseData"
 
 export function ExpenseClaimForm() {
+  const { refetch } = useExpenses();
+  const { data: session } = useSession()
+  const { data: user } = useUserData(session?.user.id as string)
+  const userinfo = user
   const [open, setOpen] = useState(false)
   const form = useForm<ExpenseFormValues>({
     resolver: zodResolver(expenseFormSchema),
-    defaultValues: useExpenseForm().defaultValues,
+    defaultValues: {
+      ...useExpenseFormDefault().defaultValues,
+      employeename: userinfo ? `${userinfo.firstName} ${userinfo.lastName}` : "",
+    },
   })
 
   const onSubmit: SubmitHandler<ExpenseFormValues> = async (values) => {
@@ -28,6 +38,8 @@ export function ExpenseClaimForm() {
       success: 'create new expense claim successfully',
       error: 'Error to create new expense claim!'
     });
+
+    await refetch();
     // Handle form submission
   }
 

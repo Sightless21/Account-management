@@ -50,7 +50,7 @@ export function ExpenseTypeInputs({ control, type, fields }: ExpenseTypeInputsPr
                 <FormLabel>{field.label}</FormLabel>
                 <FormControl>
                   {field.inputType === "textarea" ? (
-                    <div className="w-[320px] m-1">
+                    <div className="w-[530px] m-2">
                       <Textarea
                         {...formField}
                         value={formField.value as string || ''}
@@ -58,7 +58,7 @@ export function ExpenseTypeInputs({ control, type, fields }: ExpenseTypeInputsPr
                     </div>
                   ) : (
                     <Input
-                      className="w-[320px] m-1"
+                      className="w-[530px] m-2"
                       type={field.inputType}
                       value={formField.value as string | number || ''}
                       onChange={(e) =>

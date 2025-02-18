@@ -88,10 +88,10 @@ export default function DayOffTable({ userRole }: DayOffTableProps) {
     <div className="space-y-4">
       <div className="flex flex-wrap gap-4">
         {/* Search by employee name */}
-        <Input placeholder="Search by employee name" value={nameFilter} onChange={(e) => setNameFilter(e.target.value)} className="max-w-sm w-[250px]" />
+        <Input placeholder="Search by employee name" value={nameFilter} onChange={(e) => setNameFilter(e.target.value)} className="max-w-sm w-[200px]" />
         {/* Select Leave Type */}
         <Select onValueChange={setLeaveTypeFilter} value={leaveTypeFilter}>
-          <SelectTrigger className="w-[200px]">
+          <SelectTrigger className="w-[150px]">
             <SelectValue placeholder="Select leave type" />
           </SelectTrigger>
           <SelectContent>
@@ -108,7 +108,7 @@ export default function DayOffTable({ userRole }: DayOffTableProps) {
           <PopoverTrigger asChild>
             <Button
               variant={"outline"}
-              className={cn("w-[300px] justify-start text-left font-normal", !dateRange && "text-muted-foreground")}
+              className={cn("w-[250px] justify-start text-left font-normal", !dateRange && "text-muted-foreground")}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
               {dateRange?.from ? (
@@ -137,7 +137,7 @@ export default function DayOffTable({ userRole }: DayOffTableProps) {
         </Popover>
         {/* Select Leave Status */}
         <Select onValueChange={setLeaveStatusFilter} value={leaveStatusFilter} >
-          <SelectTrigger className="w-[160px]">
+          <SelectTrigger className="w-[150px]">
             <SelectValue placeholder="Select Status" />
           </SelectTrigger>
           <SelectContent>

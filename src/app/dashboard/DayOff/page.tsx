@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Menutabs from "@/components/menutabs"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 
-import DayOffTable from "@/components/Table/DayOff-table/DayoffTable"
+import DayOffTable from "@/components/Table/Dayoff-table/DayoffTable"
 
 
 

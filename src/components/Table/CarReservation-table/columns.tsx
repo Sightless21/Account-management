@@ -8,6 +8,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { MoveRight, TrashIcon, MoreHorizontal, Info, Copy, Pencil } from "lucide-react"
 import { format } from "date-fns"
 import { Badge } from "@/components/ui/badge"
+import { DataTableColumnHeader } from "../ColumnHeader"
 
 const tripStatusColor: Record<TripStatus, string> = {
   ONGOING: "bg-yellow-500 text-white",
@@ -25,7 +26,9 @@ type ActionButtonsProps = {
 export const columns: ColumnDef<CarReservationType>[] = [
   {
     accessorKey: "employeeName",
-    header: "Employee Name",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Employee Name" />
+    ),
   },
   {
     accessorKey: "date",
@@ -70,8 +73,10 @@ export const columns: ColumnDef<CarReservationType>[] = [
     header: "Destination",
   },
   {
-    accessorKey: "plate",
-    header: "Plate",
+    accessorKey: "car.plate",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Plate Number" />
+    ),
     cell: ({ row }) => {
       const { car } = row.original;
       return (

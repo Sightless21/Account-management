@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   typescript: {
     // ignoreBuildErrors: true, // 🚨 ปิด Type Checking ตอน Build
   },
+  images: {
+    domains: ["res.cloudinary.com"],
+  }
 };
 
 export default nextConfig;

@@ -27,7 +27,7 @@ export const useExpenses = () => {
     queryKey: ["expenses"],
     queryFn: fetchExpenses,
     staleTime: 0,
-    refetchInterval: 30000, // ดึงข้อมูลใหม่ทุก 30 วินาที
+    refetchInterval: 3000, // ดึงข้อมูลใหม่ทุก 3 วินาที
     refetchOnWindowFocus: true, // ดึงข้อมูลใหม่เมื่อเปลี่ยน Tab,
   });
 };

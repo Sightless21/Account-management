@@ -16,7 +16,8 @@ export async function GET() {
         useForeignCurrency: true,
         country: true,
         expenses: true,
-        createdAt: true
+        createdAt: true,
+        updatedAt: true
       }
     });
     return NextResponse.json(allExpense ?? [], { status: 200 })

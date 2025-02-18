@@ -63,7 +63,7 @@ export const handleExpense = async (expenseData: ExpenseFormValues) => {
     const newExpense = await prisma.expenseClaim.create({
       data: {
         title: expenseData.title,
-        employeeName: expenseData.employeename ?? "",
+        employeeName: expenseData.employeeName ?? "",
         transactionDate: expenseData.transactionDate,
         description: expenseData.description,
         status: expenseData.status,
@@ -142,7 +142,7 @@ export const updateExpense = async (expenseId: string, expenseData: ExpenseFormV
       where: { id: expenseId },
       data: {
         title: expenseData.title,
-        employeeName: expenseData.employeename ?? "",
+        employeeName: expenseData.employeeName ?? "",
         transactionDate: expenseData.transactionDate,
         description: expenseData.description,
         status: expenseData.status,

@@ -3,9 +3,14 @@
 import { Button } from "@/components/ui/button";
 import { ExpenseFormValues } from "@/schema/expenseFormSchema"
 import { ColumnDef, Row } from "@tanstack/react-table"
-import { CheckCircle, RotateCcw, TrashIcon, XCircle } from "lucide-react";
+import { CheckCircle, Copy, Info, MoreHorizontal, Pencil, RotateCcw, TrashIcon, XCircle } from "lucide-react";
 import { Role } from "@/types/users";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useExpenseStore } from '@/store/useExpenenseUIStore'
+import { ExpenseClaimForm } from "@/components/Sheet/ExpenseClaimForm";
+
 
 export enum ExpenseStatus {
   Pending = "Pending",
@@ -19,11 +24,6 @@ const statusColor: Record<ExpenseStatus, string> = {
   [ExpenseStatus.Declined]: "bg-red-500 text-white",
 };
 
-type ActionButtonsProps = {
-  row: Row<ExpenseFormValues>
-  onEdit?: (data: ExpenseFormValues) => void
-  onDelete?: (data: ExpenseFormValues) => void
-}
 
 type ApprovalButtonsProps = {
   row: Row<ExpenseFormValues>
@@ -31,24 +31,6 @@ type ApprovalButtonsProps = {
   onDeclined?: (data: ExpenseFormValues) => void
   onReset?: (data: ExpenseFormValues) => void
 }
-
-const ActionButtons = ({ row, onEdit, onDelete }: ActionButtonsProps) => (
-  <div className="flex gap-2">
-    {onEdit && (
-      <Button>edit</Button>
-    )}
-    {onDelete && (
-      <Button
-        variant={"outline"}
-        size="icon"
-        onClick={() => onDelete(row.original)}
-        className="h-8 w-8 text-red-500"
-      >
-        <TrashIcon className="h-4 w-4" />
-      </Button>
-    )}
-  </div>
-)
 
 const ApprovalButtons = ({ row, onAccepted, onDeclined, onReset }: ApprovalButtonsProps) => (
   <div className="flex gap-3">
@@ -152,18 +134,6 @@ export const getColumns = (
     },
   }
 
-  const actionColumn: ColumnDef<ExpenseFormValues> = {
-    id: "actions",
-    header: "Action",
-    cell: ({ row }) => (
-      <ActionButtons
-        row={row}
-        onEdit={handlers.onEdit}
-        onDelete={handlers.onDelete}
-      />
-    ),
-  }
-
   const approvalColumn: ColumnDef<ExpenseFormValues> = {
     id: "approval",
     header: "Accepted/Declined",
@@ -177,17 +147,82 @@ export const getColumns = (
     ),
   }
 
+  const menuActionColumn: ColumnDef<ExpenseFormValues> = {
+    id: "menu-actions",
+    cell: ({ row }) => {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const setSelectedExpense = useExpenseStore(state => state.setSelectedExpense)
+      const { employeeName } = row.original;
+
+      return (
+        <TooltipProvider>
+          <DropdownMenu>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Button variant={"outline"} className="h-8 w-8 p-0">
+                    <span className="sr-only">Open menu</span>
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Open actions menu</p>
+              </TooltipContent>
+            </Tooltip>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+
+              <DropdownMenuItem onClick={() => {
+                if (employeeName) {
+                  navigator.clipboard.writeText(employeeName);
+                }
+              }}>
+                <Copy /> Copy Employee Name
+              </DropdownMenuItem>
+
+              <DropdownMenuItem onClick={() => setSelectedExpense(row.original)}>
+                <Info /> View Details
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator />
+
+              <ExpenseClaimForm
+                mode="edit"
+                defaultValues={row.original}
+                expenseId={row.original.id}
+                onSubmitSuccess={() => handlers.onEdit?.(row.original)}
+                trigger={
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    <Pencil className="mr-2 h-4 w-4" /> Edit Expense
+                  </DropdownMenuItem>
+                }
+              />
+
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem onClick={() => handlers.onDelete?.(row.original)} className="text-red-600">
+                <TrashIcon /> Delete Reservation
+              </DropdownMenuItem>
+
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </TooltipProvider>
+      );
+    },
+  };
+
 
 
   switch (role) {
     case "EMPLOYEE":
-      return [...baseColumns, statusColumn, actionColumn]
+      return [...baseColumns, statusColumn, menuActionColumn]
     case "MANAGER":
-      return [...baseColumns, approvalColumn, statusColumn]
+      return [...baseColumns, approvalColumn, statusColumn, menuActionColumn]
     case "HR":
-      return [...baseColumns, approvalColumn, statusColumn, actionColumn]
+      return [...baseColumns, approvalColumn, statusColumn, menuActionColumn]
     case "ADMIN":
-      return [...baseColumns, approvalColumn, statusColumn, actionColumn]
+      return [...baseColumns, approvalColumn, statusColumn, menuActionColumn]
     default:
       return baseColumns
   }

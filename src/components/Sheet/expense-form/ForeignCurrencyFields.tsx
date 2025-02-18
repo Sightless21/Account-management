@@ -26,7 +26,7 @@ export function ForeignCurrencyFields({ control }: ForeignCurrencyFieldsProps) {
               <FormDescription>Enable if the expense is in a foreign currency</FormDescription>
             </div>
             <FormControl>
-              <Switch checked={field.value} onCheckedChange={field.onChange} />
+              <Switch defaultChecked checked={field.value} onCheckedChange={field.onChange} />
             </FormControl>
           </FormItem>
         )}

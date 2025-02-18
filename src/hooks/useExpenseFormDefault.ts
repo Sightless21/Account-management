@@ -20,6 +20,10 @@ export function useExpenseFormDefault() {
         medicalExpenses: {},
         otherExpenses: {},
       },
+      attachmentUrl: "",
+      attachmentPublicId: "",
+      employeeName: "",
+      country: "",
     },
   })
 

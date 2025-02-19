@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
+  DropdownMenuPortal,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
@@ -46,6 +47,7 @@ export function DataTableColumnHeader<TData, TValue>({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
+          <DropdownMenuPortal> Toggle Columns </DropdownMenuPortal>
           <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
             <ArrowUp className="h-3.5 w-3.5 text-muted-foreground/70" />
             Asc
@@ -55,13 +57,13 @@ export function DataTableColumnHeader<TData, TValue>({
             Desc
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => column.clearSorting()}>
-            <X className="h-3.5 w-3.5 text-muted-foreground/70" />
+          <DropdownMenuItem onClick={() => column.clearSorting()} className="text-destructive bg-red-100">
+            <X className="h-3.5 w-3.5 text-muted-foreground/70 text-red-600" />
             Clear Sort
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => column.toggleVisibility(false)}>
-            <EyeOff className="h-3.5 w-3.5 text-muted-foreground/70" />
+          <DropdownMenuItem onClick={() => column.toggleVisibility(false)} className=" bg-gray-100">
+            <EyeOff className="h-3.5 w-3.5 text-muted-foreground/70 text-slate-600" />
             Hide
           </DropdownMenuItem>
         </DropdownMenuContent>

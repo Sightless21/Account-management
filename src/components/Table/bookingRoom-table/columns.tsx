@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { BookingDialog } from "@/components/Modal/modal-Booking"
 import { useDeleteRoomBooking } from "@/hooks/useRoomBookingData"
 import { MoveRight, TrashIcon, ArrowUpDown } from "lucide-react"
+import { DateRange } from "react-day-picker"
 
 type ActionButtonsProps = {
   row: Row<RoombookingType>
@@ -67,6 +68,22 @@ export const columns: ColumnDef<RoombookingType>[] = [
 
       const date = new Date(rawDate);
       return `${date.toISOString().split("T")[0]}`;
+    },
+    filterFn: (row, columnId, filterValue: DateRange | undefined) => {
+      if (!filterValue?.from) return true;
+      
+      const rowDate = new Date(row.getValue(columnId));
+      const start = filterValue.from;
+      const end = filterValue.to ?? filterValue.from;
+
+      // Reset time portions for accurate date comparison
+      rowDate.setHours(0, 0, 0, 0);
+      const startDate = new Date(start);
+      startDate.setHours(0, 0, 0, 0);
+      const endDate = new Date(end);
+      endDate.setHours(0, 0, 0, 0);
+
+      return rowDate >= startDate && rowDate <= endDate;
     },
     sortingFn: "datetime"
   },

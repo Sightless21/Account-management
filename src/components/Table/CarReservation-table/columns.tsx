@@ -9,6 +9,7 @@ import { MoveRight, TrashIcon, MoreHorizontal, Info, Copy, Pencil } from "lucide
 import { format } from "date-fns"
 import { Badge } from "@/components/ui/badge"
 import { DataTableColumnHeader } from "../ColumnHeader"
+import { DateRange } from "react-day-picker"
 
 const tripStatusColor: Record<TripStatus, string> = {
   ONGOING: "bg-yellow-500 text-white",
@@ -32,7 +33,23 @@ export const columns: ColumnDef<CarReservationType>[] = [
   },
   {
     accessorKey: "date",
-    header: "Date Range",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Date" />
+    ),
+    filterFn: (row, columnId, filterValue: DateRange | undefined) => {
+      const rowDate = row.getValue(columnId) as { from?: string | Date; to?: string | Date };
+      const filterFrom = filterValue?.from;
+      const filterTo = filterValue?.to;
+    
+      if (!filterFrom && !filterTo) return true;
+    
+      const rowStart = rowDate.from ? new Date(rowDate.from).getTime() : 0;
+      const rowEnd = rowDate.to ? new Date(rowDate.to).getTime() : Infinity;
+      const filterStart = filterFrom?.getTime() || 0;
+      const filterEnd = filterTo?.getTime() || Infinity;
+    
+      return rowStart <= filterEnd && rowEnd >= filterStart;
+    },
     cell: ({ row }) => {
       const { from, to } = row.original.date || {};
       const fromDate = from ? format(from, "dd-MM-yyyy") : "N/A";
@@ -73,7 +90,7 @@ export const columns: ColumnDef<CarReservationType>[] = [
     header: "Destination",
   },
   {
-    accessorKey: "car.plate",
+    accessorKey: "Plate Number",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Plate Number" />
     ),
@@ -89,6 +106,11 @@ export const columns: ColumnDef<CarReservationType>[] = [
   {
     accessorKey: "tripStatus",
     header: "Status",
+    filterFn: (row, id, value: string[]) => {
+      if (!value?.length) return true
+      const status = row.getValue(id) as string
+      return value.includes(status)
+    },
     cell: ({ row }) => {
       const { tripStatus } = row.original;
       return <Badge className={tripStatusColor[tripStatus] || "bg-gray-500"}>{tripStatus}</Badge>

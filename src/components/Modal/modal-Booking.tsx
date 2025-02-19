@@ -84,7 +84,7 @@ export function BookingDialog({ defaultvalue, mode }: BookingDialogProps) {
               <PencilIcon className="h-4 w-4" />
             </Button>
           ) : (
-            <Button variant="default">
+            <Button variant="default" className="h-8">
               <BadgePlus /> Booking Meeting Room
             </Button>
           )}

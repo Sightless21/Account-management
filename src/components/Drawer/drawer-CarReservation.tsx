@@ -92,7 +92,7 @@ export function CarReservationDrawer() {
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <Button variant={"default"}><BadgePlus />Create Car Reservation</Button>
+        <Button variant={"default"} className="h-8"><BadgePlus />Create Car Reservation</Button>
       </DrawerTrigger>
       <DrawerContent>
         <Form {...form}>

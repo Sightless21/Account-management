@@ -7,6 +7,7 @@ import { TrashIcon, CheckCircle, XCircle, RotateCcw, MoveRight } from "lucide-re
 import { Badge } from "@/components/ui/badge"
 import { DayoffModal } from "@/components/Modal/modal-DayOff"
 import { format } from "date-fns"
+import { DateRange } from "react-day-picker"
 
 const statusColor: Record<LeaveStatus, string> = {
   Pending: "bg-yellow-500 text-white",
@@ -105,6 +106,26 @@ export const getColumns = (
     {
       accessorKey: "date",
       header: "Date Range",
+      filterFn: (row, columnId, filterValue: DateRange | undefined) => {
+        if (!filterValue?.from) return true;
+        
+        const rowDate = row.original.date;
+        if (!rowDate?.from) return false;
+
+        const rowStart = new Date(rowDate.from);
+        const rowEnd = new Date(rowDate.to || rowDate.from);
+        const filterStart = new Date(filterValue.from);
+        const filterEnd = filterValue.to ? new Date(filterValue.to) : filterStart;
+
+        // Reset time parts for accurate date comparison
+        rowStart.setHours(0, 0, 0, 0);
+        rowEnd.setHours(0, 0, 0, 0);
+        filterStart.setHours(0, 0, 0, 0);
+        filterEnd.setHours(0, 0, 0, 0);
+
+        // Check if date ranges overlap
+        return rowStart <= filterEnd && rowEnd >= filterStart;
+      },
       cell: ({ row }) => {
         const { from, to } = row.original.date || {}
         const fromDate = from ? format(from, "dd-MM-yyyy") : "N/A"

@@ -34,6 +34,7 @@ export default function ExpenseTable({ userRole }: ExpenseTable) {
 
   // Convert ExpenseFormValues to Expense type
   const formatExpenseForDialog = (expense: ExpenseFormValues): Expense => {
+    
     const expenses = expense.expenses as {
       fuel: { liters: number; totalCost: number };
       accommodation: { nights: number; totalCost: number };

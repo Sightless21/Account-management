@@ -87,7 +87,9 @@ export const columns: ColumnDef<CarReservationType>[] = [
   },
   {
     accessorKey: "destination",
-    header: "Destination",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Destination" />
+    ),
   },
   {
     accessorKey: "Plate Number",

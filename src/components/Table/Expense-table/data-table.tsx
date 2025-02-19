@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } from "@tanstack/react-table"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { TablePagination } from "@/components/Table/TablePagination"
+import { TablePagination } from "@/components/Table/Tool/TablePagination"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]

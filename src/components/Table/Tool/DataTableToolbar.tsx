@@ -7,10 +7,10 @@ import type React from "react"
 import type { Table } from "@tanstack/react-table"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { DataTableViewOptions } from "@/components/Table/ColumnToggle"
-import { StatusFilter } from "@/components/Table/StatusFilter"
+import { DataTableViewOptions } from "@/components/Table/Tool/ColumnToggle"
+import { StatusFilter } from "@/components/Table/Tool/StatusFilter"
 import type { DateRange } from "react-day-picker"
-import  DateRangeFilter  from "@/components/Table/DateRangeFilter"
+import  DateRangeFilter  from "@/components/Table/Tool/DateRangeFilter"
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>

@@ -10,6 +10,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useExpenseStore } from '@/store/useExpenenseUIStore'
 import { ExpenseClaimForm } from "@/components/Sheet/ExpenseClaimForm";
+import { DataTableColumnHeader } from "../ColumnHeader";
 
 
 export enum ExpenseStatus {
@@ -93,11 +94,15 @@ export const getColumns = (
   const baseColumns: ColumnDef<ExpenseFormValues>[] = [
     {
       accessorKey: "title",
-      header: "Title"
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Title" />
+      ),
     },
     {
       accessorKey: "employeeName",
-      header: "Employee Name",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Employee Name" />
+      ),
     },
     {
       accessorKey: "useForeignCurrency",

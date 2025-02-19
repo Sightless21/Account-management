@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { DayoffModal } from "@/components/Modal/modal-DayOff"
 import { format } from "date-fns"
 import { DateRange } from "react-day-picker"
+import { DataTableColumnHeader } from "../ColumnHeader"
 
 const statusColor: Record<LeaveStatus, string> = {
   Pending: "bg-yellow-500 text-white",
@@ -97,7 +98,9 @@ export const getColumns = (
   const baseColumns: ColumnDef<DayoffType>[] = [
     {
       accessorKey: "employeeName",
-      header: "Employee Name",
+      header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Employee Name" />
+          ),
     },
     {
       accessorKey: "leaveType",

@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Building2, Mail, Phone, User, Briefcase, Globe, Building, FileText, Hash, MessageSquare } from "lucide-react";
+import { Building2, Mail, Phone, User, Briefcase, Globe, Building, FileText, Hash, MessageSquare, BadgePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,7 +19,6 @@ import { type CustomerFormData, customerSchema } from "@/schema/formCustomer";
 
 interface CustomerDialogProps {
   customer?: CustomerFormData;
-  onSubmit: (data: CustomerFormData) => void;
   trigger?: React.ReactNode;
 }
 
@@ -36,7 +35,7 @@ const defaultCustomerValues: CustomerFormData = {
   notes: "",
 };
 
-export function CustomerDialog({ customer, onSubmit, trigger }: CustomerDialogProps) {
+export function CustomerDialog({ customer,  trigger }: CustomerDialogProps) {
   const [open, setOpen] = useState(false);
 
   const form = useForm<CustomerFormData>({
@@ -46,11 +45,11 @@ export function CustomerDialog({ customer, onSubmit, trigger }: CustomerDialogPr
 
   const handleSubmit = useCallback(
     (data: CustomerFormData) => {
-      onSubmit(data);
+      console.log(data);
       setOpen(false);
       form.reset(customer || defaultCustomerValues);
     },
-    [onSubmit, form, customer]
+    [ form, customer]
   );
 
   const handleOpenChange = useCallback(
@@ -90,7 +89,7 @@ export function CustomerDialog({ customer, onSubmit, trigger }: CustomerDialogPr
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{
         trigger ||
-        <Button onClick={() => console.log("Button clicked!")}>Add Customer</Button>
+        <Button className="h-8" variant={"default"} ><BadgePlus />Add Customer</Button>
       }
       </DialogTrigger>
       <DialogContent className="w-[700px] max-h-[100vh] h-[850px] overflow-y-auto">

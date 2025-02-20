@@ -1,24 +1,24 @@
 // hooks/useExpenseData.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { ExpenseFormValues } from "@/schema/expenseFormSchema";
+import { Expense } from "@/schema/expenseFormSchema";
 
 // Fetch all expenses (GET /api/expenses)
 export const fetchExpenses = async () => {
   console.time("Fetch Expenses");
-  const response = await axios.get<ExpenseFormValues[]>("/api/expenses");
+  const response = await axios.get<Expense[]>("/api/expenses");
   console.timeEnd("Fetch Expenses");
   return response.data;
 };
 
 // Fetch a single expense by ID (GET /api/expenses/:id)
 export const fetchExpenseInfo = async ({ id }: { id: string }) => {
-  const response = await axios.get<ExpenseFormValues>(`/api/expenses/${id}`);
+  const response = await axios.get<Expense>(`/api/expenses/${id}`);
   return response.data;
 };
 
 // Create a new expense (POST /api/expenses)
-export const createExpense = async (data: ExpenseFormValues) => {
+export const createExpense = async (data: Expense) => {
   const formData = new FormData();
   Object.entries(data).forEach(([key, value]) => {
     if (key === "attachment" && value instanceof File) {
@@ -30,14 +30,14 @@ export const createExpense = async (data: ExpenseFormValues) => {
     }
   });
 
-  const response = await axios.post<ExpenseFormValues>("/api/expenses", formData, {
+  const response = await axios.post<Expense>("/api/expenses", formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
   return response.data;
 };
 
 // Update an expense (PATCH /api/expenses/:id)
-export const updateExpense = async ({ id, data }: { id: string; data: Partial<ExpenseFormValues> }) => {
+export const updateExpense = async ({ id, data }: { id: string; data: Partial<Expense> }) => {
   const formData = new FormData();
   Object.entries(data).forEach(([key, value]) => {
     if (key === "attachment" && value instanceof File) {
@@ -49,7 +49,7 @@ export const updateExpense = async ({ id, data }: { id: string; data: Partial<Ex
     }
   });
 
-  const response = await axios.patch<ExpenseFormValues>(`/api/expenses/${id}`, formData, {
+  const response = await axios.patch<Expense>(`/api/expenses/${id}`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
   return response.data;

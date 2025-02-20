@@ -1,47 +1,44 @@
-"use client"
+"use client";
 
-import { format } from "date-fns"
-import { CalendarIcon, CheckCircle2, Clock, DollarSign, MapPin } from "lucide-react"
-import Image from "next/image"
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,
-} from "@/components/ui/dialog"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
-import { Expense } from "@/types/expense"
+import { format } from "date-fns";
+import { CalendarIcon, CheckCircle2, Clock, DollarSign, MapPin } from "lucide-react";
+import Image from "next/image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { Expense } from "@/types/expense";
 
 export interface ExpenseDialogProps {
-  expense: Expense
-  onClose?: () => void
+  expense: Expense;
+  onClose?: () => void;
+  trigger?: React.ReactNode;
+  open?: boolean; // Add open prop
 }
 
-export function ExpenseDialog({ expense, onClose }: ExpenseDialogProps) {
+export function ExpenseDialog({ expense, onClose, trigger, open }: ExpenseDialogProps) {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
-    }).format(amount)
-  }
+    }).format(amount);
+  };
 
   const formatDate = (dateString: string) => {
-    return format(new Date(dateString), "PPP")
-  }
+    return format(new Date(dateString), "PPP");
+  };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const hasContent = (obj: Record<string, any> | undefined) => {
-    if (!obj) return false
-    return Object.keys(obj).length > 0 && Object.values(obj).some(value => value !== null && value !== undefined)
-  }
+    if (!obj) return false;
+    return Object.keys(obj).length > 0 && Object.values(obj).some((value) => value !== null && value !== undefined);
+  };
 
   return (
-    <Dialog open={true} onOpenChange={(open) => !open && onClose?.()}>
-      <DialogTrigger asChild>
-        <Button variant="outline">View Expense Details</Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose?.()}>
+      {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent className="w-[700px]">
         <DialogHeader>
           <DialogTitle>Expense Details</DialogTitle>
@@ -185,6 +182,5 @@ export function ExpenseDialog({ expense, onClose }: ExpenseDialogProps) {
         </ScrollArea>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
-

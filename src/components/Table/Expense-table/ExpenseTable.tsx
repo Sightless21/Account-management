@@ -1,11 +1,11 @@
+// ExpenseTable.tsx
 import { getColumns } from "./columns";
 import { DataTable } from "@/components/Table/Data-Table";
-import { ExpenseDialog } from "@/components/Modal/modal-Expenses";
-import { useExpenseStore } from "@/store/useExpenenseUIStore"
+import { ExpenseClaimForm } from "@/components/Sheet/ExpenseClaimForm";
+import { useExpenseStore } from "@/store/useExpenenseUIStore";
 import { Expense } from "@/types/expense";
 import { toast } from "sonner";
 import { useExpenses, useUpdateExpense, useDeleteExpense } from "@/hooks/useExpenseData";
-import { normalizeExpense } from "@/lib/expenseUtils";
 
 interface ExpenseTableProps {
   userRole: string;
@@ -15,7 +15,6 @@ export default function ExpenseTable({ userRole }: ExpenseTableProps) {
   const { data: expensesData, isLoading, error } = useExpenses();
   const updateExpenseMutation = useUpdateExpense();
   const deleteExpenseMutation = useDeleteExpense();
-  const selectedExpense = useExpenseStore((state) => state.selectedExpense);
   const setSelectedExpense = useExpenseStore((state) => state.setSelectedExpense);
 
   if (isLoading) return <p>Loading expenses...</p>;
@@ -67,7 +66,7 @@ export default function ExpenseTable({ userRole }: ExpenseTableProps) {
     onApprove: handleAccepted,
     onReject: handleDeclined,
     onReset: handleReset,
-    onSetSelectedExpense: setSelectedExpense, 
+    onSetSelectedExpense: setSelectedExpense,
   });
 
   return (
@@ -84,14 +83,7 @@ export default function ExpenseTable({ userRole }: ExpenseTableProps) {
           { label: "Accepted", value: "Accepted" },
           { label: "Declined", value: "Declined" },
         ]}
-        toolbarAdditionalControls={
-          selectedExpense ? (
-            <ExpenseDialog
-              expense={normalizeExpense(selectedExpense)}
-              onClose={() => setSelectedExpense(null)}
-            />
-          ) : null
-        }
+        toolbarAdditionalControls={<ExpenseClaimForm />}
       />
     </div>
   );

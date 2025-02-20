@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react"; // Moved to new component
 import { Button } from "@/components/ui/button";
 import { ColumnDef, Row } from "@tanstack/react-table";
 import { CheckCircle, Copy, Info, MoreHorizontal, Pencil, RotateCcw, TrashIcon, XCircle } from "lucide-react";
@@ -7,10 +8,79 @@ import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ExpenseClaimForm } from "@/components/Sheet/ExpenseClaimForm";
+import { ExpenseDialog } from "@/components/Modal/modal-Expenses";
 import { DataTableColumnHeader } from "../ColumnHeader";
 import { Expense } from "@/types/expense";
-import { format } from "date-fns"; // Add date-fns for formatting
-import { DateRange } from "react-day-picker"; // Import DateRange type
+import { format } from "date-fns";
+import { DateRange } from "react-day-picker";
+
+// New component for menu actions
+const MenuActionsCell = ({ row, onEdit, onDelete }: {
+  row: Row<Expense>;
+  onEdit?: (data: Expense) => void;
+  onDelete?: (data: Expense) => void;
+  onSetSelectedExpense: (expense: Expense | null) => void;
+}) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { employeeName } = row.original;
+
+  return (
+    <TooltipProvider>
+      <DropdownMenu>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Open actions menu</p>
+          </TooltipContent>
+        </Tooltip>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuItem
+            onClick={() => employeeName && navigator.clipboard.writeText(employeeName)}
+          >
+            <Copy className="mr-2 h-4 w-4" /> Copy Employee Name
+          </DropdownMenuItem>
+          <ExpenseDialog
+            expense={row.original}
+            onClose={() => setIsDialogOpen(false)}
+            trigger={
+              <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setIsDialogOpen(true); }}>
+                <Info className="mr-2 h-4 w-4" /> View Details
+              </DropdownMenuItem>
+            }
+            open={isDialogOpen} // Explicitly control open state
+          />
+          <DropdownMenuSeparator />
+          <ExpenseClaimForm
+            mode="edit"
+            defaultValues={row.original}
+            expenseId={row.original.id}
+            onSubmitSuccess={() => onEdit?.(row.original)}
+            trigger={
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                <Pencil className="mr-2 h-4 w-4" /> Edit Expense
+              </DropdownMenuItem>
+            }
+          />
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={() => onDelete?.(row.original)}
+            className="text-red-600"
+          >
+            <TrashIcon className="mr-2 h-4 w-4" /> Delete Expense
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </TooltipProvider>
+  );
+};
 
 export enum ExpenseStatus {
   Pending = "Pending",
@@ -72,7 +142,7 @@ const ApprovalButtons = ({ row, onAccepted, onDeclined, onReset }: ApprovalButto
 );
 
 export const getColumns = (
-  role: string, // Changed from Role enum to string
+  role: string,
   handlers: {
     onEdit?: (data: Expense) => void;
     onDelete?: (data: Expense) => void;
@@ -106,7 +176,7 @@ export const getColumns = (
 
         const currency = useForeignCurrency && country ? country.toUpperCase() : "THB";
         const rate = exchangeRates[currency] || 1;
-        return totalCost * rate; // Return numeric value for sorting
+        return totalCost * rate;
       },
       cell: ({ row }) => {
         const { expenses, useForeignCurrency, country } = row.original;
@@ -131,17 +201,15 @@ export const getColumns = (
       header: ({ column }) => <DataTableColumnHeader column={column} title="Transaction Date" />,
       cell: ({ row }) => {
         const date = new Date(row.original.transactionDate);
-        return isNaN(date.getTime()) ? "Invalid Date" : format(date, "PPP"); // Format as "Jan 1, 2025"
+        return isNaN(date.getTime()) ? "Invalid Date" : format(date, "PPP");
       },
       enableSorting: true,
-      sortingFn: "datetime", 
+      sortingFn: "datetime",
       filterFn: (row, columnId, filterValue: DateRange | undefined) => {
-        if (!filterValue || (!filterValue.from && !filterValue.to)) return true; // No filter applied
-      
+        if (!filterValue || (!filterValue.from && !filterValue.to)) return true;
         const rowDate = new Date(row.getValue(columnId) as string).getTime();
         const start = filterValue.from ? new Date(filterValue.from).getTime() : -Infinity;
         const end = filterValue.to ? new Date(filterValue.to).getTime() : Infinity;
-      
         return rowDate >= start && rowDate <= end;
       },
     },
@@ -176,59 +244,14 @@ export const getColumns = (
 
   const menuActionColumn: ColumnDef<Expense> = {
     id: "menu-actions",
-    cell: ({ row }) => {
-      const { employeeName } = row.original;
-
-      return (
-        <TooltipProvider>
-          <DropdownMenu>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="h-8 w-8 p-0">
-                    <span className="sr-only">Open menu</span>
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Open actions menu</p>
-              </TooltipContent>
-            </Tooltip>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => employeeName && navigator.clipboard.writeText(employeeName)}
-              >
-                <Copy className="mr-2 h-4 w-4" /> Copy Employee Name
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handlers.onSetSelectedExpense(row.original)}>
-                <Info className="mr-2 h-4 w-4" /> View Details
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <ExpenseClaimForm
-                mode="edit"
-                defaultValues={row.original}
-                expenseId={row.original.id}
-                onSubmitSuccess={() => handlers.onEdit?.(row.original)}
-                trigger={
-                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    <Pencil className="mr-2 h-4 w-4" /> Edit Expense
-                  </DropdownMenuItem>
-                }
-              />
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => handlers.onDelete?.(row.original)}
-                className="text-red-600"
-              >
-                <TrashIcon className="mr-2 h-4 w-4" /> Delete Expense
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </TooltipProvider>
-      );
-    },
+    cell: ({ row }) => (
+      <MenuActionsCell
+        row={row}
+        onEdit={handlers.onEdit}
+        onDelete={handlers.onDelete}
+        onSetSelectedExpense={handlers.onSetSelectedExpense}
+      />
+    ),
   };
 
   const canApprove = ["MANAGER", "HR", "ADMIN"].includes(role.toUpperCase());

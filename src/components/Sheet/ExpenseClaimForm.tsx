@@ -83,7 +83,7 @@ export function ExpenseClaimForm({
   const isPending = createExpenseMutation.isPending || updateExpenseMutation.isPending;
 
   const defaultTrigger = mode === "create" ? (
-    <Button variant="default">
+    <Button variant="default" className="h-8">
       <BadgePlus className="mr-2" /> Add Expense Claim
     </Button>
   ) : (

@@ -5,7 +5,6 @@ import { User } from "@/types/users";
 // Function to fetch user data
 const fetchUser = async (userID: string): Promise<User> => {
   const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/user/${userID}`);
-  console.log("User Data:", response.data);
   return response.data;
 };
 

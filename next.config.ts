@@ -6,7 +6,13 @@ const nextConfig: NextConfig = {
     // ignoreBuildErrors: true, // 🚨 ปิด Type Checking ตอน Build
   },
   images: {
-    domains: ["res.cloudinary.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: "/**",
+      },
+    ]
   }
 };
 

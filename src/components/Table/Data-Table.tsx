@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import {
   type ColumnDef,
@@ -35,6 +34,7 @@ interface DataTableProps<TData, TValue> {
   enablePagination?: boolean
   pageSize?: number
   toolbarAdditionalControls?: React.ReactNode
+  defaultVisibleColumns?: string[] // New prop for default visible columns
 }
 
 export function DataTable<TData, TValue>({
@@ -49,9 +49,18 @@ export function DataTable<TData, TValue>({
   enablePagination = true,
   pageSize = 7,
   toolbarAdditionalControls,
+  defaultVisibleColumns, // Added to props
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  // Initialize columnVisibility with defaultVisibleColumns if provided
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    defaultVisibleColumns
+      ? columns.reduce((acc, column) => {
+          acc[column.id as string] = defaultVisibleColumns.includes(column.id as string)
+          return acc
+        }, {} as VisibilityState)
+      : {}
+  )
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize })
 
@@ -126,4 +135,3 @@ export function DataTable<TData, TValue>({
     </div>
   )
 }
-

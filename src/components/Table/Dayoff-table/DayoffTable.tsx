@@ -61,6 +61,7 @@ export default function DayOffTable({ userRole }: DayOffTableProps) {
       searchPlaceholder="Search by employee name"
       dateColumn="date"
       statusColumn="status"
+      defaultVisibleColumns={["employeeName", "leaveType" ,"date", "status", "actions"]}
       statusOptions={[
         { label: "Pending", value: "Pending" },
         { label: "Accepted", value: "Accepted" },

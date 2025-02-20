@@ -16,6 +16,7 @@ import {
 import { Form } from "@/components/ui/form";
 import { FormInput } from "@/components/ui/formCustomerInput"
 import { type CustomerFormData, customerSchema } from "@/schema/formCustomer";
+import { useCreateCustomer } from "@/hooks/useCustomerData";
 
 interface CustomerDialogProps {
   customer?: CustomerFormData;
@@ -36,6 +37,7 @@ const defaultCustomerValues: CustomerFormData = {
 };
 
 export function CustomerDialog({ customer,  trigger }: CustomerDialogProps) {
+  const createCustomer = useCreateCustomer();
   const [open, setOpen] = useState(false);
 
   const form = useForm<CustomerFormData>({
@@ -46,10 +48,12 @@ export function CustomerDialog({ customer,  trigger }: CustomerDialogProps) {
   const handleSubmit = useCallback(
     (data: CustomerFormData) => {
       console.log(data);
+      const customerData = { ...data, id: "" };
+      createCustomer.mutate(customerData);
       setOpen(false);
       form.reset(customer || defaultCustomerValues);
     },
-    [ form, customer]
+    [createCustomer, form, customer]
   );
 
   const handleOpenChange = useCallback(

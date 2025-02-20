@@ -26,12 +26,15 @@ type ActionButtonsProps = {
 
 export const columns: ColumnDef<CarReservationType>[] = [
   {
+    id: "employeeName",
     accessorKey: "employeeName",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Employee Name" />
     ),
+    meta: { title: "Employee Name" },
   },
   {
+    id: "date",
     accessorKey: "date",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Date" />
@@ -72,6 +75,7 @@ export const columns: ColumnDef<CarReservationType>[] = [
     },
   },
   {
+    id: "time",
     accessorKey: "time",
     header: "Time",
     cell: ({ row }) => {
@@ -86,12 +90,14 @@ export const columns: ColumnDef<CarReservationType>[] = [
     }
   },
   {
+    id:"destination",
     accessorKey: "destination",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Destination" />
     ),
   },
   {
+    id:"plateNumber",
     accessorKey: "Plate Number",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Plate Number" />
@@ -106,6 +112,7 @@ export const columns: ColumnDef<CarReservationType>[] = [
     }
   },
   {
+    id: "tripStatus",
     accessorKey: "tripStatus",
     header: "Status",
     filterFn: (row, id, value: string[]) => {
@@ -116,7 +123,8 @@ export const columns: ColumnDef<CarReservationType>[] = [
     cell: ({ row }) => {
       const { tripStatus } = row.original;
       return <Badge className={tripStatusColor[tripStatus] || "bg-gray-500"}>{tripStatus}</Badge>
-    }
+    },
+    meta: { title: "Trip Status" },
   },
   {
     id: "actions",

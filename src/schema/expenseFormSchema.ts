@@ -14,30 +14,12 @@ export const expenseSchema = z.object({
   useForeignCurrency: z.boolean().default(false),
   country: z.string().default(""),
   expenses: z.object({
-    fuel: z.object({
-      liters: z.number().min(0).optional(),
-      totalCost: z.number().min(0).optional(),
-    }).optional(),
-    accommodation: z.object({
-      nights: z.number().min(0).optional(),
-      totalCost: z.number().min(0).optional(),
-    }).optional(),
-    transportation: z.object({
-      origin: z.string().optional(),
-      destination: z.string().optional(),
-      totalCost: z.number().min(0).optional(),
-    }).optional(),
-    perDiem: z.object({
-      amount: z.number().min(0).optional(),
-    }).optional(),
-    medicalExpenses: z.object({
-      amount: z.number().min(0).optional(),
-      description: z.string().optional(),
-    }).optional(),
-    otherExpenses: z.object({
-      amount: z.number().min(0).optional(),
-      description: z.string().optional(),
-    }).optional(),
+    fuel: z.object({ liters: z.number().min(0), totalCost: z.number().min(0) }).optional(),
+    accommodation: z.object({ nights: z.number().min(0), totalCost: z.number().min(0) }).optional(),
+    transportation: z.object({ origin: z.string(), destination: z.string(), totalCost: z.number().min(0) }).optional(),
+    perDiem: z.object({ amount: z.number().min(0) }).optional(),
+    medicalExpenses: z.object({ amount: z.number().min(0), description: z.string() }).optional(),
+    otherExpenses: z.object({ amount: z.number().min(0), description: z.string() }).optional(),
   }).default({}),
   createdAt: z.string().default(() => new Date().toISOString()),
   updatedAt: z.string().default(() => new Date().toISOString()),

@@ -45,10 +45,13 @@ const handleEdit = (data: RoombookingType) => {
 
 export const columns: ColumnDef<RoombookingType>[] = [
   {
+    id:"username",
     accessorKey: "username",
-    header: "Meeting room username",
+    header: "Employee Name",
+    meta: { title: "Employee Name" },
   },
   {
+    id: "date",
     accessorKey: "date",
     header: ({ column }) => {
       return (
@@ -88,6 +91,7 @@ export const columns: ColumnDef<RoombookingType>[] = [
     sortingFn: "datetime"
   },
   {
+    id:"time",
     accessorKey: "time",
     header: "Time",
     cell: ({ row }) => {

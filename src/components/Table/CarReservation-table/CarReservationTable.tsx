@@ -23,6 +23,7 @@ export default function CarReservationTable() {
         searchPlaceholder="Search employee name..."
         dateColumn="date"
         statusColumn="tripStatus"
+        defaultVisibleColumns={["carPlate", "date", "Destination", "plateNumber", "time", "tripStatus", "actions"]}
         statusOptions={[
           { value: "ONGOING", label: "Ongoing" },
           { value: "COMPLETED", label: "Completed" },

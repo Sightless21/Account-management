@@ -1,86 +1,12 @@
-"use client";
-
-import { useState } from "react"; // Moved to new component
-import { Button } from "@/components/ui/button";
 import { ColumnDef, Row } from "@tanstack/react-table";
-import { CheckCircle, Copy, Info, MoreHorizontal, Pencil, RotateCcw, TrashIcon, XCircle } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ExpenseClaimForm } from "@/components/Sheet/ExpenseClaimForm";
-import { ExpenseDialog } from "@/components/Modal/modal-Expenses";
-import { DataTableColumnHeader } from "../ColumnHeader";
-import { Expense } from "@/types/expense";
+import { Expense } from "@/schema/expenseFormSchema"
+import { DataTableColumnHeader } from "../ColumnHeader"; // Adjust path
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
-
-// New component for menu actions
-const MenuActionsCell = ({ row, onEdit, onDelete }: {
-  row: Row<Expense>;
-  onEdit?: (data: Expense) => void;
-  onDelete?: (data: Expense) => void;
-  onSetSelectedExpense: (expense: Expense | null) => void;
-}) => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { employeeName } = row.original;
-
-  return (
-    <TooltipProvider>
-      <DropdownMenu>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Open actions menu</p>
-          </TooltipContent>
-        </Tooltip>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem
-            onClick={() => employeeName && navigator.clipboard.writeText(employeeName)}
-          >
-            <Copy className="mr-2 h-4 w-4" /> Copy Employee Name
-          </DropdownMenuItem>
-          <ExpenseDialog
-            expense={row.original}
-            onClose={() => setIsDialogOpen(false)}
-            trigger={
-              <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setIsDialogOpen(true); }}>
-                <Info className="mr-2 h-4 w-4" /> View Details
-              </DropdownMenuItem>
-            }
-            open={isDialogOpen} // Explicitly control open state
-          />
-          <DropdownMenuSeparator />
-          <ExpenseClaimForm
-            mode="edit"
-            defaultValues={row.original}
-            expenseId={row.original.id}
-            onSubmitSuccess={() => onEdit?.(row.original)}
-            trigger={
-              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                <Pencil className="mr-2 h-4 w-4" /> Edit Expense
-              </DropdownMenuItem>
-            }
-          />
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={() => onDelete?.(row.original)}
-            className="text-red-600"
-          >
-            <TrashIcon className="mr-2 h-4 w-4" /> Delete Expense
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </TooltipProvider>
-  );
-};
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { CheckCircle, RotateCcw, XCircle } from "lucide-react";
+import { MenuActionsCell } from "./MenuActionsCell"; // Assuming this is extracted
 
 export enum ExpenseStatus {
   Pending = "Pending",
@@ -154,15 +80,18 @@ export const getColumns = (
 ): ColumnDef<Expense>[] => {
   const baseColumns: ColumnDef<Expense>[] = [
     {
+      id: "Title",
       accessorKey: "title",
       header: ({ column }) => <DataTableColumnHeader column={column} title="Title" />,
     },
     {
+      id: "employeeName",
       accessorKey: "employeeName",
       header: ({ column }) => <DataTableColumnHeader column={column} title="Employee Name" />,
+      meta: { title: "Employee Name" },
     },
     {
-      id: "total",
+      id: "Total",
       header: ({ column }) => <DataTableColumnHeader column={column} title="Total" />,
       accessorFn: (row) => {
         const { expenses, useForeignCurrency, country } = row;
@@ -197,6 +126,7 @@ export const getColumns = (
       enableSorting: true,
     },
     {
+      id: "transactionDate",
       accessorKey: "transactionDate",
       header: ({ column }) => <DataTableColumnHeader column={column} title="Transaction Date" />,
       cell: ({ row }) => {
@@ -212,10 +142,12 @@ export const getColumns = (
         const end = filterValue.to ? new Date(filterValue.to).getTime() : Infinity;
         return rowDate >= start && rowDate <= end;
       },
+      meta: { title: "Transaction Date" },
     },
   ];
 
   const statusColumn: ColumnDef<Expense> = {
+    id: "status",
     accessorKey: "status",
     header: "Status",
     filterFn: (row, columnId, filterValue) => {
@@ -230,8 +162,7 @@ export const getColumns = (
   };
 
   const approvalColumn: ColumnDef<Expense> = {
-    id: "approval",
-    header: "Actions",
+    header: "Approval",
     cell: ({ row }) => (
       <ApprovalButtons
         row={row}
@@ -252,6 +183,7 @@ export const getColumns = (
         onSetSelectedExpense={handlers.onSetSelectedExpense}
       />
     ),
+    meta: { title: "Actions" },
   };
 
   const canApprove = ["MANAGER", "HR", "ADMIN"].includes(role.toUpperCase());

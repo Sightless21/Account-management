@@ -3,7 +3,7 @@ import { getColumns } from "./columns";
 import { DataTable } from "@/components/Table/Data-Table";
 import { ExpenseClaimForm } from "@/components/Sheet/ExpenseClaimForm";
 import { useExpenseStore } from "@/store/useExpenenseUIStore";
-import { Expense } from "@/types/expense";
+import { Expense } from "@/schema/expenseFormSchema"
 import { toast } from "sonner";
 import { useExpenses, useUpdateExpense, useDeleteExpense } from "@/hooks/useExpenseData";
 
@@ -74,10 +74,11 @@ export default function ExpenseTable({ userRole }: ExpenseTableProps) {
       <DataTable
         columns={columns}
         data={expensesData ?? []}
-        searchColumn="title"
-        searchPlaceholder="Search expenses..."
+        searchColumn="Title"
+        searchPlaceholder="Search expenses title..."
         dateColumn="transactionDate"
         statusColumn="status"
+        defaultVisibleColumns={["Title","Total" ,"transactionDate", "status", ]}
         statusOptions={[
           { label: "Pending", value: "Pending" },
           { label: "Accepted", value: "Accepted" },

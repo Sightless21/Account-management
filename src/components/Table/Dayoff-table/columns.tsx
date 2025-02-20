@@ -97,6 +97,7 @@ export const getColumns = (
 ): ColumnDef<DayoffType>[] => {
   const baseColumns: ColumnDef<DayoffType>[] = [
     {
+      id:"employeeName",
       accessorKey: "employeeName",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Employee Name" />
@@ -108,12 +109,16 @@ export const getColumns = (
         const filterLower = filterValue.toLowerCase();
         return nameLower.includes(filterLower);
       },
+      meta: { title: "Employee Name" },
     },
     {
+      id: "leaveType",
       accessorKey: "leaveType",
       header: "Leave Type",
+      meta: { title: "Leave Type" },
     },
     {
+      id: "date",
       accessorKey: "date",
       header: "Date Range",
       filterFn: (row, columnId, filterValue: DateRange | undefined) => {
@@ -159,6 +164,7 @@ export const getColumns = (
   ]
 
   const statusColumn: ColumnDef<DayoffType> = {
+    id:"status",
     accessorKey: "status",
     header: "Status",
     filterFn: (row, columnId, filterValue) => {

@@ -14,13 +14,14 @@ export default function BookingRoomTable() {
 
   return (
     <div className="space-y-4">
-      <DataTable 
-      columns={columns} 
-      data={roombookings || []}
-      searchColumn="username"
-      searchPlaceholder="Search username..."
-      dateColumn="date"
-      toolbarAdditionalControls={<BookingDialog />}
+      <DataTable
+        columns={columns}
+        data={roombookings || []}
+        searchColumn="username"
+        searchPlaceholder="Search username..."
+        dateColumn="date"
+        defaultVisibleColumns={["username", "time", "date", "actions"]}
+        toolbarAdditionalControls={<BookingDialog />}
       />
     </div>
   )

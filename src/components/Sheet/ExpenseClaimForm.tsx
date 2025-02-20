@@ -4,10 +4,16 @@ import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Form } from "@/components/ui/form";
-import { Expense } from "@/types/expense";
-import {expenseSchema} from "@/schema/expenseFormSchema"; 
+import { expenseSchema, Expense } from "@/schema/expenseFormSchema";
 import { normalizeExpense } from "@/lib/expenseUtils";
 import { BasicInfoFields } from "@/components/Sheet/expense-form/BasicInfoFields";
 import { ForeignCurrencyFields } from "@/components/Sheet/expense-form/ForeignCurrencyFields";
@@ -40,9 +46,23 @@ export function ExpenseClaimForm({
   const createExpenseMutation = useCreateExpense();
   const updateExpenseMutation = useUpdateExpense();
 
-  const defaultFormValues = normalizeExpense({
+  // Base default values as Partial<Expense>
+  const baseDefaultValues: Partial<Expense> = {
     employeeName: user ? `${user.firstName} ${user.lastName}` : "",
-    ...defaultValues, // Merge provided defaultValues
+    expenses: {
+      fuel: { liters: 0, totalCost: 0 },
+      accommodation: { nights: 0, totalCost: 0 },
+      transportation: { origin: "", destination: "", totalCost: 0 },
+      perDiem: { amount: 0 }, // Adjusted to match schema (assuming 'days' was a typo)
+      medicalExpenses: { amount: 0, description: "" },
+      otherExpenses: { amount: 0, description: "" },
+    },
+  };
+
+  // Merge base defaults with provided defaultValues and normalize
+  const defaultFormValues = normalizeExpense({
+    ...baseDefaultValues,
+    ...defaultValues,
   });
 
   const form = useForm<Expense>({

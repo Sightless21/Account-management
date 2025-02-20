@@ -1,269 +1,206 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useState } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { Building2, Mail, Phone, User, Briefcase, Globe, Building, FileText, Hash, MessageSquare } from "lucide-react"
-
-import { Button } from "@/components/ui/button"
+import { useState, useCallback } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Building2, Mail, Phone, User, Briefcase, Globe, Building, FileText, Hash, MessageSquare } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { type CustomerFormData, customerSchema } from "@/schema/formCustomer"
+} from "@/components/ui/dialog";
+import { Form } from "@/components/ui/form";
+import { FormInput } from "@/components/ui/formCustomerInput"
+import { type CustomerFormData, customerSchema } from "@/schema/formCustomer";
 
 interface CustomerDialogProps {
-  customer?: CustomerFormData
-  onSubmit: (data: CustomerFormData) => void
-  trigger?: React.ReactNode
+  customer?: CustomerFormData;
+  onSubmit: (data: CustomerFormData) => void;
+  trigger?: React.ReactNode;
 }
 
+const defaultCustomerValues: CustomerFormData = {
+  companyName: "",
+  contactPerson: "",
+  position: "",
+  address: "",
+  phoneNumber: "",
+  taxId: "",
+  email: "",
+  website: "",
+  industry: "",
+  notes: "",
+};
+
 export function CustomerDialog({ customer, onSubmit, trigger }: CustomerDialogProps) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   const form = useForm<CustomerFormData>({
     resolver: zodResolver(customerSchema),
-    defaultValues: customer || {
-      companyName: "",
-      contactPerson: "",
-      position: "",
-      address: "",
-      phoneNumber: "",
-      taxId: "",
-      email: "",
-      website: "",
-      industry: "",
-      notes: "",
+    defaultValues: customer || defaultCustomerValues,
+  });
+
+  const handleSubmit = useCallback(
+    (data: CustomerFormData) => {
+      onSubmit(data);
+      setOpen(false);
+      form.reset(customer || defaultCustomerValues);
     },
-  })
+    [onSubmit, form, customer]
+  );
 
-  const handleSubmit = (data: CustomerFormData) => {
-    onSubmit(data)
-    setOpen(false)
-    form.reset()
-  }
+  const handleOpenChange = useCallback(
+    (isOpen: boolean) => {
+      setOpen(isOpen);
+      if (!isOpen && !form.formState.isSubmitted) {
+        form.reset(customer || defaultCustomerValues);
+      }
+    },
+    [form, customer]
+  );
 
-  const RequiredIndicator = () => <span className="text-destructive">*</span>
+  const iconMap = {
+    companyName: Building2,
+    contactPerson: User,
+    position: Briefcase,
+    phoneNumber: Phone,
+    email: Mail,
+    taxId: Hash,
+    website: Globe,
+    industry: Building,
+    address: FileText,
+    notes: MessageSquare,
+  };
+
+  const requiredFields = [
+    "companyName",
+    "contactPerson",
+    "position",
+    "phoneNumber",
+    "email",
+    "taxId",
+    "address",
+  ];
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{trigger || <Button>Add Customer</Button>}</DialogTrigger>
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogTrigger asChild>{
+        trigger ||
+        <Button onClick={() => console.log("Button clicked!")}>Add Customer</Button>
+      }
+      </DialogTrigger>
+      <DialogContent className="w-[700px] max-h-[100vh] h-[850px] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{customer ? "Edit Customer" : "Add New Customer"}</DialogTitle>
           <DialogDescription>
             {customer
-              ? "Update customer information in the form below."
-              : "Fill in the customer information in the form below."}
+              ? "Update customer information below."
+              : "Enter new customer information below."}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <FormField
-                control={form.control}
+              <FormInput
                 name="companyName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Company Name
-                      <RequiredIndicator />
-                    </FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Building2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input {...field} className="pl-9" placeholder="Enter company name" />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
+                label="Company Name"
+                icon={iconMap.companyName}
+                placeholder="Enter company name"
                 control={form.control}
+                required={requiredFields.includes("companyName")}
+              />
+              <FormInput
                 name="contactPerson"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Contact Person
-                      <RequiredIndicator />
-                    </FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input {...field} className="pl-9" placeholder="Enter contact person name" />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
+                label="Contact Person"
+                icon={iconMap.contactPerson}
+                placeholder="Enter contact person name"
                 control={form.control}
+                required={requiredFields.includes("contactPerson")}
+              />
+              <FormInput
                 name="position"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Position
-                      <RequiredIndicator />
-                    </FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Briefcase className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input {...field} className="pl-9" placeholder="Enter position" />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
+                label="Position"
+                icon={iconMap.position}
+                placeholder="Enter position"
                 control={form.control}
+                required={requiredFields.includes("position")}
+              />
+              <FormInput
                 name="phoneNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Phone Number
-                      <RequiredIndicator />
-                    </FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input {...field} type="tel" className="pl-9" placeholder="Enter phone number" />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
+                label="Phone Number"
+                icon={iconMap.phoneNumber}
+                placeholder="(XXX) XXX-XXXX"
                 control={form.control}
+                component="phone"
+                required={requiredFields.includes("phoneNumber")}
+              />
+              <FormInput
                 name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Email
-                      <RequiredIndicator />
-                    </FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input {...field} type="email" className="pl-9" placeholder="Enter email address" />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
+                label="Email"
+                icon={iconMap.email}
+                placeholder="Enter email address"
                 control={form.control}
+                type="email"
+                required={requiredFields.includes("email")}
+              />
+              <FormInput
                 name="taxId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Tax ID
-                      <RequiredIndicator />
-                    </FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Hash className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input {...field} className="pl-9" placeholder="Enter tax ID" />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
+                label="Tax ID"
+                icon={iconMap.taxId}
+                placeholder="Enter tax ID"
                 control={form.control}
+                required={requiredFields.includes("taxId")}
+              />
+              <FormInput
                 name="website"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Website</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Globe className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input {...field} type="url" className="pl-9" placeholder="Enter website URL" />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
+                label="Website"
+                icon={iconMap.website}
+                placeholder="Enter website URL"
                 control={form.control}
+                type="url"
+                required={requiredFields.includes("website")}
+              />
+              <FormInput
                 name="industry"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Industry
-                      <RequiredIndicator />
-                    </FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Building className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input {...field} className="pl-9" placeholder="Enter industry" />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                label="Industry"
+                icon={iconMap.industry}
+                placeholder="Enter industry (optional)"
+                control={form.control}
+                required={requiredFields.includes("industry")}
               />
             </div>
-            <FormField
-              control={form.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Address
-                    <RequiredIndicator />
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <FileText className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input {...field} className="pl-9" placeholder="Enter complete address" />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
+            <div className="col-span-full">
+              <FormInput
+                name="address"
+                label="Address"
+                icon={iconMap.address}
+                placeholder="Enter complete address"
+                control={form.control}
+                required={requiredFields.includes("address")}
+              />
+            </div>
+            <FormInput
               name="notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Notes</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <MessageSquare className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Textarea {...field} className="min-h-[100px] pl-9" placeholder="Enter any additional notes" />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Notes"
+              icon={iconMap.notes}
+              placeholder="Enter any additional notes"
+              control={form.control}
+              component="textarea"
+              className="min-h-[100px]"
+              required={requiredFields.includes("notes")}
             />
-            <DialogFooter>
+            <div className="flex justify-end">
               <Button type="submit" className="px-8 rounded-md" size="lg">
                 {customer ? "Update Customer" : "Add Customer"}
               </Button>
-            </DialogFooter>
+            </div>
           </form>
         </Form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
-

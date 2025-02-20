@@ -245,3 +245,17 @@ enum ExpenseClaimStatus {
   Accepted
   Declined
 }
+
+model Customer {
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  companyName   String
+  contactPerson String
+  position      String
+  address       String
+  phoneNumber   String
+  taxId         String
+  email         String
+  website       String?
+  industry      String?
+  notes         String?
+}

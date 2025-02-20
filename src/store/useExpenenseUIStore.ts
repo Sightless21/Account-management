@@ -1,12 +1,13 @@
-import { create } from 'zustand'
-import { ExpenseFormValues } from "@/schema/expenseFormSchema"
+// store/useExpenseUIStore.ts
+import { create } from "zustand";
+import { Expense } from "@/types/expense";
 
 interface ExpenseStore {
-  selectedExpense: ExpenseFormValues | null
-  setSelectedExpense: (expense: ExpenseFormValues | null) => void
+  selectedExpense: Expense | null;
+  setSelectedExpense: (expense: Expense | null) => void;
 }
 
 export const useExpenseStore = create<ExpenseStore>((set) => ({
   selectedExpense: null,
-  setSelectedExpense: (expense) => set({ selectedExpense: expense })
-}))
+  setSelectedExpense: (expense) => set({ selectedExpense: expense }),
+}));

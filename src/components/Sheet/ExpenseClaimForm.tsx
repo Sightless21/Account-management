@@ -1,89 +1,88 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useForm, SubmitHandler } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { Form } from "@/components/ui/form"
-import { expenseFormSchema, ExpenseFormValues } from "@/schema/expenseFormSchema"
-import { useExpenseFormDefault } from "@/hooks/useExpenseFormDefault"
-import { BasicInfoFields } from "@/components/Sheet/expense-form/BasicInfoFields"
-import { ForeignCurrencyFields } from "@/components/Sheet/expense-form/ForeignCurrencyFields"
-import { ExpenseTypeAccordion } from "@/components/Sheet/expense-form/ExpenseTypeAccordion"
-import { handleExpense, updateExpense } from "@/app/action/expense"
-import { useUserData } from "@/hooks/useUserData"
-import { toast } from "sonner"
-import { useSession } from "next-auth/react"
-import { useExpenses } from "@/hooks/useExpenseData"
-import { BadgePlus, Pencil } from "lucide-react"
+import { useState } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Form } from "@/components/ui/form";
+import { Expense } from "@/types/expense";
+import {expenseSchema} from "@/schema/expenseFormSchema"; 
+import { normalizeExpense } from "@/lib/expenseUtils";
+import { BasicInfoFields } from "@/components/Sheet/expense-form/BasicInfoFields";
+import { ForeignCurrencyFields } from "@/components/Sheet/expense-form/ForeignCurrencyFields";
+import { ExpenseTypeAccordion } from "@/components/Sheet/expense-form/ExpenseTypeAccordion";
+import { useUserData } from "@/hooks/useUserData";
+import { toast } from "sonner";
+import { useSession } from "next-auth/react";
+import { useCreateExpense, useUpdateExpense } from "@/hooks/useExpenseData";
+import { BadgePlus, Pencil, Loader2 } from "lucide-react";
 
 interface ExpenseClaimFormProps {
-  mode?: 'create' | 'edit'
-  defaultValues?: Partial<ExpenseFormValues>
-  expenseId?: string
-  trigger?: React.ReactNode
-  onSubmitSuccess?: () => void
+  mode?: "create" | "edit";
+  defaultValues?: Partial<Expense>;
+  expenseId?: string;
+  trigger?: React.ReactNode;
+  onSubmitSuccess?: () => void;
 }
 
 export function ExpenseClaimForm({
-  mode = 'create',
+  mode = "create",
   defaultValues,
   expenseId,
   trigger,
-  onSubmitSuccess
+  onSubmitSuccess,
 }: ExpenseClaimFormProps) {
-  const { refetch } = useExpenses();
-  const { data: session } = useSession()
-  const { data: user } = useUserData(session?.user.id as string)
-  const userinfo = user
-  const [open, setOpen] = useState(false)
+  const { data: session } = useSession();
+  const { data: user } = useUserData(session?.user.id ?? ""); // Fallback to empty string
+  const [open, setOpen] = useState(false);
 
-  const defaultFormValues = {
-    ...useExpenseFormDefault().defaultValues,
-    employeeName: userinfo ? `${userinfo.firstName} ${userinfo.lastName}` : "",
-    ...defaultValues // Merge provided defaultValues
-  }
+  const createExpenseMutation = useCreateExpense();
+  const updateExpenseMutation = useUpdateExpense();
 
-  const form = useForm<ExpenseFormValues>({
-    resolver: zodResolver(expenseFormSchema),
-    defaultValues: defaultFormValues
-  })
+  const defaultFormValues = normalizeExpense({
+    employeeName: user ? `${user.firstName} ${user.lastName}` : "",
+    ...defaultValues, // Merge provided defaultValues
+  });
 
-  const onSubmit: SubmitHandler<ExpenseFormValues> = async (values) => {
+  const form = useForm<Expense>({
+    resolver: zodResolver(expenseSchema),
+    defaultValues: defaultFormValues,
+  });
+
+  const onSubmit: SubmitHandler<Expense> = async (values) => {
     try {
-      if (mode === 'edit' && expenseId) {
-        // Use updateExpense action for edit mode
+      if (mode === "edit" && expenseId) {
         await toast.promise(
-          updateExpense(expenseId,values),
+          updateExpenseMutation.mutateAsync({ id: expenseId, data: values }),
           {
-            loading: 'Updating expense claim...',
-            success: 'Updated expense claim successfully',
-            error: 'Error updating expense claim!'
+            loading: "Updating expense claim...",
+            success: "Expense claim updated successfully!",
+            error: (err) => `Error updating expense claim: ${err.message || "Unknown error"}`,
           }
-        )
+        );
       } else {
-        // Use handleExpense action for create mode
         await toast.promise(
-          handleExpense(values),
+          createExpenseMutation.mutateAsync(values),
           {
-            loading: 'Creating expense claim...',
-            success: 'Created expense claim successfully',
-            error: 'Error creating expense claim!'
+            loading: "Creating expense claim...",
+            success: "Expense claim created successfully!",
+            error: (err) => `Error creating expense claim: ${err.message || "Unknown error"}`,
           }
-        )
+        );
       }
 
-      await refetch()
-      setOpen(false)
-      onSubmitSuccess?.()
+      form.reset(defaultFormValues); // Reset form to initial state
+      setOpen(false);
+      onSubmitSuccess?.();
     } catch (error) {
-      console.error('Error submitting expense:', error)
+      console.error("Error submitting expense:", error);
     }
-  }
+  };
 
+  const isPending = createExpenseMutation.isPending || updateExpenseMutation.isPending;
 
-  const defaultTrigger = mode === 'create' ? (
+  const defaultTrigger = mode === "create" ? (
     <Button variant="default">
       <BadgePlus className="mr-2" /> Add Expense Claim
     </Button>
@@ -91,33 +90,34 @@ export function ExpenseClaimForm({
     <Button variant="outline" size="icon">
       <Pencil className="h-4 w-4" />
     </Button>
-  )
+  );
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        {trigger || defaultTrigger}
-      </SheetTrigger>
+      <SheetTrigger asChild>{trigger || defaultTrigger}</SheetTrigger>
       <SheetContent className="!max-w-[700px] sm:w-[600px] overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>
-            {mode === 'create' ? 'Add' : 'Edit'} Expense Claim
-          </SheetTitle>
-          <SheetDescription>
-            Fill in the details of your expense claim.
-          </SheetDescription>
+          <SheetTitle>{mode === "edit" ? "Edit" : "Add"} Expense Claim</SheetTitle>
+          <SheetDescription>Fill in the details of your expense claim.</SheetDescription>
         </SheetHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <BasicInfoFields control={form.control} />
             <ForeignCurrencyFields control={form.control} />
             <ExpenseTypeAccordion control={form.control} />
-            <Button type="submit">
-              {mode === 'create' ? 'Submit' : 'Update'} Expense Claim
+            <Button type="submit" disabled={isPending}>
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {mode === "edit" ? "Updating..." : "Submitting..."}
+                </>
+              ) : (
+                mode === "edit" ? "Update Expense Claim" : "Submit Expense Claim"
+              )}
             </Button>
           </form>
         </Form>
       </SheetContent>
     </Sheet>
-  )
+  );
 }

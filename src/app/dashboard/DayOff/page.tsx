@@ -15,8 +15,8 @@ export default function Page() {
     <div className="mr-3 flex flex-col gap-4 p-4 h-full">
       <Card>
         <CardHeader>
-          <CardTitle>Employee Leave of Absence Tracking</CardTitle>
-          <CardDescription>Employee Leave of Absence Tracking System</CardDescription>
+          <CardTitle>Employee Day off of Absence Tracking</CardTitle>
+          <CardDescription>Employee Day off of Absence Tracking System</CardDescription>
           <div className="flex w-full justify-between">
             <Menutabs userRole={"ADMIN"} onTabChange={setActiveTab} />
           </div>

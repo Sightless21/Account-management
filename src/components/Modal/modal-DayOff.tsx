@@ -129,7 +129,7 @@ export function DayoffModal({ defaultValue, mode }: DayoffModalProps) {
             <PencilIcon className="h-4 w-4" />
           </Button>
         ) : 
-        <Button variant={"default"}>
+        <Button className="h-8" variant={"default"}>
           <BadgePlus /> Add New Leave
         </Button>
         }

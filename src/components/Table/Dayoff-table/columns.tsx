@@ -99,8 +99,15 @@ export const getColumns = (
     {
       accessorKey: "employeeName",
       header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Employee Name" />
-          ),
+        <DataTableColumnHeader column={column} title="Employee Name" />
+      ),
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const employeeName = row.getValue(columnId) as string;
+        const nameLower = employeeName.toLowerCase();
+        const filterLower = filterValue.toLowerCase();
+        return nameLower.includes(filterLower);
+      },
     },
     {
       accessorKey: "leaveType",
@@ -111,7 +118,7 @@ export const getColumns = (
       header: "Date Range",
       filterFn: (row, columnId, filterValue: DateRange | undefined) => {
         if (!filterValue?.from) return true;
-        
+
         const rowDate = row.original.date;
         if (!rowDate?.from) return false;
 
@@ -143,7 +150,7 @@ export const getColumns = (
         return (
           <div className="flex items-center space-x-1">
             <span>{fromDate}</span>
-            < MoveRight/>
+            < MoveRight />
             <span>{toDate}</span>
           </div>
         )
@@ -154,6 +161,11 @@ export const getColumns = (
   const statusColumn: ColumnDef<DayoffType> = {
     accessorKey: "status",
     header: "Status",
+    filterFn: (row, columnId, filterValue) => {
+      if (!filterValue || filterValue.length === 0) return true;
+      const status = row.getValue(columnId) as string;
+      return filterValue.includes(status);
+    },
     cell: ({ row }) => {
       const { status } = row.original;
       return <Badge className={statusColor[status] || "bg-gray-500"}>{status}</Badge>;
@@ -189,7 +201,7 @@ export const getColumns = (
     case "EMPLOYEE":
       return [...baseColumns, statusColumn, actionColumn]
     case "HR":
-      return [...baseColumns, approvalColumn, statusColumn, actionColumn, ]
+      return [...baseColumns, approvalColumn, statusColumn, actionColumn,]
     case "MANAGER":
       return [...baseColumns, approvalColumn, statusColumn]
     case "ADMIN":

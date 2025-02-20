@@ -47,7 +47,7 @@ export function DataTable<TData, TValue>({
   statusOptions,
   enableToolbar = true,
   enablePagination = true,
-  pageSize = 10,
+  pageSize = 7,
   toolbarAdditionalControls,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])

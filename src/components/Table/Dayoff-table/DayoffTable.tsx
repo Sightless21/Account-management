@@ -4,6 +4,7 @@ import { getColumns } from "@/components/Table/Dayoff-table/columns"
 import type { UserRole, DayoffType } from "@/types/day-off"
 import { DataTable } from "@/components/Table/Data-Table"
 import { useDayOff, useDeleteDayOff, useUpdateDayOff, useUpdateStatusDayOff } from "@/hooks/useDayOffData"
+import { DayoffModal } from "@/components/Modal/modal-DayOff"
 
 interface DayOffTableProps {
   userRole: UserRole
@@ -65,7 +66,7 @@ export default function DayOffTable({ userRole }: DayOffTableProps) {
         { label: "Accepted", value: "Accepted" },
         { label: "Declined", value: "Declined" },
       ]}
-      />
+      toolbarAdditionalControls={<DayoffModal />}/>
     </div>
   )
 }

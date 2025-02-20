@@ -9,6 +9,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { ExpenseClaimForm } from "@/components/Sheet/ExpenseClaimForm";
 import { DataTableColumnHeader } from "../ColumnHeader";
 import { Expense } from "@/types/expense";
+import { format } from "date-fns"; // Add date-fns for formatting
+import { DateRange } from "react-day-picker"; // Import DateRange type
 
 export enum ExpenseStatus {
   Pending = "Pending",
@@ -91,7 +93,21 @@ export const getColumns = (
     },
     {
       id: "total",
-      header: "Total",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Total" />,
+      accessorFn: (row) => {
+        const { expenses, useForeignCurrency, country } = row;
+        if (!expenses) return 0;
+
+        const totalCost = Object.values(expenses).reduce((sum, expense) => {
+          if (expense && "totalCost" in expense) return sum + (expense.totalCost || 0);
+          if (expense && "amount" in expense) return sum + (expense.amount || 0);
+          return sum;
+        }, 0);
+
+        const currency = useForeignCurrency && country ? country.toUpperCase() : "THB";
+        const rate = exchangeRates[currency] || 1;
+        return totalCost * rate; // Return numeric value for sorting
+      },
       cell: ({ row }) => {
         const { expenses, useForeignCurrency, country } = row.original;
         if (!expenses) return "0 THB";
@@ -108,12 +124,37 @@ export const getColumns = (
 
         return `${convertedTotal.toLocaleString()} THB`;
       },
+      enableSorting: true,
+    },
+    {
+      accessorKey: "transactionDate",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Transaction Date" />,
+      cell: ({ row }) => {
+        const date = new Date(row.original.transactionDate);
+        return isNaN(date.getTime()) ? "Invalid Date" : format(date, "PPP"); // Format as "Jan 1, 2025"
+      },
+      enableSorting: true,
+      sortingFn: "datetime", 
+      filterFn: (row, columnId, filterValue: DateRange | undefined) => {
+        if (!filterValue || (!filterValue.from && !filterValue.to)) return true; // No filter applied
+      
+        const rowDate = new Date(row.getValue(columnId) as string).getTime();
+        const start = filterValue.from ? new Date(filterValue.from).getTime() : -Infinity;
+        const end = filterValue.to ? new Date(filterValue.to).getTime() : Infinity;
+      
+        return rowDate >= start && rowDate <= end;
+      },
     },
   ];
 
   const statusColumn: ColumnDef<Expense> = {
     accessorKey: "status",
     header: "Status",
+    filterFn: (row, columnId, filterValue) => {
+      if (!filterValue || filterValue.length === 0) return true;
+      const status = row.getValue(columnId) as string;
+      return filterValue.includes(status);
+    },
     cell: ({ row }) => {
       const { status } = row.original;
       return <Badge className={statusColor[status as ExpenseStatus] || "bg-gray-500"}>{status}</Badge>;

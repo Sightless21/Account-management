@@ -33,7 +33,7 @@ export const useUpdateCarReservation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (carReservation: CarReservationType) => {
-      const response = await axios.put(`/api/car-Reservation/${carReservation.id}`, carReservation);
+      const response = await axios.patch(`/api/car-Reservation/${carReservation.id}`, carReservation);
       return response.data;
     },
     onSuccess: () => {

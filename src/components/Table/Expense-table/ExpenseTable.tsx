@@ -78,7 +78,7 @@ export default function ExpenseTable({ userRole }: ExpenseTableProps) {
         searchPlaceholder="Search expenses title..."
         dateColumn="transactionDate"
         statusColumn="status"
-        defaultVisibleColumns={["Title","Total" ,"transactionDate", "status", 'actions']}
+        defaultVisibleColumns={["Title","Total" ,"transactionDate", "status", 'menu-actions']}
         statusOptions={[
           { label: "Pending", value: "Pending" },
           { label: "Accepted", value: "Accepted" },

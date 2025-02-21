@@ -27,6 +27,9 @@ export const formCarReservationSchema = z.object({
     required_error: "Please select an end time",
   }),
   carId: z.string().min(1, "Car ID is required").nullable(),
-  tripStatus: z.enum(["ONGOING", "COMPLETED", "CANCELLED"]),
+  tripStatus: z.enum(["ONGOING", "COMPLETED", "CANCELLED"]).optional(),
   car: formCarSchema,
 })
+
+export type FormCarReservationType = z.infer<typeof formCarReservationSchema>
+export type FormCarType = z.infer<typeof formCarSchema>

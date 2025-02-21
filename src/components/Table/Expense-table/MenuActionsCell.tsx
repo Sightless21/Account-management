@@ -19,7 +19,7 @@ export const MenuActionsCell = ({ row, onEdit, onDelete, onSetSelectedExpense }:
   onSetSelectedExpense: (expense: Expense | null) => void;
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { employeeName } = row.original;
+  const { title } = row.original;
 
   return (
     <TooltipProvider>
@@ -40,9 +40,9 @@ export const MenuActionsCell = ({ row, onEdit, onDelete, onSetSelectedExpense }:
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuItem
-            onClick={() => employeeName && navigator.clipboard.writeText(employeeName)}
+            onClick={() => title && navigator.clipboard.writeText(title)}
           >
-            <Copy className="mr-2 h-4 w-4" /> Copy Employee Name
+            <Copy className="mr-2 h-4 w-4" /> Copy Title
           </DropdownMenuItem>
           <ExpenseDialog
             expense={row.original}

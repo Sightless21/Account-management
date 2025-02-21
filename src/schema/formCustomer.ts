@@ -3,6 +3,7 @@ import { z } from "zod"
 const phoneRegex = /^\(\d{3}\)\s\d{3}-\d{4}$/
 
 export const customerSchema = z.object({
+  id: z.string().optional(),
   companyName: z.string().min(2, {
     message: "Company name must be at least 2 characters.",
   }),

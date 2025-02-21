@@ -104,82 +104,84 @@ export function ExpenseDialog({ expense, onClose, trigger, open }: ExpenseDialog
             {/* Expenses */}
             <div>
               <h4 className="mb-4 font-semibold">Expenses Summary</h4>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[100px]">Type</TableHead>
-                    <TableHead>Details</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {hasContent(expense.expenses.fuel) && (
-                    <TableRow>
-                      <TableCell className="font-medium">Fuel</TableCell>
-                      <TableCell className="text-muted-foreground">{expense.expenses.fuel!.liters} liters</TableCell>
-                      <TableCell className="text-right">{formatCurrency(expense.expenses.fuel!.totalCost)}</TableCell>
+              <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-slate-100">
+                      <TableHead className="w-[100px]">Type</TableHead>
+                      <TableHead>Details</TableHead>
+                      <TableHead className="text-right">Amount</TableHead>
                     </TableRow>
-                  )}
-                  {hasContent(expense.expenses.accommodation) && (
+                  </TableHeader>
+                  <TableBody>
+                    {hasContent(expense.expenses.fuel) && (
+                      <TableRow>
+                        <TableCell className="font-medium">Fuel</TableCell>
+                        <TableCell className="text-muted-foreground">{expense.expenses.fuel!.liters} liters</TableCell>
+                        <TableCell className="text-right">{formatCurrency(expense.expenses.fuel!.totalCost)}</TableCell>
+                      </TableRow>
+                    )}
+                    {hasContent(expense.expenses.accommodation) && (
+                      <TableRow>
+                        <TableCell className="font-medium">Accommodation</TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {expense.expenses.accommodation!.nights} nights
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {formatCurrency(expense.expenses.accommodation!.totalCost)}
+                        </TableCell>
+                      </TableRow>
+                    )}
+                    {hasContent(expense.expenses.transportation) && (
+                      <TableRow>
+                        <TableCell className="font-medium">Transportation</TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {expense.expenses.transportation!.origin} to {expense.expenses.transportation!.destination}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {formatCurrency(expense.expenses.transportation!.totalCost)}
+                        </TableCell>
+                      </TableRow>
+                    )}
+                    {hasContent(expense.expenses.perDiem) && (
+                      <TableRow>
+                        <TableCell className="font-medium">Per Diem</TableCell>
+                        <TableCell className="text-muted-foreground">Daily allowance</TableCell>
+                        <TableCell className="text-right">{formatCurrency(expense.expenses.perDiem!.amount)}</TableCell>
+                      </TableRow>
+                    )}
+                    {hasContent(expense.expenses.medicalExpenses) && (
+                      <TableRow>
+                        <TableCell className="font-medium">Medical</TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {expense.expenses.medicalExpenses!.description}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {formatCurrency(expense.expenses.medicalExpenses!.amount)}
+                        </TableCell>
+                      </TableRow>
+                    )}
+                    {hasContent(expense.expenses.otherExpenses) && (
+                      <TableRow>
+                        <TableCell className="font-medium">Other</TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {expense.expenses.otherExpenses!.description}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {formatCurrency(expense.expenses.otherExpenses!.amount)}
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                  <TableFooter>
                     <TableRow>
-                      <TableCell className="font-medium">Accommodation</TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {expense.expenses.accommodation!.nights} nights
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {formatCurrency(expense.expenses.accommodation!.totalCost)}
-                      </TableCell>
+                      <TableCell>Total</TableCell>
+                      <TableCell></TableCell>
+                      <TableCell className="text-right font-medium">{formatCurrency(calculateTotal())}</TableCell>
                     </TableRow>
-                  )}
-                  {hasContent(expense.expenses.transportation) && (
-                    <TableRow>
-                      <TableCell className="font-medium">Transportation</TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {expense.expenses.transportation!.origin} to {expense.expenses.transportation!.destination}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {formatCurrency(expense.expenses.transportation!.totalCost)}
-                      </TableCell>
-                    </TableRow>
-                  )}
-                  {hasContent(expense.expenses.perDiem) && (
-                    <TableRow>
-                      <TableCell className="font-medium">Per Diem</TableCell>
-                      <TableCell className="text-muted-foreground">Daily allowance</TableCell>
-                      <TableCell className="text-right">{formatCurrency(expense.expenses.perDiem!.amount)}</TableCell>
-                    </TableRow>
-                  )}
-                  {hasContent(expense.expenses.medicalExpenses) && (
-                    <TableRow>
-                      <TableCell className="font-medium">Medical</TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {expense.expenses.medicalExpenses!.description}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {formatCurrency(expense.expenses.medicalExpenses!.amount)}
-                      </TableCell>
-                    </TableRow>
-                  )}
-                  {hasContent(expense.expenses.otherExpenses) && (
-                    <TableRow>
-                      <TableCell className="font-medium">Other</TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {expense.expenses.otherExpenses!.description}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {formatCurrency(expense.expenses.otherExpenses!.amount)}
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-                <TableFooter>
-                  <TableRow>
-                    <TableCell>Total</TableCell>
-                    <TableCell></TableCell>
-                    <TableCell className="text-right font-medium">{formatCurrency(calculateTotal())}</TableCell>
-                  </TableRow>
-                </TableFooter>
-              </Table>
+                  </TableFooter>
+                </Table>
+              </div>
             </div>
             <Separator />
             {/* Attachment */}

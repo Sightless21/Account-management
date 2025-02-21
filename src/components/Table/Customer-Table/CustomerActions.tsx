@@ -7,7 +7,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Copy, Info, MoreHorizontal, Pencil, TrashIcon } from "lucide-react";
-import CustomerDialogInfo  from "@/components/Modal/modal-CustomerInfo";
+import CustomerDialogInfo from "@/components/Modal/modal-CustomerInfo";
+import { CustomerDialog } from "@/components/Modal/modal-Customer";
 
 interface CustomerActionsProps {
   row: Row<Customer>;
@@ -18,11 +19,17 @@ interface CustomerActionsProps {
 
 export function CustomerActions({ row, deleteCustomer, editCustomer, viewDetails }: CustomerActionsProps) {
   const { companyName, id } = row.original;
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpenView, setIsModalOpenView] = useState(false);
+  const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
 
   const handleViewDetails = () => {
-    setIsModalOpen(true);
-    viewDetails?.(row.original); // Optional external handler
+    setIsModalOpenView(true);
+    viewDetails?.(row.original);
+  };
+
+  const handleEditClick = () => {
+    setIsModalOpenEdit(true);
+    editCustomer?.(row.original);
   };
 
   return (
@@ -53,13 +60,20 @@ export function CustomerActions({ row, deleteCustomer, editCustomer, viewDetails
                 <Info className="mr-2 h-4 w-4" /> View Details
               </DropdownMenuItem>
             }
-            open={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
+            open={isModalOpenView}
+            onClose={() => setIsModalOpenView(false)}
           />
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => editCustomer?.(row.original)}>
-            <Pencil className="mr-2 h-4 w-4" /> Edit Customer
-          </DropdownMenuItem>
+          <CustomerDialog 
+            customer={row.original} 
+            trigger={
+              <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleEditClick(); }}>
+                <Pencil className="mr-2 h-4 w-4" /> Edit Customer
+              </DropdownMenuItem>
+            } 
+            open={isModalOpenEdit}
+            onClose={() => setIsModalOpenEdit(false)}
+          />
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => deleteCustomer?.(id)}

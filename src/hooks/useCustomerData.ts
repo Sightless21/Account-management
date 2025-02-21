@@ -15,7 +15,7 @@ export const fetchCustomerInfo = async ({id} : {id : string}) => {
 
 export const useCustomerInfo = ({id} : {id : string}) => {
   return useQuery({
-    queryKey: ["customer",id],
+    queryKey: ["customers",id],
     queryFn: () => fetchCustomerInfo({id}),
     enabled: !!id,
   })
@@ -26,6 +26,8 @@ export const useCustomer = () => {
     queryKey: ["customers"],
     queryFn: fetchCustomer,
     staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
 };
 

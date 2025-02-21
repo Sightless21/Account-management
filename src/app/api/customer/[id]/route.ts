@@ -19,7 +19,7 @@ export async function GET( req: NextRequest, { params }: { params: { id: string 
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params;
+  const { id } = await params;
   try {
     const data = await req.json();
     console.log("📌 Received Body: ", data)
@@ -34,6 +34,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
         taxId: data.taxId,
         email: data.email,
         website: data.website,
+        industry: data.industry,
+        notes: data.notes,
       },
     });
     return NextResponse.json(updatedCustomer, { status: 200 });

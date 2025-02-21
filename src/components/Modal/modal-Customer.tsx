@@ -7,6 +7,7 @@ import { Building2, Mail, Phone, User, Briefcase, Globe, Building, FileText, Has
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -14,13 +15,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
-import { FormInput } from "@/components/ui/formCustomerInput"
+import { FormInput } from "@/components/ui/formCustomerInput";
 import { type CustomerFormData, customerSchema } from "@/schema/formCustomer";
-import { useCreateCustomer } from "@/hooks/useCustomerData";
+import { useCreateCustomer, useUpdateCustomer } from "@/hooks/useCustomerData";
 
 interface CustomerDialogProps {
   customer?: CustomerFormData;
   trigger?: React.ReactNode;
+  open?: boolean;
+  onClose?: () => void;
 }
 
 const defaultCustomerValues: CustomerFormData = {
@@ -36,35 +39,54 @@ const defaultCustomerValues: CustomerFormData = {
   notes: "",
 };
 
-export function CustomerDialog({ customer,  trigger }: CustomerDialogProps) {
+export function CustomerDialog({ customer, trigger, open: controlledOpen, onClose }: CustomerDialogProps) {
   const createCustomer = useCreateCustomer();
+  const updateCustomer = useUpdateCustomer();
   const [open, setOpen] = useState(false);
+
+  // Determine mode based on whether customer data is provided
+  const mode = customer ? 'edit' : 'create';
+
+  // Use customer data for default values if in edit mode, otherwise use defaults
+  const initialValues = customer || defaultCustomerValues;
 
   const form = useForm<CustomerFormData>({
     resolver: zodResolver(customerSchema),
-    defaultValues: customer || defaultCustomerValues,
+    defaultValues: initialValues, // Pre-fill with customer data if editing
   });
 
   const handleSubmit = useCallback(
     (data: CustomerFormData) => {
-      console.log(data);
-      const customerData = { ...data, id: "" };
-      createCustomer.mutate(customerData);
-      setOpen(false);
-      form.reset(customer || defaultCustomerValues);
+      if (mode === 'edit' && customer?.id) {
+        updateCustomer.mutateAsync({ ...data, id: customer.id });
+      } else {
+        const customerData = { ...data, id: "" };
+        createCustomer.mutateAsync(customerData);
+      }
+      setOpen(false); // Close the modal after submission
+      form.reset(defaultCustomerValues);
+      if (onClose) onClose(); // Trigger onClose callback
     },
-    [createCustomer, form, customer]
+    [createCustomer, updateCustomer, mode, customer, onClose, form]
   );
 
   const handleOpenChange = useCallback(
     (isOpen: boolean) => {
-      setOpen(isOpen);
-      if (!isOpen && !form.formState.isSubmitted) {
-        form.reset(customer || defaultCustomerValues);
+      const newOpen = controlledOpen !== undefined ? controlledOpen : isOpen;
+      setOpen(newOpen);
+      if (!newOpen) {
+        form.reset(initialValues); // Reset to initial values (customer data or defaults) when closing
+        if (onClose) onClose(); // Trigger onClose callback
       }
     },
-    [form, customer]
+    [form, initialValues, controlledOpen, onClose]
   );
+
+  const handleClose = () => {
+    setOpen(false); // Explicitly close the modal
+    form.reset(initialValues); // Reset to initial values (customer data or defaults)
+    if (onClose) onClose(); // Trigger onClose callback
+  };
 
   const iconMap = {
     companyName: Building2,
@@ -90,17 +112,23 @@ export function CustomerDialog({ customer,  trigger }: CustomerDialogProps) {
   ];
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>{
-        trigger ||
-        <Button className="h-8" variant={"default"} ><BadgePlus />Add Customer</Button>
-      }
+    <Dialog open={controlledOpen !== undefined ? controlledOpen : open} onOpenChange={handleOpenChange}>
+      <DialogTrigger asChild>
+        {trigger || (
+          <Button className="h-8" variant={"default"}>
+            <BadgePlus /> Add Customer
+          </Button>
+        )}
       </DialogTrigger>
-      <DialogContent className="w-[700px] max-h-[100vh] h-[850px] overflow-y-auto">
+      <DialogContent
+        className="w-[700px] max-h-[100vh] h-fit overflow-y-auto bg-white border rounded-lg shadow-lg"
+        onEscapeKeyDown={handleClose}
+        onPointerDownOutside={handleClose}
+      >
         <DialogHeader>
-          <DialogTitle>{customer ? "Edit Customer" : "Add New Customer"}</DialogTitle>
+          <DialogTitle>{mode === 'edit' ? "Edit Customer" : "Add New Customer"}</DialogTitle>
           <DialogDescription>
-            {customer
+            {mode === 'edit'
               ? "Update customer information below."
               : "Enter new customer information below."}
           </DialogDescription>
@@ -196,10 +224,15 @@ export function CustomerDialog({ customer,  trigger }: CustomerDialogProps) {
               className="min-h-[100px]"
               required={requiredFields.includes("notes")}
             />
-            <div className="flex justify-end">
-              <Button type="submit" className="px-8 rounded-md" size="lg">
-                {customer ? "Update Customer" : "Add Customer"}
+            <div className="flex justify-end gap-2">
+              <Button type="submit" className="px-8 rounded-md">
+                {mode === 'edit' ? "Update Customer" : "Add Customer"}
               </Button>
+              <DialogClose asChild>
+                <Button type="button" variant="destructive" onClick={handleClose}>
+                  Close
+                </Button>
+              </DialogClose>
             </div>
           </form>
         </Form>

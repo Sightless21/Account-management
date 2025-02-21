@@ -15,7 +15,7 @@ export default function CarReservation() {
           <CardDescription>Car Reservation and tracking system.</CardDescription>
         </CardHeader>
         <CardContent>
-          <CarReservationTable userRole="HR" />
+          <CarReservationTable userRole={"HR"} />
         </CardContent>
       </Card>
     </div>

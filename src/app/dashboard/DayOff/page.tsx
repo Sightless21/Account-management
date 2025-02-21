@@ -22,7 +22,7 @@ export default function Page() {
           </div>
         </CardHeader>
         <CardContent>
-          {activeTab === "Leave History" && <DayOffTable userRole={"HR"}/>}
+          {activeTab === "Leave History" && <DayOffTable userRole={"ADMIN"}/>}
           {activeTab === "Reports" && <p>แสดงข้อมูล Reports</p>}
         </CardContent>
       </Card>

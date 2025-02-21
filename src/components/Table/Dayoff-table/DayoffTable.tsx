@@ -1,14 +1,15 @@
 "use client"
 
 import { getColumns } from "@/components/Table/Dayoff-table/columns"
-import type { UserRole, DayoffType } from "@/types/day-off"
+import type { DayoffType } from "@/types/day-off"
+import { Role } from "@/types/users"
 import { DataTable } from "@/components/Table/Data-Table"
 import { useDayOff, useDeleteDayOff, useUpdateDayOff, useUpdateStatusDayOff } from "@/hooks/useDayOffData"
 import { DayoffModal } from "@/components/Modal/modal-DayOff"
 import { toast } from "sonner"
 
 interface DayOffTableProps {
-  userRole: UserRole
+  userRole: Role
 }
 
 export default function DayOffTable({ userRole }: DayOffTableProps) {

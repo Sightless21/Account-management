@@ -106,7 +106,7 @@ export function StatusFilter<TData, TValue>({ column, title, options }: StatusFi
                 <CommandGroup>
                   <CommandItem
                     onSelect={() => column?.setFilterValue(undefined)}
-                    className="justify-center text-center"
+                    className="justify-center text-center text-destructive"
                   >
                     Clear filters
                   </CommandItem>

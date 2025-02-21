@@ -136,7 +136,7 @@ export const getColumns = (role: Role,
     {
       id: "plateNumber",
       accessorKey: "Plate Number",
-      header: ({ column }) => <DataTableColumnHeader column={column} title="Plate Number" />,
+      header: "Plate Number",
       cell: ({ row }) => {
         const { car } = row.original;
         return (

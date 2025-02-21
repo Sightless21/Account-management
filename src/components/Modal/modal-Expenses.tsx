@@ -5,11 +5,11 @@ import { CalendarIcon, CheckCircle2, Clock, DollarSign, MapPin } from "lucide-re
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Expense } from "@/schema/expenseFormSchema";
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "../ui/table";
 
 export interface ExpenseDialogProps {
   expense: Expense;
@@ -36,6 +36,16 @@ export function ExpenseDialog({ expense, onClose, trigger, open }: ExpenseDialog
     return Object.keys(obj).length > 0 && Object.values(obj).some((value) => value !== null && value !== undefined);
   };
 
+  const calculateTotal = () => {
+    const { expenses } = expense
+    return Object.values(expenses).reduce((total, exp) => {
+      if (exp && ("totalCost" in exp || "amount" in exp)) {
+        return total + (("totalCost" in exp ? exp.totalCost : 0) + ("amount" in exp ? exp.amount : 0))
+      }
+      return total
+    }, 0)
+  }
+
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose?.()}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
@@ -48,114 +58,131 @@ export function ExpenseDialog({ expense, onClose, trigger, open }: ExpenseDialog
         </DialogHeader>
         <ScrollArea className="max-h-[80vh] pr-4">
           <div className="space-y-6">
-            <div className="flex items-center space-x-4">
-              <Avatar className="h-12 w-12">
-                <AvatarImage src="/placeholder-avatar.jpg" alt={expense.employeeName} />
-                <AvatarFallback>
-                  {expense.employeeName
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
-                    .toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h3 className="text-lg font-semibold">{expense.employeeName}</h3>
-                <p className="text-sm text-muted-foreground">{expense.title}</p>
+            <div className="grid grid-cols-2 gap-4">
+              {/* Primary Information Card */}
+              <div className="flex flex-col space-x-4">
+                <div className="span-col-2 flex items-center space-x-4 space-y-4">
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage src="/placeholder-avatar.jpg" alt={expense.employeeName} />
+                    <AvatarFallback>
+                      {expense.employeeName
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="space-y-1">
+                    <h3 className="text-lg font-semibold">{expense.employeeName}</h3>
+                    <p className="text-sm text-muted-foreground">{expense.title}</p>
+                  </div>
+                </div>
+                {/* Secondary Information */}
+                <div className="grid gap-2 mt-4">
+                  <div className="flex items-center space-x-2">
+                    <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm">{formatDate(expense.transactionDate)}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm capitalize">{expense.country}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <DollarSign className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm">{expense.useForeignCurrency ? "Foreign Currency" : "Local Currency"}</span>
+                  </div>
+                  <Badge className="justify-self-start" variant={expense.status === "Pending" ? "secondary" : "default"}>{expense.status}</Badge>
+                </div>
               </div>
-            </div>
-            <div className="grid gap-2">
-              <div className="flex items-center space-x-2">
-                <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">{formatDate(expense.transactionDate)}</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm capitalize">{expense.country}</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">{expense.useForeignCurrency ? "Foreign Currency" : "Local Currency"}</span>
-              </div>
-              <Badge variant={expense.status === "Pending" ? "secondary" : "default"}>{expense.status}</Badge>
-            </div>
-            <Separator />
-            <div>
-              <h4 className="mb-2 font-semibold">Description</h4>
-              <p className="text-sm text-muted-foreground">{expense.description}</p>
-            </div>
-            <div>
-              <h4 className="mb-4 font-semibold">Expenses Breakdown</h4>
-              <div className="grid gap-4">
-                {hasContent(expense.expenses.fuel) && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Fuel</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p>Liters: {expense.expenses.fuel!.liters}</p>
-                      <p>Total Cost: {formatCurrency(expense.expenses.fuel!.totalCost)}</p>
-                    </CardContent>
-                  </Card>
-                )}
-                {hasContent(expense.expenses.accommodation) && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Accommodation</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p>Nights: {expense.expenses.accommodation!.nights}</p>
-                      <p>Total Cost: {formatCurrency(expense.expenses.accommodation!.totalCost)}</p>
-                    </CardContent>
-                  </Card>
-                )}
-                {hasContent(expense.expenses.transportation) && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Transportation</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p>Origin: {expense.expenses.transportation!.origin}</p>
-                      <p>Destination: {expense.expenses.transportation?.destination}</p>
-                      <p>Total Cost: {formatCurrency(expense.expenses.transportation!.totalCost)}</p>
-                    </CardContent>
-                  </Card>
-                )}
-                {hasContent(expense.expenses.perDiem) && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Per Diem</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p>Amount: {formatCurrency(expense.expenses.perDiem!.amount)}</p>
-                    </CardContent>
-                  </Card>
-                )}
-                {hasContent(expense.expenses.medicalExpenses) && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Medical Expenses</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p>Amount: {formatCurrency(expense.expenses.medicalExpenses!.amount)}</p>
-                      <p>Description: {expense.expenses.medicalExpenses?.description}</p>
-                    </CardContent>
-                  </Card>
-                )}
-                {hasContent(expense.expenses.otherExpenses) && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Other Expenses</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p>Amount: {formatCurrency(expense.expenses.otherExpenses!.amount)}</p>
-                      <p>Description: {expense.expenses.otherExpenses?.description}</p>
-                    </CardContent>
-                  </Card>
-                )}
+              {/* Description */}
+              <div className="mt-4">
+                <h4 className="mb-2 mt-1 font-semibold">Description</h4>
+                <p className="text-sm text-muted-foreground">{expense.description}</p>
               </div>
             </div>
             <Separator />
+            {/* Expenses */}
+            <div>
+              <h4 className="mb-4 font-semibold">Expenses Summary</h4>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[100px]">Type</TableHead>
+                    <TableHead>Details</TableHead>
+                    <TableHead className="text-right">Amount</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {hasContent(expense.expenses.fuel) && (
+                    <TableRow>
+                      <TableCell className="font-medium">Fuel</TableCell>
+                      <TableCell className="text-muted-foreground">{expense.expenses.fuel!.liters} liters</TableCell>
+                      <TableCell className="text-right">{formatCurrency(expense.expenses.fuel!.totalCost)}</TableCell>
+                    </TableRow>
+                  )}
+                  {hasContent(expense.expenses.accommodation) && (
+                    <TableRow>
+                      <TableCell className="font-medium">Accommodation</TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {expense.expenses.accommodation!.nights} nights
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrency(expense.expenses.accommodation!.totalCost)}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {hasContent(expense.expenses.transportation) && (
+                    <TableRow>
+                      <TableCell className="font-medium">Transportation</TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {expense.expenses.transportation!.origin} to {expense.expenses.transportation!.destination}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrency(expense.expenses.transportation!.totalCost)}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {hasContent(expense.expenses.perDiem) && (
+                    <TableRow>
+                      <TableCell className="font-medium">Per Diem</TableCell>
+                      <TableCell className="text-muted-foreground">Daily allowance</TableCell>
+                      <TableCell className="text-right">{formatCurrency(expense.expenses.perDiem!.amount)}</TableCell>
+                    </TableRow>
+                  )}
+                  {hasContent(expense.expenses.medicalExpenses) && (
+                    <TableRow>
+                      <TableCell className="font-medium">Medical</TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {expense.expenses.medicalExpenses!.description}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrency(expense.expenses.medicalExpenses!.amount)}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {hasContent(expense.expenses.otherExpenses) && (
+                    <TableRow>
+                      <TableCell className="font-medium">Other</TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {expense.expenses.otherExpenses!.description}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrency(expense.expenses.otherExpenses!.amount)}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+                <TableFooter>
+                  <TableRow>
+                    <TableCell>Total</TableCell>
+                    <TableCell></TableCell>
+                    <TableCell className="text-right font-medium">{formatCurrency(calculateTotal())}</TableCell>
+                  </TableRow>
+                </TableFooter>
+              </Table>
+            </div>
+            <Separator />
+            {/* Attachment */}
             <div>
               <h4 className="mb-2 font-semibold">Attachment</h4>
               <div className="flex justify-center">

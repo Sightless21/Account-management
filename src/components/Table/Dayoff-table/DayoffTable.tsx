@@ -5,6 +5,7 @@ import type { UserRole, DayoffType } from "@/types/day-off"
 import { DataTable } from "@/components/Table/Data-Table"
 import { useDayOff, useDeleteDayOff, useUpdateDayOff, useUpdateStatusDayOff } from "@/hooks/useDayOffData"
 import { DayoffModal } from "@/components/Modal/modal-DayOff"
+import { toast } from "sonner"
 
 interface DayOffTableProps {
   userRole: UserRole
@@ -12,36 +13,56 @@ interface DayOffTableProps {
 
 export default function DayOffTable({ userRole }: DayOffTableProps) {
   const { data: dayOffData, isLoading, error } = useDayOff()
-  const { mutate: deleteDayOff } = useDeleteDayOff()
-  const { mutate: updateDayOff } = useUpdateDayOff()
-  const { mutate: updateStatusDayOff } = useUpdateStatusDayOff()
+  const { mutateAsync: deleteDayOff } = useDeleteDayOff()
+  const { mutateAsync: updateDayOff } = useUpdateDayOff()
+  const { mutateAsync: updateStatusDayOff } = useUpdateStatusDayOff()
 
   if (isLoading) return <p>Loading...</p>
   if (error) return <p>Error loading data</p>
 
   const handleEdit = (dayOff: DayoffType) => {
     console.log("Edit day off:", dayOff)
-    updateDayOff({ id: dayOff.id, newData: dayOff })
+    toast.promise(updateDayOff({ id: dayOff.id, newData: dayOff }),{
+      loading: "Saving...",
+      success: "Day off updated successfully",
+      error: "Error updating day off",
+    })
   }
 
   const handleDelete = (dayOff: DayoffType) => {
     console.log("Delete day off:", dayOff)
-    deleteDayOff(dayOff.id)
+    toast.promise(deleteDayOff(dayOff.id),{
+      loading: "Deleting...",
+      success: "Day off deleted successfully",
+      error: "Error deleting day off",
+    })
   }
 
   const handleAccepted = (dayOff: DayoffType) => {
     console.log("✅ Approve day off (before update):", dayOff);
-    updateStatusDayOff({ id: dayOff.id, status: "Accepted" });
+    toast.promise(updateStatusDayOff({ id: dayOff.id, status: "Accepted" }),{
+      loading: "Approving...",
+      success: "Day off approved successfully",
+      error: "Error approving day off",
+    });
   }
 
   const handleDeclined = (dayOff: DayoffType) => {
     console.log("❌ Reject day off:", dayOff);
-    updateStatusDayOff({ id: dayOff.id, status: "Declined" });
+    toast.promise(updateStatusDayOff({ id: dayOff.id, status: "Declined" }),{
+      loading: "Rejecting...",
+      success: "Day off rejected successfully",
+      error: "Error rejecting day off",
+    });
   }
 
   const handleReset = (dayOff: DayoffType) => {
     console.log("Reset day off:", dayOff);
-    updateStatusDayOff({ id: dayOff.id, status: "Pending" });
+    toast.promise(updateStatusDayOff({ id: dayOff.id, status: "Pending" }),{
+      loading: "Resetting...",
+      success: "Day off reset successfully",
+      error: "Error resetting"
+    });
   }
 
   const columns = getColumns(userRole, {

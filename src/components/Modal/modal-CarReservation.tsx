@@ -28,6 +28,7 @@ import { useCars } from "@/hooks/useCarData"; // Only use useCars
 import { useCreateCarReservation, useUpdateCarReservation } from "@/hooks/useCarReservationData";
 import { Car, CarReservationType, CarType } from "@/types/car-reservation";
 import { useCarReservationUI } from "@/store/useCarreservationUIStore";
+import { toast } from "sonner";
 
 type FormValues = z.infer<typeof formCarReservationSchema>;
 
@@ -44,8 +45,8 @@ export function CarReservationDialog() {
   const { data: user } = useUserData(session?.user.id as string);
   const { data: cars = [] } = useCars(); // Only use useCars for car data
   const [selectedCarId, setSelectedCarId] = useState<string | null>(null);
-  const { mutate: createCarReservation } = useCreateCarReservation();
-  const { mutate: updateCarReservation } = useUpdateCarReservation();
+  const { mutateAsync: createCarReservation } = useCreateCarReservation();
+  const { mutateAsync: updateCarReservation } = useUpdateCarReservation();
   // Removed useCarInfo since it's not needed
 
   // Memoize defaultCar to prevent re-creation on every render
@@ -192,9 +193,17 @@ export function CarReservationDialog() {
       tripStatus: values.tripStatus || "ONGOING",
     };
     if (mode === "edit" && reservation.id) {
-      updateCarReservation(reservation);
+      toast.promise(updateCarReservation(reservation),{
+        loading: "Updating car reservation...",
+        success: "Car reservation updated successfully",
+        error: "Failed to update car reservation",
+      });
     } else if (mode === "create") {
-      createCarReservation(reservation);
+      toast.promise(createCarReservation(reservation),{
+        loading: "Creating car reservation...",
+        success: "Car reservation created successfully",
+        error: "Failed to create car reservation",
+      });
     }
     closeModal();
   };

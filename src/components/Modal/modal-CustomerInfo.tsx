@@ -33,12 +33,8 @@ export default function CustomerDialogInfo({ customer, trigger, open, onClose }:
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose?.()}>
       <DialogTrigger asChild>{trigger || <Button variant="outline">{trigger}</Button>}</DialogTrigger>
       <DialogContent className="w-[1000px] h-[700px]">
-        <DialogHeader className="flex justify-between">
-            <DialogTitle>Information for {customer.companyName}</DialogTitle>
-        </DialogHeader>
-        <ScrollArea className="h-full pr-4">
-          <div className="space-y-6">
-            {/* Header Section */}
+        <DialogHeader className="flex justify-center">
+          <DialogTitle>
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
                 <h2 className="text-2xl font-bold">{customer.companyName}</h2>
@@ -47,7 +43,10 @@ export default function CustomerDialogInfo({ customer, trigger, open, onClose }:
                 )}
               </div>
             </div>
-
+          </DialogTitle>
+        </DialogHeader>
+        <ScrollArea className="h-full pr-4">
+          <div className="space-y-6">
             <div className="grid md:grid-cols-2 gap-6">
               {/* Primary Information Card */}
               <div className="space-y-6 rounded-lg border p-6">

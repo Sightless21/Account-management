@@ -34,7 +34,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params; // ✅ ใช้ params.id โดยตรง
+  const { id } = await params; 
   if (!id) {
     return NextResponse.json({ error: "Missing reservation ID" }, { status: 400 });
   }

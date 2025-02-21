@@ -20,6 +20,7 @@ import { useUserData } from "@/hooks/useUserData"
 import { useCreateDayOff, useUpdateDayOff } from "@/hooks/useDayOffData"
 import { DayoffType } from "@/types/day-off"
 import { useState } from "react"
+import { toast } from "sonner"
 
 type DayoffModalProps = {
   defaultValue?: DayoffType;
@@ -65,8 +66,8 @@ export function DayoffModal({ defaultValue, mode }: DayoffModalProps) {
   );
   const { data: user } = useUserData(session?.user.id as string)
   const userinfo = user
-  const { mutate: createDayOff } = useCreateDayOff()
-  const { mutate: updateDayOff } = useUpdateDayOff()
+  const { mutateAsync: createDayOff } = useCreateDayOff()
+  const { mutateAsync: updateDayOff } = useUpdateDayOff()
   // console.log("defaultValue", defaultValue)
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -109,9 +110,17 @@ export function DayoffModal({ defaultValue, mode }: DayoffModalProps) {
 
     //DONE : API calling 
     if (mode === "edit") {
-      updateDayOff({ id: formatData.id, newData: formatData });
+      toast.promise(updateDayOff({ id: formatData.id, newData: formatData }),{
+        loading: "Saving...",
+        success: "Day off updated successfully",
+        error: "Error updating"
+      });
     } else {
-      createDayOff(formatData);
+      toast.promise(createDayOff(formatData),{
+        loading: "Saving...",
+        success: "Day off added successfully",
+        error: "Error adding"
+      });
       form.reset();
     }
     setOpen(false);

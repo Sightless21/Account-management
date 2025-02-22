@@ -1,7 +1,6 @@
 "use client";
 
 import { ChevronRight, type LucideIcon } from "lucide-react";
-
 import {
   Collapsible,
   CollapsibleContent,
@@ -27,15 +26,12 @@ export function NavMain({
     url: string;
     icon?: LucideIcon;
     isActive?: boolean;
-    items?: {
-      title: string;
-      url: string;
-    }[];
+    items?: { title: string; url: string }[];
   }[];
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel className="a lign-middle flex justify-center">
+      <SidebarGroupLabel className="align-middle flex justify-center">
         Japan System Menu
       </SidebarGroupLabel>
       <SidebarMenu>

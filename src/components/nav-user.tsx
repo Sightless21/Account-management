@@ -6,22 +6,11 @@ import { ChevronsUpDown, LogOut } from "lucide-react";
 
 // components
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
+import  CustomAlertDialog  from "@/components/ui/customAlertDialog";
 import { signOut } from "next-auth/react";
+import { useState } from "react";
 
 export function NavUser({
   user,
@@ -33,17 +22,21 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
-
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Get the initials of the user
   const fullName = user.name as string;
   function getInitials(fullName: string) {
-    const names = fullName.split(" "); // Split the full name by space
-    const initials = names.map((name) => name[0].toUpperCase()).join(""); // Take the first letter of each name
+    const names = fullName.split(" ");
+    const initials = names.map((name) => name[0].toUpperCase()).join("");
     return initials;
   }
 
   const initials = getInitials(fullName);
+
+  const handleLogout = () => {
+    signOut({ callbackUrl: "/" });
+  };
 
   return (
     <SidebarMenu>
@@ -88,13 +81,24 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={async () => { signOut({ callbackUrl: "/" })}} className="cursor-pointer">
+            <DropdownMenuItem onClick={() => setIsDialogOpen(true)}
+              className="cursor-pointer">
               <LogOut className="mr-5" />
               <span>Logout</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
+      <CustomAlertDialog
+        title="Confirm Logout"
+        description="Are you sure you want to log out of your account?"
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        onConfirm={handleLogout}
+        confirmText="Logout"
+        cancelText="Cancel"
+        confirmIcon={LogOut}
+      />
     </SidebarMenu>
   );
 }

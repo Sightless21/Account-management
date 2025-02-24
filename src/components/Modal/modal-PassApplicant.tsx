@@ -3,19 +3,12 @@
 
 import { useState } from "react";
 import { z } from "zod";
-import { Applicant } from "./columns";
+import { Applicant } from "../../app/dashboard/Applicant/Probation/columns";
 import { generateCustomPassword } from "@/utils/passwordGenerate";
 import { convertApplicantToEmployee } from "@/actions/convertApplicantToEmployee";
 import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -65,40 +58,26 @@ type FormFieldProps = {
   disabled?: boolean;
   type?: string;
   placeholder?: string;
-}
+};
 
-const FormField = ({ id, label, value, onChange, error, disabled, type = "text", placeholder }: FormFieldProps) => (
+const FormField = ({
+  id,
+  label,
+  value,
+  onChange,
+  error,
+  disabled,
+  type = "text",
+  placeholder,
+}: FormFieldProps) => (
   <div>
     <Label htmlFor={id}>{label}</Label>
     {id === "phone" ? (
-      <PhoneInput
-        id={id}
-        name={id}
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
-        className="w-full"
-      />
+      <PhoneInput id={id} name={id} value={value} onChange={onChange} disabled={disabled} className="w-full"/>
     ) : id.includes("password") ? (
-      <PasswordInput
-        id={id}
-        name={id}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
-        className="w-full"
-      />
+      <PasswordInput id={id} name={id} placeholder={placeholder} value={value} onChange={onChange} disabled={disabled} className="w-full"/>
     ) : (
-      <Input
-        id={id}
-        name={id}
-        type={type}
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
-        className="w-full"
-      />
+      <Input id={id} name={id} type={type} value={value} onChange={onChange} disabled={disabled} className="w-full"/>
     )}
     {error && <div className="text-red-500 text-sm mt-1">{error}</div>}
   </div>
@@ -108,6 +87,7 @@ export const PassDialog = ({ applicant, onPassComplete }: PassDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const queryClient = useQueryClient();
 
   const [firstName, lastName] = splitFullName(applicant.name);
   const initialFormData: UserForm = {
@@ -120,6 +100,25 @@ export const PassDialog = ({ applicant, onPassComplete }: PassDialogProps) => {
     confirmPassword: "",
   };
   const [formData, setFormData] = useState<UserForm>(initialFormData);
+
+  const mutation = useMutation({
+    mutationFn: convertApplicantToEmployee,
+    onSuccess: (result) => {
+      toast.success(result.message);
+      onPassComplete(formData.email);
+      queryClient.invalidateQueries({ queryKey: ["applicants"] }); // รีเฟรชข้อมูลอัตโนมัติ
+      setIsOpen(false);
+      setFormData(initialFormData);
+    },
+    onError: (error) => {
+      const errorMessage = error instanceof Error ? error.message : "An error occurred";
+      setErrors({ general: errorMessage });
+      toast.error(errorMessage);
+    },
+    onSettled: () => {
+      setIsLoading(false);
+    },
+  });
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement> | string,
@@ -162,7 +161,7 @@ export const PassDialog = ({ applicant, onPassComplete }: PassDialogProps) => {
       setIsLoading(true);
       setErrors({});
 
-      const result = await convertApplicantToEmployee({
+      mutation.mutate({
         applicantId: applicant.id,
         firstName: formData.firstName,
         lastName: formData.lastName,
@@ -171,21 +170,11 @@ export const PassDialog = ({ applicant, onPassComplete }: PassDialogProps) => {
         password: formData.password,
         confirmPassword: formData.confirmPassword,
       });
-
-      if (!result.success) {
-        throw new Error(result.message);
-      }
-
-      toast.success(result.message);
-      onPassComplete(formData.email);
-      setIsOpen(false);
-      setFormData(initialFormData);
     } catch (err) {
+      setIsLoading(false);
       const errorMessage = err instanceof Error ? err.message : "An error occurred";
       setErrors({ general: errorMessage });
       toast.error(errorMessage);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -218,8 +207,7 @@ export const PassDialog = ({ applicant, onPassComplete }: PassDialogProps) => {
               </Button>
             </div>
           </div>
-          <FormField id="confirmPassword" label="Confirm Password" placeholder="Confirm password" value={formData.confirmPassword} onChange={handleInputChange} error={errors.confirmPassword}disabled={isLoading}
-          />
+          <FormField id="confirmPassword" label="Confirm Password" placeholder="Confirm password" value={formData.confirmPassword} onChange={handleInputChange} error={errors.confirmPassword} disabled={isLoading} />
           <div className="text-sm text-gray-500">
             Password must contain at least:
             <ul className="list-disc pl-4">

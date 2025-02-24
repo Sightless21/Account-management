@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {PassDialog} from "./PassDialog"
+import {PassDialog} from "../../../../components/Modal/modal-PassApplicant"
 export type Applicant = {
   id: string;
   name: string;

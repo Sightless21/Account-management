@@ -76,6 +76,7 @@ export async function POST({ request }: { request: Request; }) {
   }
 }
 
+// อัปเดต Applicant from drag and drop
 export async function PATCH(request: Request) {
   try {
     const { id, status } = await request.json();

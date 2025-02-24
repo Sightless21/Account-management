@@ -1,3 +1,4 @@
+// src/components/DnDApplicant/BurnBarrel.tsx
 "use client";
 import { useState, DragEvent } from "react";
 import { FaFire } from "react-icons/fa";
@@ -6,7 +7,8 @@ import { useApplicantData } from "@/hooks/useApplicantData";
 
 const BurnBarrel = () => {
   const [active, setActive] = useState(false);
-  const { fetchApplicants, deleteApplicant } = useApplicantData();
+  const { deleteApplicant } = useApplicantData();
+
   const handleDragOver = (e: DragEvent) => {
     e.preventDefault();
     setActive(true);
@@ -24,8 +26,6 @@ const BurnBarrel = () => {
     try {
       await deleteApplicant(cardId);
       console.log(`Successfully deleted applicant with ID: ${cardId}`);
-
-      await fetchApplicants();
     } catch (error) {
       console.error("Error deleting applicant:", error);
     }

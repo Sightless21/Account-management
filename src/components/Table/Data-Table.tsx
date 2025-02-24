@@ -1,7 +1,7 @@
-"use client"
+// src/components/Table/Data-Table.tsx
+"use client";
 
-import type React from "react"
-import { useState } from "react"
+import { useState } from "react";
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -13,28 +13,25 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
-
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { DataTableToolbar } from "@/components/Table/Tool/DataTableToolbar"
-import { TablePagination } from "@/components/Table/Tool/TablePagination"
+} from "@tanstack/react-table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { DataTableToolbar } from "@/components/Table/Tool/DataTableToolbar";
+import { TablePagination } from "@/components/Table/Tool/TablePagination";
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
-  searchColumn?: string
-  searchPlaceholder?: string
-  dateColumn?: string
-  statusColumn?: string
-  statusOptions?: {
-    label: string
-    value: string
-  }[]
-  enableToolbar?: boolean
-  enablePagination?: boolean
-  pageSize?: number
-  toolbarAdditionalControls?: React.ReactNode
-  defaultVisibleColumns?: string[] // New prop for default visible columns
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+  searchColumn?: string;
+  searchPlaceholder?: string;
+  dateColumn?: string;
+  statusColumn?: string;
+  statusOptions?: { label: string; value: string }[];
+  enableToolbar?: boolean;
+  enablePagination?: boolean;
+  pageSize?: number;
+  toolbarAdditionalControls?: React.ReactNode;
+  defaultVisibleColumns?: string[];
+  redirect?: React.ReactNode; // คง redirect prop ไว้
 }
 
 export function DataTable<TData, TValue>({
@@ -49,20 +46,20 @@ export function DataTable<TData, TValue>({
   enablePagination = true,
   pageSize = 7,
   toolbarAdditionalControls,
-  defaultVisibleColumns, // Added to props
+  defaultVisibleColumns,
+  redirect,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>([])
-  // Initialize columnVisibility with defaultVisibleColumns if provided
+  const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
     defaultVisibleColumns
       ? columns.reduce((acc, column) => {
-          acc[column.id as string] = defaultVisibleColumns.includes(column.id as string)
-          return acc
+          acc[column.id as string] = defaultVisibleColumns.includes(column.id as string);
+          return acc;
         }, {} as VisibilityState)
       : {}
-  )
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize })
+  );
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize });
 
   const table = useReactTable({
     data,
@@ -82,7 +79,7 @@ export function DataTable<TData, TValue>({
       pagination,
     },
     autoResetPageIndex: false,
-  })
+  });
 
   return (
     <div className="space-y-4">
@@ -95,9 +92,9 @@ export function DataTable<TData, TValue>({
           statusColumn={statusColumn}
           statusOptions={statusOptions}
           additionalControls={toolbarAdditionalControls}
+          redirect={redirect} // ส่ง redirect prop ไปยัง DataTableToolbar
         />
       )}
-
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -116,7 +113,9 @@ export function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
                   ))}
                 </TableRow>
               ))
@@ -130,8 +129,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-
       {enablePagination && <TablePagination table={table} />}
     </div>
-  )
+  );
 }

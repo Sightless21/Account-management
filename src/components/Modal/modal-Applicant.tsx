@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-// 1. External Libraries (เรียงตามตัวอักษร)
+// 1. External Libraries
 import { JSX, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -9,46 +10,28 @@ import { TiCancel, TiTick, TiEdit } from "react-icons/ti";
 import { SquareUserRound, UserRoundPlus, UserPen, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { Label } from "@radix-ui/react-label";
-// 2. Internal Components (เรียงตามเส้นทางไฟล์)
+import { useMutation, useQueryClient } from "@tanstack/react-query"; // เพิ่ม React Query
+
+// 2. Internal Components
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { DatePickerWithPresets } from "@/components/date-picker";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 
 // 3. Internal Hooks & Utilities
-import { useApplicantData } from "@/hooks/useApplicantData";
+import { useApplicantData } from "@/hooks/useApplicantData"; // ใช้ hook React Query ใหม่
 
 // 4. Schemas & Constants
-import { formApplicantSchema } from "@/schema/formApplicant";
-import { APPLICANT_FORM_FIELDS, APPLICANT_FORM_DEFAULT_VALUES } from "@/schema/formApplicant";
+import { formApplicantSchema, APPLICANT_FORM_FIELDS, APPLICANT_FORM_DEFAULT_VALUES } from "@/schema/formApplicant";
+
 interface ModalApplicantProps {
   mode: "create" | "edit" | "view";
   defaultValues?: z.infer<typeof formApplicantSchema>;
 }
+
 const DIALOG_CONFIG = {
   create: {
     buttonVariant: "default" as const,
@@ -73,80 +56,69 @@ const DIALOG_CONFIG = {
   },
 };
 
-//TEST
-export default function ModalApplicant({
-  mode,
-  defaultValues,
-}: ModalApplicantProps) {
-  // Initialize form using useForm hook with Zod validation schema
+export default function ModalApplicant({ mode, defaultValues }: ModalApplicantProps) {
   const form = useForm<z.infer<typeof formApplicantSchema>>({
     resolver: zodResolver(formApplicantSchema),
-    mode: "all", // ✅ ตรวจสอบ validation แบบเรียลไทม์
-    defaultValues: defaultValues || APPLICANT_FORM_DEFAULT_VALUES
+    mode: "all",
+    defaultValues: defaultValues || APPLICANT_FORM_DEFAULT_VALUES,
   });
-  // State to store applicant data
-  const [applicants, setApplicants] = useState<z.infer<typeof formApplicantSchema>[]>([]);
-  // ใช้ค่า mode จาก props โดยตรง
   const [currentMode, setCurrentMode] = useState(mode);
   const [isReadyToSave, setIsReadyToSave] = useState(false);
   const config = useMemo(() => DIALOG_CONFIG[mode], [mode]);
-  // ใช้ form โดยตรง
+  const queryClient = useQueryClient();
+  const { addApplicant, updateApplicant } = useApplicantData();
+
   useEffect(() => {
     if (defaultValues) {
       form.reset(defaultValues);
     }
   }, [defaultValues, form]);
-  // เพิ่ม state สำหรับควบคุมโหมด
-  // คำนวณค่าตรงๆ จาก props
-  const isEditing = mode === "edit";
-  // Destructure ค่าที่ต้องการในครั้งเดียว
-  const { control, formState: { isValid, isDirty, errors }} = form;
-  const { formState: { isSubmitting }} = form; // ใช้ isSubmitting จาก formState โดยตรง
-  // ✅ เมื่อเปลี่ยน `isEditing` ให้ React อัปเดต UI
+
+  const isEditing = currentMode === "edit";
+  const { control, formState: { isValid, isDirty, errors } } = form;
+  const { formState: { isSubmitting } } = form;
+
   useEffect(() => {
     console.log("Form is valid:", isValid);
   }, [isValid]);
 
-  /**
-   * Handles form submission and updates applicant state.
-   * @param values - Form values
-   */
+  const addMutation = useMutation({
+    mutationFn: addApplicant,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["applicants"] });
+      toast.success("Applicant created");
+      form.reset();
+    },
+    onError: (error) => {
+      toast.error("Error creating applicant: " + (error instanceof Error ? error.message : "Unknown error"));
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: updateApplicant,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["applicants"] });
+      toast.success("Applicant updated");
+      setCurrentMode("view");
+      setIsReadyToSave(false);
+    },
+    onError: (error) => {
+      toast.error("Error updating applicant: " + (error instanceof Error ? error.message : "Unknown error"));
+    },
+  });
+
   async function onSubmit(values: z.infer<typeof formApplicantSchema>) {
-    console.log("🚀 Form Data:", values); // ✅ ตรวจสอบค่าก่อนส่ง API
-    setApplicants([...applicants, values]);
+    console.log("🚀 Form Data:", values);
     if (!isValid) {
       console.log("Form is invalid!");
       return;
     }
-    try {
-      if (currentMode === "create") {
-        toast.promise(
-          useApplicantData.getState().addApplicant(values),
-          {
-            loading: "Creating applicant...",
-            success: "Applicant created",
-            error: "Error creating applicant"
-          }
-        );
-        console.log("Applicant created", values);
-      } else if (currentMode === "edit" && isReadyToSave) {
-        values.id = defaultValues?.id;
-        toast.promise(
-          useApplicantData.getState().updateApplicant(values),
-          {
-            loading: "Updating applicant...",
-            success: "Applicant updated",
-            error: "Error updating applicant"
-          }
-        );
-        console.log("Applicant updated", values);
-        setCurrentMode("view")
-        setIsReadyToSave(false);
-      }
-      form.reset(); // Reset fields to default values
-      setApplicants([]);
-    } finally {
-      setIsReadyToSave(false);
+
+    if (currentMode === "create") {
+      addMutation.mutate(values);
+    } else if (currentMode === "edit" && isReadyToSave) {
+      const updatedValues = { ...values, id: defaultValues?.id };
+      updateMutation.mutate(updatedValues as any);
     }
   }
 
@@ -160,37 +132,24 @@ export default function ModalApplicant({
       </DialogTrigger>
       <DialogContent className="min-h-20 w-[70%]">
         <DialogHeader>
-          <DialogTitle>
-            {config.title}
-          </DialogTitle>
-          <DialogDescription>
-            {config.description}
-          </DialogDescription>
+          <DialogTitle>{config.title}</DialogTitle>
+          <DialogDescription>{config.description}</DialogDescription>
         </DialogHeader>
-        {/* Form layout */}
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="grid grid-cols-2 gap-4"
-          >
-            {/* Information Card */}
+          <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-2 gap-4">
             <Card className="col-span-2">
               <CardHeader>
                 <CardTitle>Information</CardTitle>
                 <CardDescription>ข้อมูลส่วนตัว</CardDescription>
               </CardHeader>
               <CardContent className="flex flex-wrap items-center gap-2">
-                {/* Iterate over info fields */}
                 {Object.entries(APPLICANT_FORM_FIELDS.info).map(([key, value]) => {
                   if (key === "address") {
-                    // Render address fields
                     return Object.values(value).map((item) => (
                       <FormField
                         key={item.id}
                         control={control}
-                        name={
-                          `info.address.${item.id}` as `info.address.${keyof typeof APPLICANT_FORM_FIELDS.info.address}`
-                        }
+                        name={`info.address.${item.id}` as `info.address.${keyof typeof APPLICANT_FORM_FIELDS.info.address}`}
                         render={({ field }) => (
                           <FormItem className="flex flex-row items-start space-x-3 space-y-0 leading-none">
                             <Label>{item.label}</Label>
@@ -199,11 +158,7 @@ export default function ModalApplicant({
                               <Input
                                 className="h-5 w-40 text-center"
                                 {...field}
-                                value={
-                                  typeof field.value === "string"
-                                    ? field.value
-                                    : ""
-                                }
+                                value={typeof field.value === "string" ? field.value : ""}
                                 disabled={currentMode === "view" && !isEditing}
                               />
                             </FormControl>
@@ -212,14 +167,11 @@ export default function ModalApplicant({
                       />
                     ));
                   } else {
-                    // Render other info fields
                     return (
                       <FormField
                         key={key}
                         control={control}
-                        name={
-                          `info.${key}` as `info.${keyof typeof APPLICANT_FORM_FIELDS.info}`
-                        }
+                        name={`info.${key}` as `info.${keyof typeof APPLICANT_FORM_FIELDS.info}`}
                         render={({ field }) => (
                           <FormItem className="flex flex-row items-start space-x-3 space-y-0 leading-none">
                             {"label" in value && <Label>{value.label}</Label>}
@@ -228,11 +180,7 @@ export default function ModalApplicant({
                               <Input
                                 className="h-5 w-40 text-center"
                                 {...field}
-                                value={
-                                  typeof field.value === "string"
-                                    ? field.value
-                                    : ""
-                                }
+                                value={typeof field.value === "string" ? field.value : ""}
                                 disabled={currentMode === "view" && !isEditing}
                               />
                             </FormControl>
@@ -242,7 +190,6 @@ export default function ModalApplicant({
                     );
                   }
                 })}
-                {/* Military Status Card */}
                 <div className="flex w-full justify-between gap-4">
                   <Card className="w-full">
                     <CardHeader>
@@ -261,30 +208,15 @@ export default function ModalApplicant({
                                   className="mb-3"
                                   checked={field.value?.includes(item.id)}
                                   onCheckedChange={(checked) => {
-                                    const currentValue = Array.isArray(
-                                      field.value,
-                                    )
-                                      ? field.value
-                                      : [];
+                                    const currentValue = Array.isArray(field.value) ? field.value : [];
                                     return checked
-                                      ? field.onChange([
-                                        ...currentValue,
-                                        item.id,
-                                      ])
-                                      : field.onChange(
-                                        currentValue.filter(
-                                          (value) => value !== item.id,
-                                        ),
-                                      );
+                                      ? field.onChange([...currentValue, item.id])
+                                      : field.onChange(currentValue.filter((value) => value !== item.id));
                                   }}
-                                  disabled={
-                                    currentMode === "view" && !isEditing
-                                  }
+                                  disabled={currentMode === "view" && !isEditing}
                                 />
                               </FormControl>
-                              <FormLabel className="font-normal">
-                                {item.lable}
-                              </FormLabel>
+                              <FormLabel className="font-normal">{item.lable}</FormLabel>
                               <FormMessage />
                             </FormItem>
                           )}
@@ -292,7 +224,6 @@ export default function ModalApplicant({
                       ))}
                     </CardContent>
                   </Card>
-                  {/* Marital Status Card */}
                   <Card className="w-full">
                     <CardHeader>
                       <CardDescription>สถานภาพ</CardDescription>
@@ -310,30 +241,15 @@ export default function ModalApplicant({
                                   className="mb-3"
                                   checked={field.value?.includes(item.id)}
                                   onCheckedChange={(checked) => {
-                                    const currentValue = Array.isArray(
-                                      field.value,
-                                    )
-                                      ? field.value
-                                      : [];
+                                    const currentValue = Array.isArray(field.value) ? field.value : [];
                                     return checked
-                                      ? field.onChange([
-                                        ...currentValue,
-                                        item.id,
-                                      ])
-                                      : field.onChange(
-                                        currentValue.filter(
-                                          (value) => value !== item.id,
-                                        ),
-                                      );
+                                      ? field.onChange([...currentValue, item.id])
+                                      : field.onChange(currentValue.filter((value) => value !== item.id));
                                   }}
-                                  disabled={
-                                    currentMode === "view" && !isEditing
-                                  }
+                                  disabled={currentMode === "view" && !isEditing}
                                 />
                               </FormControl>
-                              <FormLabel className="font-normal">
-                                {item.label}
-                              </FormLabel>
+                              <FormLabel className="font-normal">{item.label}</FormLabel>
                               <FormMessage />
                             </FormItem>
                           )}
@@ -341,7 +257,6 @@ export default function ModalApplicant({
                       ))}
                     </CardContent>
                   </Card>
-                  {/* Dwelling Status Card */}
                   <Card className="w-full">
                     <CardHeader>
                       <CardDescription>การอยู่อาศัย</CardDescription>
@@ -359,30 +274,15 @@ export default function ModalApplicant({
                                   className="mb-3"
                                   checked={field.value?.includes(item.id)}
                                   onCheckedChange={(checked) => {
-                                    const currentValue = Array.isArray(
-                                      field.value,
-                                    )
-                                      ? field.value
-                                      : [];
+                                    const currentValue = Array.isArray(field.value) ? field.value : [];
                                     return checked
-                                      ? field.onChange([
-                                        ...currentValue,
-                                        item.id,
-                                      ])
-                                      : field.onChange(
-                                        currentValue.filter(
-                                          (value) => value !== item.id,
-                                        ),
-                                      );
+                                      ? field.onChange([...currentValue, item.id])
+                                      : field.onChange(currentValue.filter((value) => value !== item.id));
                                   }}
-                                  disabled={
-                                    currentMode === "view" && !isEditing
-                                  }
+                                  disabled={currentMode === "view" && !isEditing}
                                 />
                               </FormControl>
-                              <FormLabel className="font-normal">
-                                {item.label}
-                              </FormLabel>
+                              <FormLabel className="font-normal">{item.label}</FormLabel>
                               <FormMessage />
                             </FormItem>
                           )}
@@ -394,9 +294,7 @@ export default function ModalApplicant({
               </CardContent>
             </Card>
 
-            {/* Documents and Personal Information */}
             <div className="col-span-2 grid grid-cols-5 gap-3">
-              {/* Documents Card */}
               <Card className="col-span-2 overflow-y-auto">
                 <CardHeader className="flex">
                   <CardTitle>Documents</CardTitle>
@@ -416,19 +314,13 @@ export default function ModalApplicant({
                                 checked={field.value?.includes(item.id)}
                                 onCheckedChange={(checked) => {
                                   return checked
-                                    ? field.onChange([...field.value, item.id])
-                                    : field.onChange(
-                                      field.value?.filter(
-                                        (value) => value !== item.id,
-                                      ),
-                                    );
+                                    ? field.onChange([...(field.value || []), item.id])
+                                    : field.onChange(field.value?.filter((value) => value !== item.id));
                                 }}
                                 disabled={currentMode === "view" && !isEditing}
                               />
                             </FormControl>
-                            <FormLabel className="font-normal">
-                              {item.label}
-                            </FormLabel>
+                            <FormLabel className="font-normal">{item.label}</FormLabel>
                           </FormItem>
                         )}
                       />
@@ -440,7 +332,6 @@ export default function ModalApplicant({
                   </div>
                 </CardContent>
               </Card>
-              {/* Personal Information Card */}
               <Card className="col-span-3">
                 <CardHeader className="flex">
                   <CardTitle>Personal</CardTitle>
@@ -461,11 +352,7 @@ export default function ModalApplicant({
                             <Input
                               placeholder={item.placeholder}
                               {...field}
-                              value={
-                                typeof field.value === "string"
-                                  ? field.value
-                                  : ""
-                              }
+                              value={typeof field.value === "string" ? field.value : ""}
                               disabled={currentMode === "view" && !isEditing}
                             />
                           </FormControl>
@@ -473,7 +360,6 @@ export default function ModalApplicant({
                       )}
                     />
                   ))}
-                  {/* Birthdate Field */}
                   <FormField
                     control={control}
                     name="birthdate"
@@ -486,9 +372,7 @@ export default function ModalApplicant({
                         <FormControl>
                           <DatePickerWithPresets
                             value={field.value}
-                            onChange={(date) =>
-                              field.onChange(date.toISOString())
-                            }
+                            onChange={(date) => field.onChange(date.toISOString())}
                             disabled={currentMode === "view" && !isEditing}
                           />
                         </FormControl>
@@ -498,8 +382,7 @@ export default function ModalApplicant({
                 </CardContent>
               </Card>
             </div>
-            
-            {/* Submit and Cancel Buttons */}
+
             <div className="col-span-2 grid">
               <div className="flex justify-end gap-2">
                 {(() => {
@@ -507,8 +390,7 @@ export default function ModalApplicant({
                     create: (
                       <Button
                         type="submit"
-                        disabled={!isValid}
-                        onClick={() => form.handleSubmit(onSubmit)()}
+                        disabled={!isValid || addMutation.isPending || updateMutation.isPending}
                       >
                         <TiTick /> Create Applicant
                       </Button>
@@ -516,7 +398,7 @@ export default function ModalApplicant({
                     edit: (
                       <Button
                         type="submit"
-                        disabled={!isValid}
+                        disabled={!isValid || !isDirty || addMutation.isPending || updateMutation.isPending}
                         onClick={() => setIsReadyToSave(true)}
                       >
                         <TiTick /> Save Changes
@@ -531,7 +413,6 @@ export default function ModalApplicant({
 
                   return modeButtons[currentMode] || null;
                 })()}
-
                 <DialogClose asChild>
                   <Button type="button" variant="destructive">
                     <TiCancel /> Close

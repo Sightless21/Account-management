@@ -1,9 +1,9 @@
+// src/components/DnDApplicant/Column.tsx
 "use client";
 import React, { useState } from "react";
 import Card from "./Card";
 import { CardType, ColumnType } from "./types";
-import axios from "axios";
-import { useApplicantData } from "@/hooks/useApplicantData"; // นำเข้า Zustand Store
+import { useApplicantData } from "@/hooks/useApplicantData";
 
 type ColumnProps = {
   title: string;
@@ -26,7 +26,7 @@ export const Column = ({
   const handleDragStart = (
     e: React.DragEvent<Element>,
     card: CardType,
-    fromColumn: ColumnType,
+    fromColumn: ColumnType
   ) => {
     e.dataTransfer.setData("cardId", card.id);
     e.dataTransfer.setData("fromColumn", fromColumn);
@@ -48,27 +48,10 @@ export const Column = ({
       return;
     }
 
-    if (fromColumn === column) return; // ถ้าลากไปที่เดิม ไม่ต้องทำอะไร
-
-    let copy = [...cards]; // สร้าง copy ของ cards
-
-    // ค้นหาการ์ดที่ถูกลาก
-    let cardToTransfer = copy.find((c) => c.id === cardId);
-    if (!cardToTransfer) return;
-
-    // เปลี่ยนสถานะของการ์ดให้เป็น Column ใหม่
-    cardToTransfer = { ...cardToTransfer, status: column };
-
-    // ลบการ์ดจาก Column เดิม
-    copy = copy.filter((c) => c.id !== cardId);
-
-    // เพิ่มเข้าไปที่ Column ใหม่
-    copy.push(cardToTransfer);
-
-    updateApplicantStatus(cardId, column);
+    if (fromColumn === column) return;
 
     try {
-      await axios.patch("/api/applicant", { id: cardId, status: column });
+      await updateApplicantStatus({ id: cardId, status: column });
     } catch (error) {
       console.error("❌ Error updating status:", error);
     }
@@ -86,9 +69,7 @@ export const Column = ({
   const filteredCards = cards.filter((c) => c.status === column);
 
   return (
-    <div
-      className={`h-[550px] w-72 shrink-0 rounded-md border ${headingBgColor}`}
-    >
+    <div className={`h-[550px] w-72 shrink-0 rounded-md border ${headingBgColor}`}>
       <div className={`flex items-center justify-between rounded-t-md p-2`}>
         <h3 className={`font-medium decoration-4 ${headingColor}`}>{title}</h3>
         <span className="text-sm text-muted-foreground">
@@ -101,7 +82,9 @@ export const Column = ({
         onDragLeave={handleDragLeave}
         className={`h-[500px] w-full overflow-auto border-t-2 border-dotted p-4 transition-colors ${active ? "bg-neutral-800/20" : "bg-neutral-800/0"}`}
       >
-        {filteredCards.map((c) => (<Card key={c.id} {...c} handleDragStart={(e) => handleDragStart(e, c, column)} />))}
+        {filteredCards.map((c) => (
+          <Card key={c.id} {...c} handleDragStart={(e) => handleDragStart(e, c, column)} />
+        ))}
       </div>
     </div>
   );

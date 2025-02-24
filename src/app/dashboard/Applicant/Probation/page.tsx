@@ -1,12 +1,21 @@
+// src/app/dashboard/Applicant/Probation/page.tsx
 "use client";
 import React from "react";
-import { columns} from "./columns";
-import { DataTable } from "./data-table";
+import { columns } from "./columns";
+import { DataTable } from "@/components/Table/Data-Table";
 import { useApplicantData } from "@/hooks/useApplicantData";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import {ArrowLeft} from "lucide-react"
 
 export default function Page() {
-  const { applicants, deleteApplicant } = useApplicantData();
+  const { applicants, deleteApplicant, isLoading } = useApplicantData();
+  const router = useRouter();
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   const handleNotPass = async (id: string) => {
     try {
@@ -21,6 +30,7 @@ export default function Page() {
     }
   };
 
+
   const handlePassComplete = async () => {
     try {
       toast.success("Applicant passed successfully!");
@@ -34,7 +44,6 @@ export default function Page() {
     (applicant) => applicant.status === "INTERVIEW_PASSED"
   );
 
-  // แปลงข้อมูลเพื่อให้เข้ากับ DataTable
   const simplifiedApplicants = filteredApplicants.map((applicant) => ({
     id: applicant.id || "",
     name: applicant.person.name,
@@ -45,6 +54,16 @@ export default function Page() {
     status: applicant.status,
   }));
 
+  const redirectButton = (
+    <Button
+      variant="outline"
+      onClick={() => router.replace("/dashboard/Applicant")}
+      className="h-8"
+    >
+      <ArrowLeft/> Back to Applicant Board
+    </Button>
+  );
+
   return (
     <div className="ml-3 mr-3 flex flex-col gap-4">
       <div className="mr-3 flex scroll-m-20 items-center justify-between border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
@@ -54,6 +73,9 @@ export default function Page() {
         <DataTable
           columns={columns(handleNotPass, handlePassComplete)}
           data={simplifiedApplicants}
+          searchColumn="name"
+          searchPlaceholder="Search by name..."
+          redirect={redirectButton}
         />
       </div>
     </div>

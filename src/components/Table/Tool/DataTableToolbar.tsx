@@ -1,3 +1,4 @@
+// src/components/Table/Tool/DataTableToolbar.tsx
 "use client";
 
 import { useState } from "react";
@@ -19,6 +20,7 @@ interface DataTableToolbarProps<TData> {
   enableReset?: boolean;
   enableColumnVisibility?: boolean;
   additionalControls?: React.ReactNode;
+  redirect?: React.ReactNode; // คง prop redirect ไว้
 }
 
 export function DataTableToolbar<TData>({
@@ -31,6 +33,7 @@ export function DataTableToolbar<TData>({
   enableReset = true,
   enableColumnVisibility = true,
   additionalControls,
+  redirect,
 }: DataTableToolbarProps<TData>) {
   const [date, setDate] = useState<DateRange | undefined>({
     from: undefined,
@@ -74,6 +77,7 @@ export function DataTableToolbar<TData>({
       )}
       {additionalControls}
       {enableColumnVisibility && <DataTableViewOptions table={table} />}
+      {redirect} {/* แสดง redirect ใน div เดียวกัน */}
     </div>
   );
 }

@@ -89,6 +89,7 @@ enum ApplicantStatus {
   NEW
   PENDING_INTERVIEW
   INTERVIEW_PASSED
+  SUCCESS
 }
 
 // 📌 ENUM สำหรับ Role (RBAC)

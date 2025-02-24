@@ -3,34 +3,37 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {PassDialog} from "./PassDialog"
+export type Applicant = {
+  id: string;
+  name: string;
+  firstname?: string;
+  lastname?: string;
+  email: string;
+  phone: string;
+  position: string;
+  createdAt: string;
+};
 
-//DONE : Applocant type move to Type Folder
 export const columns = (
   handleNotPass: (id: string) => void,
-): ColumnDef<{
-  id: string | undefined;
-  name: string;
-  position: string;
-  createdAt: string | undefined;
-  status: string;
-}>[] => [
+  onPassComplete: (id: string) => void,
+): ColumnDef<Applicant>[] => [
   {
     accessorKey: "name",
     header: "Name",
   },
   {
     accessorKey: "position",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Position
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Position
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
   },
   {
     accessorKey: "createdAt",
@@ -45,15 +48,15 @@ export const columns = (
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {
-      const applicant = row.original; // ข้อมูลผู้สมัครในแถวปัจจุบัน
+      const applicant = row.original;
+
+      console.log("Applicant:", applicant);
       return (
         <div className="flex gap-2">
-          <Button variant={"default"} onClick={() => {}}>
-            Pass
-          </Button>
+          <PassDialog applicant={applicant} onPassComplete={onPassComplete} />
           <Button
-            variant={"secondary"}
-            onClick={() => applicant.id && handleNotPass(applicant.id)} // ส่ง id ไปยัง handleNotPass
+            variant="secondary"
+            onClick={() => handleNotPass(applicant.id)}
           >
             Not Pass
           </Button>

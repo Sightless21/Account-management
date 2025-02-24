@@ -2,27 +2,8 @@
 
 import * as React from "react";
 import { redirect } from "next/navigation";
-
-import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-
+import { ColumnDef, ColumnFiltersState, SortingState, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { IoIosArrowBack } from "react-icons/io";
@@ -32,7 +13,6 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
 }
 
-//DONE : Data Table applicant
 export function DataTable<TData, TValue>({
   columns,
   data,
@@ -56,7 +36,6 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="flex flex-col h-full">
-      {/* Search */}
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter name..."
@@ -69,12 +48,12 @@ export function DataTable<TData, TValue>({
         <Button
           onClick={() => table.resetColumnFilters()}
           className="ml-3"
-          variant={"secondary"}
+          variant="secondary"
         >
           Reset
         </Button>
         <Button
-          onClick={() => { redirect("/dashboard/Applicant") }}
+          onClick={() => redirect("/dashboard/Applicant")}
           className="ml-3"
         >
           <IoIosArrowBack />
@@ -82,11 +61,8 @@ export function DataTable<TData, TValue>({
         </Button>
       </div>
 
-      {/* Table Container with relative positioning */}
       <div className="rounded-md border">
-
         <div className="relative">
-          {/* Separate sticky header */}
           <div className="sticky top-0 bg-white z-20">
             <Table>
               <TableHeader>
@@ -98,16 +74,20 @@ export function DataTable<TData, TValue>({
                         className="bg-white font-bold h-12"
                         style={{
                           width:
-                            header.id === 'name' ? '30%' :
-                              header.id === 'position' ? '30%' :
-                                header.id === 'lastApplied' ? '20%' : '20%'
+                            header.id === "name"
+                              ? "30%"
+                              : header.id === "position"
+                                ? "30%"
+                                : header.id === "lastApplied"
+                                  ? "20%"
+                                  : "20%",
                         }}
                       >
                         {header.isPlaceholder
                           ? null
                           : flexRender(
                             header.column.columnDef.header,
-                            header.getContext(),
+                            header.getContext()
                           )}
                       </TableHead>
                     ))}
@@ -118,7 +98,6 @@ export function DataTable<TData, TValue>({
           </div>
         </div>
 
-        {/* Scrollable body */}
         <div className="max-h-[600px] overflow-y-auto">
           <Table>
             <TableBody>
@@ -129,16 +108,22 @@ export function DataTable<TData, TValue>({
                     data-state={row.getIsSelected() && "selected"}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}
+                      <TableCell
+                        key={cell.id}
                         style={{
                           width:
-                            cell.column.id === 'name' ? '30%' :
-                            cell.column.id === 'position' ? '30%' :
-                            cell.column.id === 'lastApplied' ? '20%' : '20%'
-                        }}>
+                            cell.column.id === "name"
+                              ? "30%"
+                              : cell.column.id === "position"
+                                ? "30%"
+                                : cell.column.id === "lastApplied"
+                                  ? "20%"
+                                  : "20%",
+                        }}
+                      >
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext(),
+                          cell.getContext()
                         )}
                       </TableCell>
                     ))}
@@ -146,10 +131,7 @@ export function DataTable<TData, TValue>({
                 ))
               ) : (
                 <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
                     No results.
                   </TableCell>
                 </TableRow>

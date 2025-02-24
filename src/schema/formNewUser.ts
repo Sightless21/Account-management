@@ -13,7 +13,7 @@ export const formSchema = z.object({
     .regex(/^\d+$/, "Must contain only numbers"),
   password: z.string().min(MIN_PASSWORD_LENGTH),
   confirmPassword: z.string().min(MIN_PASSWORD_LENGTH),
-  role: z.enum(["EMPLOYEE","MANAGER","HR"]),
+  role: z.enum(["EMPLOYEE","MANAGER","HR","ADMIN"]),
 })
 
 export const DEFAULT_FORM_VALUES = {

@@ -10,6 +10,7 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/c
 import CustomAlertDialog from "@/components/ui/customAlertDialog";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export function NavUser({
   user,
@@ -22,6 +23,7 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const router = useRouter();
 
   // Get the initials of the user
   const fullName = user.name as string;
@@ -36,6 +38,7 @@ export function NavUser({
   const handleLogout = () => {
     signOut({ callbackUrl: "/" });
   };
+
 
   return (
     <SidebarMenu>
@@ -81,8 +84,8 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-            <DropdownMenuLabel className="flex"><Settings className="mr-5 size-5"/> Setting </DropdownMenuLabel>
-              <DropdownMenuItem>
+            <DropdownMenuLabel className="flex"><Settings className="mr-5 size-5"/>Setting</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => router.push("/Settings")}>
                 <UserRoundPen className="mr-5"/> <span className="text-muted-foreground">Profile Settings</span>
               </DropdownMenuItem>
               <DropdownMenuItem>

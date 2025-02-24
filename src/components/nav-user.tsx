@@ -1,14 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 // icons
-import { ChevronsUpDown, LogOut } from "lucide-react";
+import { ChevronsUpDown, LogOut, Settings , UserRoundPen , MonitorCog , Lock } from "lucide-react";
 
 // components
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
-import  CustomAlertDialog  from "@/components/ui/customAlertDialog";
+import CustomAlertDialog from "@/components/ui/customAlertDialog";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
 
@@ -81,10 +80,22 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+            <DropdownMenuLabel className="flex"><Settings className="mr-5 size-5"/> Setting </DropdownMenuLabel>
+              <DropdownMenuItem>
+                <UserRoundPen className="mr-5"/> <span className="text-muted-foreground">Profile Settings</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <MonitorCog className="mr-5"/> <span className="text-muted-foreground">Display & Appearance</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Lock className="mr-5"/> <span className="text-muted-foreground">Security & Password</span>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => setIsDialogOpen(true)}
               className="cursor-pointer">
-              <LogOut className="mr-5" />
-              <span>Logout</span>
+              <LogOut className="mr-5" /> <span className="text-muted-foreground">Logout</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

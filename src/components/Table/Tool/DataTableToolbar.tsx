@@ -41,7 +41,7 @@ export function DataTableToolbar<TData>({
   });
 
   const onDateRangeChange = (dateRange: DateRange | undefined) => {
-    if (dateRange?.from) {
+    if (dateRange?.from || dateRange?.to) {
       table.getColumn(dateColumn!)?.setFilterValue(dateRange);
     } else {
       table.getColumn(dateColumn!)?.setFilterValue(undefined);
@@ -67,7 +67,6 @@ export function DataTableToolbar<TData>({
           className="h-8"
           onClick={() => {
             table.resetColumnFilters();
-            table.resetColumnVisibility();
             table.resetSorting();
             setDate({ from: undefined, to: undefined });
           }}

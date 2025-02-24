@@ -31,7 +31,7 @@ interface DataTableProps<TData, TValue> {
   pageSize?: number;
   toolbarAdditionalControls?: React.ReactNode;
   defaultVisibleColumns?: string[];
-  redirect?: React.ReactNode; // คง redirect prop ไว้
+  redirect?: React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({

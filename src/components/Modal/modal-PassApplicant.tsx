@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { z } from "zod";
-import { Applicant } from "../../app/dashboard/Applicant/Probation/columns";
+import { Applicant } from "@/components/Table/Applicant-table/columns"
 import { generateCustomPassword } from "@/utils/passwordGenerate";
 import { convertApplicantToEmployee } from "@/actions/convertApplicantToEmployee";
 import { toast } from "sonner";

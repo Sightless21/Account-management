@@ -1,4 +1,4 @@
-// AppSidebar.tsx
+// app-sidebar.tsx
 "use client";
 
 import Image from "next/image";
@@ -9,60 +9,57 @@ import { NavUser } from "@/components/nav-user";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from "@/components/ui/sidebar";
 import { User } from "@/types/users";
 
+// ✨ กำหนดโครงสร้างเมนูแบบแยกออกมา
+const NAV_ITEMS = [
+  {
+    title: "Workspace",
+    url: "/dashboard",
+    icon: Briefcase,
+    isActive: true,
+    roles: ["EMPLOYEE", "HR", "MANAGER", "ADMIN"],
+    items: [
+      { title: "Home", url: "" },
+      { title: "Applicant", url: "/Applicant" },
+      { title: "Project board", url: "/ProjectBoard" },
+      { title: "Meeting room", url: "/MeetingRoom" },
+      { title: "Day off tracking", url: "/DayOff" },
+      { title: "Car Reservation", url: "/CarReservation" },
+      { title: "Expenses Claim", url: "/Expenses" },
+    ],
+  },
+  {
+    title: "Customer service",
+    url: "/dashboard",
+    icon: UserSearch,
+    isActive: true,
+    roles: ["EMPLOYEE", "HR", "MANAGER", "ADMIN"], 
+    items: [{ title: "Customer list", url: "/CustomerList" }],
+  },
+  {
+    title: "Financial System",
+    url: "*",
+    icon: CircleDollarSign,
+    roles: ["HR", "MANAGER", "ADMIN"],
+    items: [
+      { title: "Introduction", url: "#" },
+      { title: "Get Started", url: "#" },
+    ],
+  },
+  {
+    title: "Service",
+    url: "/dashboard",
+    icon: ServerCog,
+    roles: ["HR", "MANAGER", "ADMIN"],
+    items: [{ title: "Create User", url: "/CreateUser" }],
+  },
+];
+
+// ✨ ทำให้ฟังก์ชันกรองเมนูใช้งานซ้ำได้
+const getFilteredNavItems = (role: string | undefined) => {
+  return NAV_ITEMS.filter((item) => item.roles.includes(role || "EMPLOYEE"));
+};
+
 export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sidebar> & { user?: User | null }) {
-  const getFilteredNavItems = (role: string | undefined) => {
-    const navMain = [
-      {
-        title: "Workspace",
-        url: "/dashboard",
-        icon: Briefcase,
-        isActive: true,
-        items: [
-          { title: "Home", url: "" },
-          { title: "Applicant", url: "/Applicant" },
-          { title: "Project board", url: "/ProjectBoard" },
-          { title: "Meeting room", url: "/MeetingRoom" },
-          { title: "Day off tracking", url: "/DayOff" },
-          { title: "Car Reservation", url: "/CarReservation" },
-          { title: "Expenses Claim", url: "/Expenses" },
-        ],
-      },
-      {
-        title: "Customer service",
-        url: "/dashboard",
-        icon: UserSearch,
-        isActive: true,
-        items: [{ title: "Customer list", url: "/CustomerList" }],
-      },
-      {
-        title: "Financial System",
-        url: "*",
-        icon: CircleDollarSign,
-        items: [
-          { title: "Introduction", url: "#" },
-          { title: "Get Started", url: "#" },
-        ],
-      },
-      {
-        title: "Service",
-        url: "/dashboard",
-        icon: ServerCog,
-        items: [{ title: "Create New User", url: "/newUser" }],
-      },
-    ];
-
-    const fullAccessRoles = ["HR", "MANAGER", "ADMIN"];
-
-    // If role is not in fullAccessRoles (i.e., EMPLOYEE), filter out restricted items
-    if (!fullAccessRoles.includes(role || "")) {
-      return navMain.filter(
-        (item) => item.title !== "Financial System" && item.title !== "Service"
-      );
-    }
-    // Return all items for HR, MANAGER, and ADMIN
-    return navMain;
-  };
-
   const data = {
     user: {
       name: user ? `${user.firstName} ${user.lastName}` : "Guest",

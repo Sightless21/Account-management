@@ -48,7 +48,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <Skeleton className="h-full w-full m-3" />
               ) : (
                 <h3 className="text-2xl font-semibold tracking-tight">
-                  Hello : {user?.firstName?.toUpperCase()} {user?.lastName?.toUpperCase()}
+                  Hello : {user?.firstName?.toUpperCase()} {user?.lastName?.toUpperCase()} 
                 </h3>
               )}
               <DigitalClock />

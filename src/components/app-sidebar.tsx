@@ -3,14 +3,13 @@
 
 import Image from "next/image";
 import React from "react";
-import { Briefcase, Users, ServerCog ,Github , Send, Settings} from "lucide-react";
+import { Briefcase, Users, Github, Send, Settings, BookUser } from "lucide-react";
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser } from "@/components/nav-user";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from "@/components/ui/sidebar";
 import { User } from "@/types/users";
 
-// ✨ กำหนดโครงสร้างเมนูแบบแยกออกมา
 const NAV_ITEMS = [
   {
     title: "Workspace",
@@ -21,9 +20,9 @@ const NAV_ITEMS = [
     items: [
       { title: "Home", url: "" },
       { title: "Applicant", url: "/Applicant" },
-      { title: "Project board", url: "/ProjectBoard" },
-      { title: "Meeting room", url: "/MeetingRoom" },
-      { title: "Day off tracking", url: "/DayOff" },
+      { title: "Project Board", url: "/ProjectBoard" },
+      { title: "Meeting Room", url: "/MeetingRoom" },
+      { title: "Day Off Tracking", url: "/DayOff" },
       { title: "Car Reservation", url: "/CarReservation" },
       { title: "Expenses Claim", url: "/Expenses" },
     ],
@@ -35,24 +34,13 @@ const NAV_ITEMS = [
     isActive: true,
     roles: ["EMPLOYEE", "HR", "MANAGER", "ADMIN"],
     items: [
-      { title: "Customer list", url: "/CustomerList" }
-    ],
-  },
-  {
-    title: "Setting",
-    url: "*",
-    icon: Settings,
-    roles: ["HR", "MANAGER", "ADMIN","EMPLOYEE"],
-    items: [
-      { title: "My Profile", url: "#" },
-      { title: "Change Password", url: "#" },
-      { title: "Appearance", url: "#" },
+      { title: "Customer List", url: "/CustomerList" }
     ],
   },
   {
     title: "Service",
     url: "/Dashboard",
-    icon: ServerCog,
+    icon: BookUser,
     roles: ["HR", "MANAGER", "ADMIN"],
     items: [
       { title: "Create User", url: "/CreateUser" },
@@ -62,13 +50,11 @@ const NAV_ITEMS = [
 ];
 
 const NAV_SERVICE_ITEMS = [
-  { title: "Git Hub Repository", url: "https://github.com/Sightless21/Account-management", icon: Github,
-  },
-  { title: "Feedback", url: "#", icon: Send,
-  },
+  { title: "GitHub Repository", url: "https://github.com/Sightless21/Account-management", icon: Github , target: "_blank"},
+  { title: "Feedback", url: "https://forms.office.com/r/NkgY9BFqKa", icon: Send , target: "_blank"},
+  { title: "Settings", url: "/Dashboard/Settings", icon: Settings , target: "_self"}
 ]
 
-// ✨ ทำให้ฟังก์ชันกรองเมนูใช้งานซ้ำได้
 const getFilteredNavItems = (role: string | undefined) => {
   return NAV_ITEMS.filter((item) => item.roles.includes(role || "EMPLOYEE"));
 };
@@ -78,6 +64,7 @@ export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sideb
     user: {
       name: user ? `${user.firstName} ${user.lastName}` : "Guest",
       email: user?.email,
+      role: user?.role,
       avatar: "",
     },
     navMain: getFilteredNavItems(user?.role),
@@ -90,7 +77,7 @@ export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sideb
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavSecondary items={NAV_SERVICE_ITEMS}  className="mt-auto"/>
+        <NavSecondary items={NAV_SERVICE_ITEMS} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

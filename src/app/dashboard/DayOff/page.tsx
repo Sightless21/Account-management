@@ -1,13 +1,11 @@
 "use client";
 import React, { useState } from "react";
-import Menutabs from "@/components/menutabs"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import Menutabs from "@/components/menutabs";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { DayOffTabsConfig } from "@/Configs/tabsConfig"
+import DayOffTable from "@/components/Table/Dayoff-table/DayoffTable";
 
-import DayOffTable from "@/components/Table/Dayoff-table/DayoffTable"
 
-
-
-//DONE : Reports Dayoff MANAGER , HR interface 
 export default function Page() {
   const [activeTab, setActiveTab] = useState("Leave History");
 
@@ -18,11 +16,16 @@ export default function Page() {
           <CardTitle>Employee Day off of Absence Tracking</CardTitle>
           <CardDescription>Employee Day off of Absence Tracking System</CardDescription>
           <div className="flex w-full justify-between">
-            <Menutabs userRole={"ADMIN"} onTabChange={setActiveTab} />
+            <Menutabs
+              userRole="ADMIN"
+              tabsConfig={DayOffTabsConfig} // Pass the config with iconKey
+              onTabChange={setActiveTab}
+              defaultTab="Leave History" // Optional: matches initial activeTab
+            />
           </div>
         </CardHeader>
         <CardContent>
-          {activeTab === "Leave History" && <DayOffTable userRole={"ADMIN"}/>}
+          {activeTab === "Leave History" && <DayOffTable userRole="ADMIN" />}
           {activeTab === "Reports" && <p>แสดงข้อมูล Reports</p>}
         </CardContent>
       </Card>

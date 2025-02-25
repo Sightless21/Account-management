@@ -18,6 +18,7 @@ export function NavUser({
   user: {
     name?: string;
     email?: string;
+    role? : string
     avatar?: string;
   };
 }) {
@@ -72,12 +73,13 @@ export function NavUser({
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user.avatar} alt={user.name} />
                   <AvatarFallback className="rounded-lg">
-                    {/* {initials} */}
+                    {initials}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{user.name}</span>
+                  <span className="truncate font-semibold capitalize">{user.name}</span>
                   <span className="truncate text-xs">{user.email}</span>
+                  <span className="truncate text-xs">{user.role?.toLowerCase().replace(/^./, (c) => c.toUpperCase())}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
@@ -85,7 +87,7 @@ export function NavUser({
             <DropdownMenuGroup>
               <DropdownMenuLabel className="flex">Setting</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => router.push("/Settings")}>
-                <UserRound className="mr-5" /> <span>View Profile</span>
+                <UserRound className="mr-5" /> <span>My Profile</span>
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Settings className="mr-5" /> <span className="text-muted-foreground">Account Settings</span>

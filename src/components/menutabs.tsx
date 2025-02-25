@@ -2,96 +2,122 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { useState, useRef, useEffect } from "react"
+import { CalendarIcon, BarChartIcon, SettingsIcon } from "lucide-react"
+import Tooltip from "@/components/Tooltip" // Import your Tooltip component
 
-const allTabs = [
-  { name: "Leave History", roles: ["EMPLOYEE", "MANAGER", "HR","ADMIN"] },
-  { name: "Reports", roles: ["MANAGER","ADMIN","HR"] },
-] // config role base here
+// Define icon keys and map type
+export type IconKey = "CalendarIcon" | "BarChartIcon" | "SettingsIcon";
+type IconMap = Record<IconKey, React.ReactNode>;
 
-export default function Menutabs(
-  { userRole , onTabChange}: { userRole: "EMPLOYEE" | "MANAGER" | "HR" | "ADMIN", onTabChange: (tabName: string) => void  }
-) {
-  const tabs = allTabs.filter(tab => tab.roles.includes(userRole)).map(tab => tab.name)
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
-  const [activeIndex, setActiveIndex] = useState(0)
-  const [hoverStyle, setHoverStyle] = useState({})
-  const [activeStyle, setActiveStyle] = useState({ left: "0px", width: "0px" })
-  const tabRefs = useRef<(HTMLDivElement | null)[]>([])
+interface TabConfig {
+  name: string;
+  roles: string[];
+  iconKey?: IconKey;
+  disabled?: boolean;
+  tooltip?: string;
+}
+
+interface MenutabsProps {
+  userRole: string;
+  tabsConfig: TabConfig[];
+  onTabChange: (tabName: string) => void;
+  defaultTab?: string;
+}
+
+// Icon mapping with explicit typing
+const iconMap: IconMap = {
+  "CalendarIcon": <CalendarIcon className="w-4 h-4" />,
+  "BarChartIcon": <BarChartIcon className="w-4 h-4" />,
+  "SettingsIcon": <SettingsIcon className="w-4 h-4" />,
+};
+
+export default function Menutabs({
+  userRole,
+  tabsConfig,
+  onTabChange,
+  defaultTab,
+}: MenutabsProps) {
+  const tabs = tabsConfig.filter(tab => tab.roles.includes(userRole));
+  
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [activeIndex, setActiveIndex] = useState(() => {
+    const defaultIndex = defaultTab ? tabs.findIndex(tab => tab.name === defaultTab) : 0;
+    return defaultIndex >= 0 ? defaultIndex : 0;
+  });
+  const [hoverStyle, setHoverStyle] = useState({});
+  const [activeStyle, setActiveStyle] = useState({ left: "0px", width: "0px" });
+  const tabRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const handleTabClick = (index: number) => {
-    setActiveIndex(index);
-    onTabChange(tabs[index]); // ส่งชื่อแท็บกลับไปยัง parent component
+    if (!tabs[index].disabled) {
+      setActiveIndex(index);
+      onTabChange(tabs[index].name);
+    }
   };
-
 
   useEffect(() => {
     if (hoveredIndex !== null) {
-      const hoveredElement = tabRefs.current[hoveredIndex]
+      const hoveredElement = tabRefs.current[hoveredIndex];
       if (hoveredElement) {
-        const { offsetLeft, offsetWidth } = hoveredElement
-        setHoverStyle({ left: `${offsetLeft}px`, width: `${offsetWidth}px` })
+        const { offsetLeft, offsetWidth } = hoveredElement;
+        setHoverStyle({ left: `${offsetLeft}px`, width: `${offsetWidth}px` });
       }
     }
-  }, [hoveredIndex])
+  }, [hoveredIndex]);
 
   useEffect(() => {
-    const activeElement = tabRefs.current[activeIndex]
+    const activeElement = tabRefs.current[activeIndex];
     if (activeElement) {
-      const { offsetLeft, offsetWidth } = activeElement
-      setActiveStyle({ left: `${offsetLeft}px`, width: `${offsetWidth}px` })
+      const { offsetLeft, offsetWidth } = activeElement;
+      setActiveStyle({ left: `${offsetLeft}px`, width: `${offsetWidth}px` });
     }
-  }, [activeIndex])
-
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      const overviewElement = tabRefs.current[0]
-      if (overviewElement) {
-        const { offsetLeft, offsetWidth } = overviewElement
-        setActiveStyle({ left: `${offsetLeft}px`, width: `${offsetWidth}px` })
-      }
-    })
-  }, [])
+  }, [activeIndex]);
 
   return (
     <Card className="h-[50px] border-none shadow-none relative flex items-center">
       <CardContent className="p-0">
         <div className="relative">
-          {/* Hover Highlight */}
           <div
             className="absolute h-[30px] transition-all duration-300 ease-out bg-[#0e0f1114] rounded-[6px] flex items-center"
             style={{ ...hoverStyle, opacity: hoveredIndex !== null ? 1 : 0 }}
           />
-
-          {/* Active Indicator */}
           <div
             className="absolute bottom-[-6px] h-[2px] bg-[#0e0f11] dark:bg-white transition-all duration-300 ease-out"
             style={activeStyle}
           />
-
-          {/* Tabs */}
           <div className="relative flex space-x-[6px] items-center">
             {tabs.map((tab, index) => (
-              <div
+              <Tooltip
                 key={index}
-                ref={(el) => {
-                  if (el) tabRefs.current[index] = el;
-                }}
-                className={`px-3 py-2 cursor-pointer transition-colors duration-300 h-[30px] ${index === activeIndex ? "text-[#0e0e10]" : "text-[#0e0f1199]"}`}
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-                onClick={() => {
-                  setActiveIndex(index)
-                  handleTabClick(index)
-                }}
+                content={tab.tooltip || ""} 
+                position="top"
+                delay={1000}
               >
-                <div className="text-sm leading-5 whitespace-nowrap flex items-center justify-center h-full">
-                  {tab}
+                <div
+                  ref={(el) => {
+                    if (el) tabRefs.current[index] = el;
+                  }}
+                  className={`px-3 py-2 transition-colors duration-300 h-[30px] flex items-center justify-center
+                    ${tab.disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"}
+                    ${index === activeIndex ? "text-[#0e0e10]" : "text-[#0e0f1199]"}`}
+                  onMouseEnter={() => !tab.disabled && setHoveredIndex(index)}
+                  onMouseLeave={() => !tab.disabled && setHoveredIndex(null)}
+                  onClick={() => handleTabClick(index)}
+                >
+                  <div className="text-sm leading-5 whitespace-nowrap flex items-center gap-2 h-full">
+                    {tab.iconKey && iconMap[tab.iconKey] && (
+                      <span className={index === activeIndex ? "text-[#0e0e10]" : "text-[#0e0f1199]"}>
+                        {iconMap[tab.iconKey]}
+                      </span>
+                    )}
+                    <span>{tab.name}</span>
+                  </div>
                 </div>
-              </div>
+              </Tooltip>
             ))}
           </div>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -58,7 +58,7 @@ export default function ApplicantTable() {
   const redirectButton = (
     <Button
       variant="outline"
-      onClick={() => router.replace("/dashboard/Applicant")}
+      onClick={() => router.replace("/Dashboard/Applicant")}
       className="h-8"
     >
       <ArrowLeft/> Back to Applicant Board

@@ -151,7 +151,7 @@ export function RadialChart({ data, config, title, value, projectID, description
         <Button
           onClick={() => {
             if (title) {
-              router.push(`/dashboard/ProjectBoard/${title}`);
+              router.push(`/Dashboard/ProjectBoard/${title}`);
             }
           }}
         >

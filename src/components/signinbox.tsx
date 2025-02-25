@@ -40,7 +40,7 @@ export default function SignInForm() {
           return;
         }
         toast.success("Login successful!");
-        router.push("/dashboard");
+        router.push("/Dashboard");
       } catch (error) {
         toast.error(`Something went wrong. Please try again: ${String(error)}`);
       }

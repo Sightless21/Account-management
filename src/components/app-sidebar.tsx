@@ -3,8 +3,9 @@
 
 import Image from "next/image";
 import React from "react";
-import { Briefcase, UserSearch, CircleDollarSign, ServerCog } from "lucide-react";
+import { Briefcase, Users, ServerCog ,Github , Send, Settings} from "lucide-react";
 import { NavMain } from "@/components/nav-main";
+import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser } from "@/components/nav-user";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from "@/components/ui/sidebar";
 import { User } from "@/types/users";
@@ -13,7 +14,7 @@ import { User } from "@/types/users";
 const NAV_ITEMS = [
   {
     title: "Workspace",
-    url: "/dashboard",
+    url: "/Dashboard",
     icon: Briefcase,
     isActive: true,
     roles: ["EMPLOYEE", "HR", "MANAGER", "ADMIN"],
@@ -29,30 +30,43 @@ const NAV_ITEMS = [
   },
   {
     title: "Customer service",
-    url: "/dashboard",
-    icon: UserSearch,
+    url: "/Dashboard",
+    icon: Users,
     isActive: true,
-    roles: ["EMPLOYEE", "HR", "MANAGER", "ADMIN"], 
-    items: [{ title: "Customer list", url: "/CustomerList" }],
+    roles: ["EMPLOYEE", "HR", "MANAGER", "ADMIN"],
+    items: [
+      { title: "Customer list", url: "/CustomerList" }
+    ],
   },
   {
-    title: "Financial System",
+    title: "Setting",
     url: "*",
-    icon: CircleDollarSign,
-    roles: ["HR", "MANAGER", "ADMIN"],
+    icon: Settings,
+    roles: ["HR", "MANAGER", "ADMIN","EMPLOYEE"],
     items: [
-      { title: "Introduction", url: "#" },
-      { title: "Get Started", url: "#" },
+      { title: "My Profile", url: "#" },
+      { title: "Change Password", url: "#" },
+      { title: "Appearance", url: "#" },
     ],
   },
   {
     title: "Service",
-    url: "/dashboard",
+    url: "/Dashboard",
     icon: ServerCog,
     roles: ["HR", "MANAGER", "ADMIN"],
-    items: [{ title: "Create User", url: "/CreateUser" }],
+    items: [
+      { title: "Create User", url: "/CreateUser" },
+      { title: "Employee List", url: "#" }
+    ],
   },
 ];
+
+const NAV_SERVICE_ITEMS = [
+  { title: "Git Hub Repository", url: "https://github.com/Sightless21/Account-management", icon: Github,
+  },
+  { title: "Feedback", url: "#", icon: Send,
+  },
+]
 
 // ✨ ทำให้ฟังก์ชันกรองเมนูใช้งานซ้ำได้
 const getFilteredNavItems = (role: string | undefined) => {
@@ -76,6 +90,7 @@ export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sideb
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
+        <NavSecondary items={NAV_SERVICE_ITEMS}  className="mt-auto"/>
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

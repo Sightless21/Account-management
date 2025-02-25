@@ -30,7 +30,7 @@ export default function Page() {
 
   // Handle redirect back to Project page
   async function handleProjectPage(): Promise<void> {
-    router.push("/dashboard/ProjectBoard");
+    router.push("/Dashboard/ProjectBoard");
   }
 
   return (

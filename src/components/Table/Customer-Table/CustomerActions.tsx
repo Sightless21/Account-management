@@ -92,7 +92,7 @@ export function CustomerActions({ row, deleteCustomer, editCustomer, viewDetails
             open={isOpenDialogDelete}
             onOpenChange={setIsOpenDialogDelete}
             title="Delete Customer"
-            description="Are you sure you want to delete this customer?"
+            description={`Are you sure you want to delete ${companyName} customer?`}
             onConfirm={() => deleteCustomer?.(id)}
             confirmText="Delete"
             cancelText="Cancel"

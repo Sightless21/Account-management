@@ -1,12 +1,12 @@
 "use client";
 
 // icons
-import { ChevronsUpDown, LogOut, Settings , UserRoundPen , MonitorCog , Lock } from "lucide-react";
+import { ChevronsUpDown, LogOut, Settings, UserRound, Lock ,Palette} from "lucide-react";
 
 // components
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import CustomAlertDialog from "@/components/ui/customAlertDialog";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
@@ -21,7 +21,6 @@ export function NavUser({
     avatar?: string;
   };
 }) {
-  const { isMobile } = useSidebar();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const router = useRouter();
 
@@ -64,7 +63,7 @@ export function NavUser({
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
+            side={"top"}
             align="end"
             sideOffset={4}
           >
@@ -84,21 +83,23 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-            <DropdownMenuLabel className="flex"><Settings className="mr-5 size-5"/>Setting</DropdownMenuLabel>
+              <DropdownMenuLabel className="flex">Setting</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => router.push("/Settings")}>
-                <UserRoundPen className="mr-5"/> <span className="text-muted-foreground">Profile Settings</span>
+                <UserRound className="mr-5" /> <span>View Profile</span>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <MonitorCog className="mr-5"/> <span className="text-muted-foreground">Display & Appearance</span>
+                <Settings className="mr-5" /> <span className="text-muted-foreground">Account Settings</span>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Lock className="mr-5"/> <span className="text-muted-foreground">Security & Password</span>
+                <Palette className="mr-5" /> <span className="text-muted-foreground">Preferences</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Lock className="mr-5" /> <span className="text-muted-foreground">Security & Password</span>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => setIsDialogOpen(true)}
-              className="cursor-pointer">
-              <LogOut className="mr-5" /> <span className="text-muted-foreground">Logout</span>
+            <DropdownMenuItem onClick={() => setIsDialogOpen(true)} className="cursor-pointe text-destructive">
+              <LogOut className="mr-5" /> <span>Logout</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

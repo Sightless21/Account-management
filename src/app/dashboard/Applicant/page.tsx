@@ -1,5 +1,5 @@
-// src/app/dashboard/Applicant/page.tsx
 "use client";
+
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import * as React from "react";
@@ -25,7 +25,7 @@ export default function Page() {
 
   function handleProbationPage() {
     toast.loading("Loading data", { duration: 2000 });
-    router.push("/dashboard/Applicant/Probation");
+    router.push("/Dashboard/Applicant/Probation");
     fetchApplicants().then(() => {
       toast.dismiss();
       toast.success("Successfully loaded data");

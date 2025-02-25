@@ -37,7 +37,7 @@ export default function CustomAlertDialog({
 }: AlertDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="max-w-md">
+      <AlertDialogContent className="max-w-xl">
         <AlertDialogHeader>
           <AlertDialogTitle className="text-xl font-semibold text-gray-900">
             {title}

@@ -57,7 +57,7 @@ export default function VerifyForm({ userId }: VerifyFormProps) {
     const handleLoading = form.handleSubmit((values) => {
         toast.promise(
             onSubmit(values).then(() => {
-                router.push("/dashboard");
+                router.push("/Dashboard");
             }),
             {
                 loading: "Verifying...",

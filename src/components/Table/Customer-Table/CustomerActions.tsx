@@ -6,9 +6,10 @@ import { Customer } from "@/schema/formCustomer";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Copy, Info, MoreHorizontal, Pencil, TrashIcon } from "lucide-react";
+import { Copy, Info, MoreHorizontal, Pencil, TrashIcon , X} from "lucide-react";
 import CustomerDialogInfo from "@/components/Modal/modal-CustomerInfo";
 import { CustomerDialog } from "@/components/Modal/modal-Customer";
+import CustomAlertDialog from "@/components/ui/customAlertDialog";
 
 interface CustomerActionsProps {
   row: Row<Customer>;
@@ -21,6 +22,8 @@ export function CustomerActions({ row, deleteCustomer, editCustomer, viewDetails
   const { companyName, id } = row.original;
   const [isModalOpenView, setIsModalOpenView] = useState(false);
   const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
+  const [isOpenDialogDelete, setIsOpenDialogDelete] = useState(false);
+
 
   const handleViewDetails = () => {
     setIsModalOpenView(true);
@@ -31,6 +34,10 @@ export function CustomerActions({ row, deleteCustomer, editCustomer, viewDetails
     setIsModalOpenEdit(true);
     editCustomer?.(row.original);
   };
+
+  const hadleDelete = () => {
+    setIsOpenDialogDelete(true);
+  }
 
   return (
     <TooltipProvider>
@@ -76,11 +83,22 @@ export function CustomerActions({ row, deleteCustomer, editCustomer, viewDetails
           />
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            onClick={() => deleteCustomer?.(id)}
+            onSelect={(e) => { e.preventDefault(); hadleDelete(); }}
             className="text-red-600"
           >
             <TrashIcon className="mr-2 h-4 w-4" /> Delete Customer
           </DropdownMenuItem>
+          <CustomAlertDialog
+            open={isOpenDialogDelete}
+            onOpenChange={setIsOpenDialogDelete}
+            title="Delete Customer"
+            description="Are you sure you want to delete this customer?"
+            onConfirm={() => deleteCustomer?.(id)}
+            confirmText="Delete"
+            cancelText="Cancel"
+            confirmIcon={TrashIcon}
+            cancelIcon={X}
+          />
         </DropdownMenuContent>
       </DropdownMenu>
     </TooltipProvider>

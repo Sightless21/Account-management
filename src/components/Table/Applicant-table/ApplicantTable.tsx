@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import {ArrowLeft} from "lucide-react"
 
+//DONE : Applicant Table
 export default function ApplicantTable() {
   const { applicants, deleteApplicant, isLoading } = useApplicantData();
   const router = useRouter();

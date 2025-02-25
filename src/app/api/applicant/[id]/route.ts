@@ -2,7 +2,7 @@ import { NextResponse, NextRequest, } from "next/server";
 import { ObjectId } from "mongodb";
 import { prisma } from "@/lib/prisma";
 
-//FIXME : Update Document
+
 interface Document {
   id: string;
   name: string;

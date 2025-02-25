@@ -12,6 +12,7 @@ interface DayOffTableProps {
   userRole: Role
 }
 
+//DONE : Reports Dayoff MANAGER , HR interface
 export default function DayOffTable({ userRole }: DayOffTableProps) {
   const { data: dayOffData, isLoading, error } = useDayOff()
   const { mutateAsync: deleteDayOff } = useDeleteDayOff()

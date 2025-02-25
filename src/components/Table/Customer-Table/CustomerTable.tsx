@@ -6,7 +6,9 @@ import { getColumns } from "./columns";
 import { useCustomer, useDeleteCustomer } from "@/hooks/useCustomerData";
 import { Customer } from "@/schema/formCustomer";
 import { CustomerDialog } from "@/components/Modal/modal-Customer";
+import { toast } from "sonner";
 
+//DONE : Customer Table
 export default function CustomerTable() {
   const { data: customers } = useCustomer();
   const { mutateAsync: deleteCustomer } = useDeleteCustomer();
@@ -19,8 +21,16 @@ export default function CustomerTable() {
     console.log("Viewing details for:", customer);
   };
 
+  const handdleDeleteCustomer = (id: string) => {
+    toast.promise(deleteCustomer(id),{
+      loading: "Deleting customer...",
+      success: "Customer deleted successfully",
+      error: "Error deleting customer",
+    });
+  };
+
   const columns = getColumns({
-    deleteCustomer,
+    deleteCustomer : handdleDeleteCustomer ,
     editCustomer: handleEditCustomer,
     viewDetails: handleViewDetails,
   });

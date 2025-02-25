@@ -11,14 +11,13 @@ import { ActionsCell } from "./MenuActionCell";
 import { Role } from "@/types/users";
 import { Button } from "@/components/ui/button";
 
-// Define the trip status colors
 const tripStatusColor: Record<TripStatus, string> = {
   ONGOING: "bg-yellow-500 text-white",
   COMPLETED: "bg-green-500 text-white",
   CANCELLED: "bg-red-500 text-white",
 };
 
-type ApprovalButtonsProps = {
+interface ApprovalButtonsProps {
   row: Row<CarReservationType>
   onAccepted?: (data: CarReservationType) => void
   onDeclined?: (data: CarReservationType) => void

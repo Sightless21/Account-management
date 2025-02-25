@@ -1,21 +1,25 @@
 "use client"
 
+import { useState } from "react"
 import type { ColumnDef, Row } from "@tanstack/react-table"
 import type { RoombookingType } from "@/types/room-bookings"
 import { Button } from "@/components/ui/button"
 import { BookingDialog } from "@/components/Modal/modal-Booking"
 import { useDeleteRoomBooking } from "@/hooks/useRoomBookingData"
-import { MoveRight, TrashIcon, ArrowUpDown } from "lucide-react"
+import { MoveRight, TrashIcon, ArrowUpDown, X } from "lucide-react"
 import { DateRange } from "react-day-picker"
+import CustomAlertDialog from "@/components/ui/customAlertDialog"
+import { toast } from "sonner"
 
-type ActionButtonsProps = {
+interface ActionButtonsProps {
   row: Row<RoombookingType>
   onEdit?: (data: RoombookingType) => void
   onDelete?: (data: RoombookingType) => void
 }
 
 const ActionButtons = ({ row, onEdit, onDelete }: ActionButtonsProps) => {
-  const { mutate: deleteRoomBooking } = useDeleteRoomBooking()
+  const { mutateAsync: deleteRoomBooking } = useDeleteRoomBooking()
+  const [isOpen, setIsOpen] = useState(false)
 
   return (
     <div className="flex gap-2">
@@ -26,14 +30,31 @@ const ActionButtons = ({ row, onEdit, onDelete }: ActionButtonsProps) => {
         />
       )}
       {onDelete && (
-        <Button
-          variant={"outline"}
-          size="icon"
-          onClick={() => deleteRoomBooking(row.original.id)}
-          className="h-8 w-8 text-red-500"
-        >
-          <TrashIcon className="h-4 w-4" />
-        </Button>
+        <>
+          <Button
+            variant={"outline"}
+            size="icon"
+            onClick={() => setIsOpen(true)}
+            className="h-8 w-8 text-red-500"
+          >
+            <TrashIcon className="h-4 w-4" />
+          </Button>
+          <CustomAlertDialog
+            open={isOpen}
+            onOpenChange={setIsOpen}
+            onConfirm={() => toast.promise(deleteRoomBooking(row.original.id), {
+              loading: "Deleting Room Booking...",
+              success: "Room Booking Deleted Successfully",
+              error: "Error Deleting Room Booking",
+            })}
+            title="Delete Room Booking"
+            description="Are you sure you want to delete this room booking?"
+            confirmText="Delete"
+            confirmIcon={TrashIcon}
+            confirmVariant="destructive"
+            cancelIcon={X}
+          />
+        </>
       )}
     </div>
   )
@@ -45,7 +66,7 @@ const handleEdit = (data: RoombookingType) => {
 
 export const columns: ColumnDef<RoombookingType>[] = [
   {
-    id:"username",
+    id: "username",
     accessorKey: "username",
     header: "Employee Name",
     meta: { title: "Employee Name" },
@@ -74,7 +95,7 @@ export const columns: ColumnDef<RoombookingType>[] = [
     },
     filterFn: (row, columnId, filterValue: DateRange | undefined) => {
       if (!filterValue?.from) return true;
-      
+
       const rowDate = new Date(row.getValue(columnId));
       const start = filterValue.from;
       const end = filterValue.to ?? filterValue.from;
@@ -91,7 +112,7 @@ export const columns: ColumnDef<RoombookingType>[] = [
     sortingFn: "datetime"
   },
   {
-    id:"time",
+    id: "time",
     accessorKey: "time",
     header: "Time",
     cell: ({ row }) => {

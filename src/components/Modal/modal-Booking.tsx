@@ -17,6 +17,7 @@ import { roomBookingFormSchema } from "@/schema/formRoomBooking"
 import { useUserData } from "@/hooks/useUserData"
 import { useSession } from "next-auth/react"
 import { useCreateRoomBooking, useUpdateRoomBooking } from "@/hooks/useRoomBookingData"
+import { toast } from "sonner"
 
 type BookingFormValues = z.infer<typeof roomBookingFormSchema>
 
@@ -30,8 +31,8 @@ export function BookingDialog({ defaultvalue, mode }: BookingDialogProps) {
   const [open, setOpen] = useState(false)
   const { data: user } = useUserData(session?.user.id as string)
   const userinfo = user
-  const { mutate: createRoomBooking } = useCreateRoomBooking()
-  const { mutate: updateRoomBooking } = useUpdateRoomBooking()
+  const { mutateAsync: createRoomBooking } = useCreateRoomBooking()
+  const { mutateAsync: updateRoomBooking } = useUpdateRoomBooking()
 
   const form = useForm<BookingFormValues>({
     resolver: zodResolver(roomBookingFormSchema),
@@ -63,9 +64,17 @@ export function BookingDialog({ defaultvalue, mode }: BookingDialogProps) {
     }
 
     if (mode === "edit") {
-      updateRoomBooking(formatData)
+      toast.promise(updateRoomBooking(formatData),{
+        loading: "Saving...",
+        success: "Room booking updated successfully",
+        error: "Error updating"
+      })
     } else {
-      createRoomBooking(formatData)
+      toast.promise(createRoomBooking(formatData),{
+        loading: "Creating...",
+        success: "Room booking created successfully",
+        error: "Error creating"
+      })
       form.reset()
     }
     setOpen(false)

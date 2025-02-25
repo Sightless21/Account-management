@@ -7,7 +7,7 @@ import DayOffTable from "@/components/Table/Dayoff-table/DayoffTable"
 
 
 
-//TODO : Reports Dayoff MANAGER , HR interface 
+//DONE : Reports Dayoff MANAGER , HR interface 
 export default function Page() {
   const [activeTab, setActiveTab] = useState("Leave History");
 

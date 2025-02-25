@@ -40,26 +40,26 @@ export function ExpenseClaimForm({
   onSubmitSuccess,
 }: ExpenseClaimFormProps) {
   const { data: session } = useSession();
-  const { data: user } = useUserData(session?.user.id ?? ""); // Fallback to empty string
+  const { data: user } = useUserData(session?.user.id ?? ""); 
   const [open, setOpen] = useState(false);
 
-  const createExpenseMutation = useCreateExpense();
-  const updateExpenseMutation = useUpdateExpense();
+  const { mutateAsync: createExpenseMutation , isPending: isPendingCreate } = useCreateExpense();
+  const { mutateAsync: updateExpenseMutation , isPending: isPendingUpdate } = useUpdateExpense();
 
-  // Base default values as Partial<Expense>
+  
   const baseDefaultValues: Partial<Expense> = {
     employeeName: user ? `${user.firstName} ${user.lastName}` : "",
     expenses: {
       fuel: { liters: 0, totalCost: 0 },
       accommodation: { nights: 0, totalCost: 0 },
       transportation: { origin: "", destination: "", totalCost: 0 },
-      perDiem: { amount: 0 }, // Adjusted to match schema (assuming 'days' was a typo)
+      perDiem: { amount: 0 }, 
       medicalExpenses: { amount: 0, description: "" },
       otherExpenses: { amount: 0, description: "" },
     },
   };
 
-  // Merge base defaults with provided defaultValues and normalize
+  
   const defaultFormValues = normalizeExpense({
     ...baseDefaultValues,
     ...defaultValues,
@@ -74,7 +74,7 @@ export function ExpenseClaimForm({
     try {
       if (mode === "edit" && expenseId) {
         await toast.promise(
-          updateExpenseMutation.mutateAsync({ id: expenseId, data: values }),
+          updateExpenseMutation({ id: expenseId, data: values }),
           {
             loading: "Updating expense claim...",
             success: "Expense claim updated successfully!",
@@ -83,7 +83,7 @@ export function ExpenseClaimForm({
         );
       } else {
         await toast.promise(
-          createExpenseMutation.mutateAsync(values),
+          createExpenseMutation(values),
           {
             loading: "Creating expense claim...",
             success: "Expense claim created successfully!",
@@ -92,7 +92,7 @@ export function ExpenseClaimForm({
         );
       }
 
-      form.reset(defaultFormValues); // Reset form to initial state
+      form.reset(defaultFormValues);
       setOpen(false);
       onSubmitSuccess?.();
     } catch (error) {
@@ -100,7 +100,7 @@ export function ExpenseClaimForm({
     }
   };
 
-  const isPending = createExpenseMutation.isPending || updateExpenseMutation.isPending;
+  const isPending = isPendingCreate || isPendingUpdate;
 
   const defaultTrigger = mode === "create" ? (
     <Button variant="default" className="h-8">

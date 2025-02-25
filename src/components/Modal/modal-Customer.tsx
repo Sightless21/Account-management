@@ -18,6 +18,7 @@ import { Form } from "@/components/ui/form";
 import { FormInput } from "@/components/ui/formCustomerInput";
 import { type CustomerFormData, customerSchema } from "@/schema/formCustomer";
 import { useCreateCustomer, useUpdateCustomer } from "@/hooks/useCustomerData";
+import { toast } from "sonner";
 
 interface CustomerDialogProps {
   customer?: CustomerFormData;
@@ -40,8 +41,8 @@ const defaultCustomerValues: CustomerFormData = {
 };
 
 export function CustomerDialog({ customer, trigger, open: controlledOpen, onClose }: CustomerDialogProps) {
-  const createCustomer = useCreateCustomer();
-  const updateCustomer = useUpdateCustomer();
+  const { mutateAsync: createCustomer }= useCreateCustomer();
+  const { mutateAsync: updateCustomer } = useUpdateCustomer();
   const [open, setOpen] = useState(false);
 
   // Determine mode based on whether customer data is provided
@@ -58,10 +59,18 @@ export function CustomerDialog({ customer, trigger, open: controlledOpen, onClos
   const handleSubmit = useCallback(
     (data: CustomerFormData) => {
       if (mode === 'edit' && customer?.id) {
-        updateCustomer.mutateAsync({ ...data, id: customer.id });
+        toast.promise(updateCustomer({ ...data, id: customer.id }),{
+          loading: 'Updating customer...',
+          success: 'Customer updated successfully',
+          error: 'Failed to update customer',
+        });
       } else {
         const customerData = { ...data, id: "" };
-        createCustomer.mutateAsync(customerData);
+        toast.promise(createCustomer(customerData),{
+          loading: 'Creating customer...',
+          success: 'Customer created successfully',
+          error: 'Failed to create customer',
+        });
       }
       setOpen(false); // Close the modal after submission
       form.reset(defaultCustomerValues);

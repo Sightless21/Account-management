@@ -5,20 +5,8 @@ import { useRouter } from "next/navigation";
 import * as React from "react";
 import ModalApplicant from "@/components/Modal/modal-Applicant";
 import { ApplicantBoard } from "@/components/DnDApplicant/ApplicantBoard";
-import {
-  Card,
-  CardTitle,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Card, CardTitle, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useApplicantData } from "@/hooks/useApplicantData"; // ใช้ hook ใหม่
 import { TableOfContents } from "lucide-react";
 import { useState, useEffect } from "react";

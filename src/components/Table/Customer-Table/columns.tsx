@@ -6,7 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Customer } from "@/schema/formCustomer";
 import { DataTableColumnHeader } from "@/components/Table/ColumnHeader";
 import { CustomerActions } from "@/components/Table/Customer-Table/CustomerActions"
-import { CustomColumnMeta } from "@/types/table"; // Adjust import path
+import { CustomColumnMeta } from "@/types/table"; 
 import { Badge } from "@/components/ui/badge";
 
 interface ColumnHandlers {

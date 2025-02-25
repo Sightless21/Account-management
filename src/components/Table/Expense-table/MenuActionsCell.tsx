@@ -1,4 +1,3 @@
-// MenuActionsCell.tsx
 "use client";
 
 import { useState } from "react";
@@ -10,6 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { ExpenseClaimForm } from "@/components/Sheet/ExpenseClaimForm";
 import { ExpenseDialog } from "@/components/Modal/modal-Expenses";
 import { Expense } from "@/schema/expenseFormSchema"
+import CustomAlertDialog from "@/components/ui/customAlertDialog";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const MenuActionsCell = ({ row, onEdit, onDelete, onSetSelectedExpense }: {
@@ -18,7 +18,8 @@ export const MenuActionsCell = ({ row, onEdit, onDelete, onSetSelectedExpense }:
   onDelete?: (data: Expense) => void;
   onSetSelectedExpense: (expense: Expense | null) => void;
 }) => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDialogViewOpen, setIsDialogViewOpen] = useState(false);
+  const [IsDialogDeleteOpen, setDialogDeleteOpen] = useState(false);
   const { title } = row.original;
 
   return (
@@ -46,13 +47,13 @@ export const MenuActionsCell = ({ row, onEdit, onDelete, onSetSelectedExpense }:
           </DropdownMenuItem>
           <ExpenseDialog
             expense={row.original}
-            onClose={() => setIsDialogOpen(false)}
+            onClose={() => setIsDialogViewOpen(false)}
             trigger={
-              <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setIsDialogOpen(true); }}>
+              <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setIsDialogViewOpen(true); }}>
                 <Info className="mr-2 h-4 w-4" /> View Details
               </DropdownMenuItem>
             }
-            open={isDialogOpen}
+            open={isDialogViewOpen}
           />
           <DropdownMenuSeparator />
           <ExpenseClaimForm
@@ -68,11 +69,19 @@ export const MenuActionsCell = ({ row, onEdit, onDelete, onSetSelectedExpense }:
           />
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            onClick={() => onDelete?.(row.original)}
+            onSelect={(e) => { e.preventDefault(); setDialogDeleteOpen(true); }}
             className="text-red-600"
           >
             <TrashIcon className="mr-2 h-4 w-4" /> Delete Expense
           </DropdownMenuItem>
+          <CustomAlertDialog
+            open={IsDialogDeleteOpen}
+            onOpenChange={() => setDialogDeleteOpen(false)}
+            onConfirm={() => onDelete?.(row.original)}
+            title="Delete Expense"
+            description="Are you sure you want to delete this expense?"
+            confirmText="Delete"
+          />
         </DropdownMenuContent>
       </DropdownMenu>
     </TooltipProvider>

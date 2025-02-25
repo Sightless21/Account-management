@@ -43,7 +43,7 @@ const ActionsCell = ({
       </Button>
       <CustomAlertDialog
         title="Confirm, Applicant Not Pass"
-        description={`Are you sure you want to mark ${applicant.name} as not passed? This action will delete the applicant and their documents.`}
+        description={`Are you sure you want to mark ${applicant.name} as not passed? This action will delete the applicant and their documents and infomation.`}
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
         onConfirm={handleConfirmNotPass}

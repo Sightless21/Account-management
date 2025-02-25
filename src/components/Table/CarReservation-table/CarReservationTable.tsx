@@ -11,6 +11,8 @@ import { Role } from "@/types/users";
 import { CarReservationType, TripStatus } from "@/types/car-reservation"
 import { useUpdateCarReservation } from "@/hooks/useCarReservationData";
 import { toast } from "sonner";
+
+//DONE : Car-Reservation Table
 interface CarReservationTableProps {
   userRole: Role
 }
@@ -18,7 +20,7 @@ interface CarReservationTableProps {
 export default function CarReservationTable({userRole}: CarReservationTableProps) {
   const { data: carReservations, isLoading, error } = useCarReservation();
   const { mutateAsync: updateCarReservation } = useUpdateCarReservation();
-  const { openModal } = useCarReservationUI(); // Access Zustand store
+  const { openModal } = useCarReservationUI(); 
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error loading data</p>;
@@ -76,7 +78,7 @@ export default function CarReservationTable({userRole}: CarReservationTableProps
           <Button
             variant="default"
             className="h-8"
-            onClick={() => openModal("create")} // Trigger create mode
+            onClick={() => openModal("create")} 
           >
             <PlusIcon className="mr-2 h-4 w-4" /> Create Reservation
           </Button>

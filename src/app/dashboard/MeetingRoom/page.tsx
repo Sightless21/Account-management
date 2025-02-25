@@ -3,7 +3,6 @@ import React from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import BookingRoomTable from "@/components/Table/BookingRoom-table/BookingRoomTable"
 
-//FIXME : Room Booking Page enchance ui or table
 export default function RoomBooking() {
 
   return (

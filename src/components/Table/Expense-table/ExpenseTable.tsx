@@ -1,4 +1,5 @@
-// ExpenseTable.tsx
+'use client'
+
 import { getColumns } from "./columns";
 import { DataTable } from "@/components/Table/Data-Table";
 import { ExpenseClaimForm } from "@/components/Sheet/ExpenseClaimForm";
@@ -11,17 +12,18 @@ interface ExpenseTableProps {
   userRole: string;
 }
 
+// DONE : Expense Table
 export default function ExpenseTable({ userRole }: ExpenseTableProps) {
   const { data: expensesData, isLoading, error } = useExpenses();
-  const updateExpenseMutation = useUpdateExpense();
-  const deleteExpenseMutation = useDeleteExpense();
+  const { mutateAsync: updateExpenseMutation } = useUpdateExpense();
+  const { mutateAsync: deleteExpenseMutation } = useDeleteExpense();
   const setSelectedExpense = useExpenseStore((state) => state.setSelectedExpense);
 
   if (isLoading) return <p>Loading expenses...</p>;
   if (error) return <p>Error loading expenses: {error instanceof Error ? error.message : "Unknown error"}</p>;
 
   const handleDelete = (expense: Expense) => {
-    toast.promise(deleteExpenseMutation.mutateAsync({ id: expense.id }), {
+    toast.promise(deleteExpenseMutation({ id: expense.id }), {
       loading: "Deleting expense...",
       success: "Expense deleted successfully!",
       error: (err) => `Error deleting expense: ${err.message || "Unknown error"}`,
@@ -30,7 +32,7 @@ export default function ExpenseTable({ userRole }: ExpenseTableProps) {
 
   const handleAccepted = (expense: Expense) => {
     toast.promise(
-      updateExpenseMutation.mutateAsync({ id: expense.id, data: { status: "Accepted" } }),
+      updateExpenseMutation({ id: expense.id, data: { status: "Accepted" } }),
       {
         loading: "Updating expense...",
         success: "Expense approved successfully!",
@@ -41,7 +43,7 @@ export default function ExpenseTable({ userRole }: ExpenseTableProps) {
 
   const handleDeclined = (expense: Expense) => {
     toast.promise(
-      updateExpenseMutation.mutateAsync({ id: expense.id, data: { status: "Declined" } }),
+      updateExpenseMutation({ id: expense.id, data: { status: "Declined" } }),
       {
         loading: "Updating expense...",
         success: "Expense declined successfully!",
@@ -52,7 +54,7 @@ export default function ExpenseTable({ userRole }: ExpenseTableProps) {
 
   const handleReset = (expense: Expense) => {
     toast.promise(
-      updateExpenseMutation.mutateAsync({ id: expense.id, data: { status: "Pending" } }),
+      updateExpenseMutation({ id: expense.id, data: { status: "Pending" } }),
       {
         loading: "Resetting expense...",
         success: "Expense reset to pending successfully!",
@@ -78,7 +80,7 @@ export default function ExpenseTable({ userRole }: ExpenseTableProps) {
         searchPlaceholder="Search expenses title..."
         dateColumn="transactionDate"
         statusColumn="status"
-        defaultVisibleColumns={["Title","Total" ,"transactionDate", "status", 'menu-actions']}
+        defaultVisibleColumns={["Title", "Total", "transactionDate", "status", 'menu-actions']}
         statusOptions={[
           { label: "Pending", value: "Pending" },
           { label: "Accepted", value: "Accepted" },

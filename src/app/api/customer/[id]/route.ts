@@ -1,7 +1,6 @@
 import {prisma} from "@/lib/prisma";
 import { NextResponse, NextRequest } from "next/server";
 
-//TODO : endpoont customer
 export async function GET( req: NextRequest, { params }: { params: { id: string } }) {
   const { id } = await params
   try {

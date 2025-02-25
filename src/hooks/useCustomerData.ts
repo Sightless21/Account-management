@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import {Customer} from "@/schema/formCustomer"
 
-//TODO : Fetching Customer React-Query
+//DONE : Fetching Customer React-Query
 export const fetchCustomer = async () => {
   const response = await axios.get<Customer[]>("/api/customer");
   return response.data;

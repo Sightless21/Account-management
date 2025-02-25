@@ -75,7 +75,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   const { id } = await params
   try {
     const expense = await prisma.expenseClaim.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     });
     if (!expense) return NextResponse.json({ error: "Expense not found" }, { status: 404 });
 

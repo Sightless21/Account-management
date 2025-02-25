@@ -1,24 +1,15 @@
 "use client";
 import React from "react";
 import { Button, ButtonProps } from "@/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { LucideIcon } from "lucide-react";
 
 interface AlertDialogProps {
-  title?: string;
-  description?: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
+  title?: string;
+  description?: string;
   confirmText?: string;
   cancelText?: string;
   confirmIcon?: LucideIcon;
@@ -30,11 +21,11 @@ interface AlertDialogProps {
 }
 
 export default function CustomAlertDialog({
-  title = "Alert",
-  description,
   open,
   onOpenChange,
   onConfirm,
+  title = "Alert",
+  description = "Are you sure?",
   confirmText = "Confirm",
   cancelText = "Cancel",
   confirmIcon: ConfirmIcon,

@@ -3,12 +3,14 @@
 import { ColumnDef, Row } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { DayoffType, UserRole, LeaveStatus } from "@/types/day-off"
-import { TrashIcon, CheckCircle, XCircle, RotateCcw, MoveRight } from "lucide-react"
+import { TrashIcon, CheckCircle, XCircle, RotateCcw, MoveRight , X} from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { DayoffModal } from "@/components/Modal/modal-DayOff"
 import { format } from "date-fns"
 import { DateRange } from "react-day-picker"
 import { DataTableColumnHeader } from "../ColumnHeader"
+import CustomAlertDialog from "@/components/ui/customAlertDialog"
+import { useState } from "react"
 
 const statusColor: Record<LeaveStatus, string> = {
   Pending: "bg-yellow-500 text-white",
@@ -22,26 +24,42 @@ type ActionButtonsProps = {
   onDelete?: (data: DayoffType) => void
 }
 
-const ActionButtons = ({ row, onEdit, onDelete }: ActionButtonsProps) => (
-  <div className="flex gap-2">
-    {onEdit && (
-      <DayoffModal
-        mode="edit"
-        defaultValue={row.original}
-      />
-    )}
-    {onDelete && (
-      <Button
-        variant={"outline"}
-        size="icon"
-        onClick={() => onDelete(row.original)}
-        className="h-8 w-8 text-red-500"
-      >
-        <TrashIcon className="h-4 w-4" />
-      </Button>
-    )}
-  </div>
-)
+const ActionButtons = ({ row, onEdit, onDelete }: ActionButtonsProps) => {
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <div className="flex gap-2">
+      {onEdit && (
+        <DayoffModal
+          mode="edit"
+          defaultValue={row.original}
+        />
+      )}
+      {onDelete && (<>
+        <Button
+          variant={"outline"}
+          size="icon"
+          onClick={(e) => { e.preventDefault(); setIsOpen(true) }}
+          className="h-8 w-8 text-red-500"
+        >
+          <TrashIcon className="h-4 w-4" />
+        </Button>
+        <CustomAlertDialog
+          open={isOpen}
+          onOpenChange={setIsOpen}
+          onConfirm={() => onDelete(row.original)}
+          title="Delete Dayoff"
+          description="Are you sure you want to delete this dayoff?"
+          confirmText="Delete"
+          cancelText="Cancel"
+          confirmIcon={TrashIcon}
+          cancelIcon={X}
+        />
+      </>
+      )}
+    </div>
+  )
+}
 
 type ApprovalButtonsProps = {
   row: Row<DayoffType>
@@ -97,7 +115,7 @@ export const getColumns = (
 ): ColumnDef<DayoffType>[] => {
   const baseColumns: ColumnDef<DayoffType>[] = [
     {
-      id:"employeeName",
+      id: "employeeName",
       accessorKey: "employeeName",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Employee Name" />
@@ -164,7 +182,7 @@ export const getColumns = (
   ]
 
   const statusColumn: ColumnDef<DayoffType> = {
-    id:"status",
+    id: "status",
     accessorKey: "status",
     header: "Status",
     filterFn: (row, columnId, filterValue) => {

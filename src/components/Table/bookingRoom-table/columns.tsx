@@ -6,7 +6,7 @@ import type { RoombookingType } from "@/types/room-bookings"
 import { Button } from "@/components/ui/button"
 import { BookingDialog } from "@/components/Modal/modal-Booking"
 import { useDeleteRoomBooking } from "@/hooks/useRoomBookingData"
-import { MoveRight, TrashIcon, ArrowUpDown, X } from "lucide-react"
+import { MoveRight, TrashIcon, ArrowUpDown, X , Trash2 } from "lucide-react"
 import { DateRange } from "react-day-picker"
 import CustomAlertDialog from "@/components/ui/customAlertDialog"
 import { toast } from "sonner"
@@ -50,7 +50,7 @@ const ActionButtons = ({ row, onEdit, onDelete }: ActionButtonsProps) => {
             title="Delete Room Booking"
             description="Are you sure you want to delete this room booking?"
             confirmText="Delete"
-            confirmIcon={TrashIcon}
+            confirmIcon={Trash2}
             confirmVariant="destructive"
             cancelIcon={X}
           />

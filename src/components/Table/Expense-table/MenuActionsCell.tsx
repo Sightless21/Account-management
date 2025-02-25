@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Row } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Copy, Info, MoreHorizontal, Pencil, TrashIcon } from "lucide-react";
+import { Copy, Info, MoreHorizontal, Pencil, TrashIcon, X, Trash2 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ExpenseClaimForm } from "@/components/Sheet/ExpenseClaimForm";
@@ -81,6 +81,9 @@ export const MenuActionsCell = ({ row, onEdit, onDelete, onSetSelectedExpense }:
             title="Delete Expense"
             description="Are you sure you want to delete this expense?"
             confirmText="Delete"
+            cancelText="Cancel"
+            confirmIcon={Trash2}
+            cancelIcon={X}
           />
         </DropdownMenuContent>
       </DropdownMenu>

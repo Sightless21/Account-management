@@ -6,7 +6,7 @@ import { CarReservationType } from "@/types/car-reservation";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { MoreHorizontal, Info, Copy, Pencil, TrashIcon } from "lucide-react";
+import { MoreHorizontal, Info, Copy, Pencil, TrashIcon , X , Trash2} from "lucide-react";
 import { useCarReservationUI } from "@/store/useCarreservationUIStore";
 import { useDeleteCarReservation } from "@/hooks/useCarReservationData";
 import CustomAlertDialog from "@/components/ui/customAlertDialog";
@@ -61,6 +61,9 @@ export function ActionsCell({ row }: { row: Row<CarReservationType> }) {
             title="Delete Reservation"
             description="Are you sure you want to delete this reservation?"
             confirmText="Delete"
+            confirmIcon={Trash2}
+            cancelText="Cancel"
+            cancelIcon={X}
           />
         </DropdownMenuContent>
       </DropdownMenu>

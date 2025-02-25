@@ -6,7 +6,7 @@ import { Customer } from "@/schema/formCustomer";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Copy, Info, MoreHorizontal, Pencil, TrashIcon , X} from "lucide-react";
+import { Copy, Info, MoreHorizontal, Pencil, TrashIcon , X , Trash2} from "lucide-react";
 import CustomerDialogInfo from "@/components/Modal/modal-CustomerInfo";
 import { CustomerDialog } from "@/components/Modal/modal-Customer";
 import CustomAlertDialog from "@/components/ui/customAlertDialog";
@@ -96,7 +96,7 @@ export function CustomerActions({ row, deleteCustomer, editCustomer, viewDetails
             onConfirm={() => deleteCustomer?.(id)}
             confirmText="Delete"
             cancelText="Cancel"
-            confirmIcon={TrashIcon}
+            confirmIcon={Trash2}
             cancelIcon={X}
           />
         </DropdownMenuContent>

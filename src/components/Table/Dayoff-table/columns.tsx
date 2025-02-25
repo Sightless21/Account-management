@@ -3,7 +3,7 @@
 import { ColumnDef, Row } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { DayoffType, UserRole, LeaveStatus } from "@/types/day-off"
-import { TrashIcon, CheckCircle, XCircle, RotateCcw, MoveRight , X} from "lucide-react"
+import { TrashIcon, CheckCircle, XCircle, RotateCcw, MoveRight, X, Trash2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { DayoffModal } from "@/components/Modal/modal-DayOff"
 import { format } from "date-fns"
@@ -52,7 +52,7 @@ const ActionButtons = ({ row, onEdit, onDelete }: ActionButtonsProps) => {
           description="Are you sure you want to delete this dayoff?"
           confirmText="Delete"
           cancelText="Cancel"
-          confirmIcon={TrashIcon}
+          confirmIcon={Trash2}
           cancelIcon={X}
         />
       </>

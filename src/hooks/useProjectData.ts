@@ -72,11 +72,10 @@ export const useTask = (projectID: string | null) => {
 export const useCreateTask = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({id ,newTask}: {id: string; newTask : Task}) => {
+    mutationFn: async ({ id, newTask }: { id: string; newTask: Task }) => {
       const response = await axios.post(`/api/project/${id}`, newTask);
       return response.data;
     },
-
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
     },
@@ -86,23 +85,34 @@ export const useCreateTask = () => {
 export const useUpdateTask = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, taskName, status, priority, description }: 
-      { id: string, taskName: string, status: string, priority: string, description: string }) => {
-      
-      const response = await axios.patch(`/api/project/${id}`, { 
-        taskName, 
-        status, 
-        priority, 
-        description 
+    mutationFn: async ({ id, taskName, status, priority, description }: Task) => {
+      const response = await axios.patch(`/api/project/${id}`, {
+        taskName,
+        status,
+        priority,
+        description
       });
-
       return response.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] }); // ✅ เคลียร์ cache tasks ให้ตรงกับ API
+    onMutate: async (updateTask) => {
+      await queryClient.cancelQueries({ queryKey: ['tasks'] });
+      const previousTasks = queryClient.getQueryData<Task[]>(["tasks"]);
+      queryClient.setQueryData(["tasks"], (oldTasks: Task[] = []) => {
+        return oldTasks.map((task) =>
+          task.id === updateTask.id ? updateTask : task
+        );
+      })
+      return { previousTasks };
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] }); 
+    },
+    onError: (error, _variables, context) => {
+      queryClient.setQueryData(["tasks"], context?.previousTasks);
     },
   });
 };
+
 
 export const useDeleteTask = () => {
   const queryClient = useQueryClient();
@@ -110,8 +120,13 @@ export const useDeleteTask = () => {
     mutationFn: async (id: string) => {
       await axios.delete(`/api/tasks/${id}`); // ✅ ใช้ URL ที่ถูกต้อง
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] }); // ✅ รีเฟรชข้อมูล
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ["tasks"] });
+      const previousTasks = queryClient.getQueryData<Task[]>(["tasks"]);
+      queryClient.setQueryData(["tasks"], (oldTasks: Task[] = []) => {
+        return oldTasks.filter((task) => task.id !== id);
+      });
+      return { previousTasks };
     },
   });
 };

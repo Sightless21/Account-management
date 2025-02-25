@@ -32,7 +32,7 @@ const updateApplicant = async (updateApplicant: CardType) => {
 };
 
 const updateApplicantStatus = async ({ id, status }: { id: string; status: string }) => {
-  await axios.patch("/api/applicant", { id, status }, { // เปลี่ยน endpoint เป็น /api/applicant
+  await axios.patch("/api/applicant", { id, status }, {
     headers: { "Content-Type": "application/json" },
   });
 };
@@ -48,6 +48,7 @@ export const useApplicantData = () => {
   const { data: applicants = [], isLoading, error } = useQuery({
     queryKey: ["applicants"],
     queryFn: fetchApplicants,
+    staleTime: 5 * 60 * 1000, // 5 นาที ข้อมูลยัง "สด" ไม่ refetch
   });
 
   // Add Applicant
@@ -64,33 +65,58 @@ export const useApplicantData = () => {
   // Update Applicant
   const updateMutation = useMutation({
     mutationFn: updateApplicant,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["applicants"] }); // รีเฟรชข้อมูล
+    onMutate: async (updateApplicant) => {
+      queryClient.cancelQueries({ queryKey: ["applicants"] });
+      const previousApplicants = queryClient.getQueryData<CardType[]>(["applicants"]);
+      queryClient.setQueryData(["applicants"], (oldApplicants: CardType[] = []) => {
+        return oldApplicants.map((applicant) =>
+          applicant.id === updateApplicant.id ? updateApplicant : applicant
+        );
+      })
+      return { previousApplicants };
     },
-    onError: (error) => {
-      console.error("Error updating applicant:", error);
+    onError: (error, _variables, context) => {
+      queryClient.setQueryData(["applicants"], context?.previousApplicants);
     },
+
   });
 
   // Update Applicant Status
   const updateStatusMutation = useMutation({
     mutationFn: updateApplicantStatus,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["applicants"] }); // รีเฟรชข้อมูล
+    onMutate: async ({ id, status }) => {
+      await queryClient.cancelQueries({ queryKey: ["applicants"] });
+      const previousApplicants = queryClient.getQueryData<CardType[]>(["applicants"]);
+      queryClient.setQueryData(["applicants"], (oldApplicants: CardType[] = []) => {
+        return oldApplicants.map((applicant) =>
+          applicant.id === id ? { ...applicant, status } : applicant
+        );
+      });
+
+      return { previousApplicants };
     },
-    onError: (error) => {
-      console.error("Error updating applicant status:", error);
+    onError: (_error, _variables, context) => {
+      if (context?.previousApplicants) {
+        queryClient.setQueryData(["applicants"], context.previousApplicants); // rollback
+      }
     },
   });
 
   // Delete Applicant
   const deleteMutation = useMutation({
     mutationFn: deleteApplicant,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["applicants"] }); // รีเฟรชข้อมูล
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ["applicants"] });
+      const previousApplicants = queryClient.getQueryData<CardType[]>(["applicants"]);
+      queryClient.setQueryData(["applicants"], (oldApplicants: CardType[] = []) => {
+        return oldApplicants.filter((applicant) => applicant.id !== id);
+      });
+      return { previousApplicants };
     },
-    onError: (error) => {
-      console.error("Error deleting applicant:", error);
+    onError: (error, _variables, context) => {
+      if (context?.previousApplicants) {
+        queryClient.setQueryData(["applicants"], context.previousApplicants);
+      }
     },
   });
 

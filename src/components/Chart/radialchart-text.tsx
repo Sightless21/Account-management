@@ -20,11 +20,12 @@ import {
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
-import { Pencil, Trash } from "lucide-react";
+import { Pencil, X, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useDeleteProject, useUpdateProject } from "@/hooks/useProjectData";
 import { useQueryClient } from "@tanstack/react-query"; // นำเข้า useQueryClient
+import CustomAlertDialog from "@/components/ui/customAlertDialog";
 
 interface RadialChartProps {
   data: { name: string; value: number; fill: string }[];
@@ -36,33 +37,26 @@ interface RadialChartProps {
   footerText?: string;
 }
 
-export function RadialChart({
-  data,
-  config,
-  title,
-  value,
-  projectID,
-  description,
-  footerText,
-}: RadialChartProps) {
+export function RadialChart({ data, config, title, value, projectID, description, footerText }: RadialChartProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [newTitle, setNewTitle] = useState(title);
-  const { mutate: deleteProject,isPending } = useDeleteProject();
-  const { mutate: updateProject, isPending: isUpdating } = useUpdateProject();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const { mutateAsync: deleteProject, isPending } = useDeleteProject();
+  const { mutateAsync: updateProject, isPending: isUpdating } = useUpdateProject();
 
   const queryClient = useQueryClient();  // เรียกใช้ queryClient เพื่อ invalidate queries
-  
+
   const handleSave = () => {
     setIsEditing(false);
     if (newTitle.trim() !== "" && newTitle !== title) {
       toast.promise(
         new Promise((resolve, reject) => {
-          updateProject({ id: projectID, NewNameProject: newTitle }, { 
+          updateProject({ id: projectID, NewNameProject: newTitle }, {
             onSuccess: () => {
               resolve("Successfully updated project name");
               queryClient.invalidateQueries({ queryKey: ['projects'] }); // รีเฟรชข้อมูลหลังอัปเดต
-            }, 
-            onError: reject 
+            },
+            onError: reject
           });
         }),
         {
@@ -79,7 +73,7 @@ export function RadialChart({
   return (
     <Card className="flex flex-col w-[250px] transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-2xl">
       <CardHeader className="static items-center pb-0">
-      {isEditing ? (
+        {isEditing ? (
           <Input
             type="text"
             value={newTitle}
@@ -168,25 +162,22 @@ export function RadialChart({
             variant="ghost"
             className="hover:bg-red-300"
             disabled={isPending}
-            onClick={() => {
-              toast.promise(
-                new Promise((resolve, reject) => {
-                  deleteProject(projectID, {
-                    onSuccess: resolve,
-                    onError: reject,
-                  });
-                }),
-                {
-                  loading: "Deleting project...",
-                  success: "Successfully deleted project",
-                  error: "Error deleting project",
-                }
-              );
-            }}
+            onClick={() => setIsDeleting(true)}
           >
-            <Trash />
+            <Trash2 />
           </Button>
         </div>
+        <CustomAlertDialog
+          open={isDeleting}
+          onOpenChange={setIsDeleting}
+          onConfirm={() => deleteProject(projectID)}
+          title="Delete Project"
+          description={`Are you sure you want to delete ${title} Project?`}
+          confirmText="Delete"
+          cancelText="Cancel"
+          confirmIcon={Trash2}
+          cancelIcon={X}
+        />
       </CardFooter>
     </Card>
   );

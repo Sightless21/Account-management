@@ -8,13 +8,6 @@ export interface Task {
   projectId: string;
 }
 
-// id: string;
-// status: ColumnType;
-// taskName: string;
-// description: string;
-// priority: string;
-// projectId: string;
-
 export interface Project {
   id: string;
   projectName: string;

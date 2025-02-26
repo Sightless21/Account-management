@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ThemeProvider } from "@/context/ThemeProvider";
 import "./globals.css";
 // I get server session for use session in client component
 // if u want to use in server component use "import { getCachedSession } from "@/lib/sessionCache"; read more in lib/sessionCache"
@@ -34,8 +35,10 @@ export default async function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <SessionProvider session={session}>
           <ReactQueryProvider>
-            <Toaster richColors />
-            {children}
+            <ThemeProvider attribute="class" defaultTheme="light" enableSystem >
+              <Toaster richColors />
+              {children}
+            </ThemeProvider>
           </ReactQueryProvider>
         </SessionProvider>
       </body>

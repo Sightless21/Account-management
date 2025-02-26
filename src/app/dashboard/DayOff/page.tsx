@@ -18,9 +18,9 @@ export default function Page() {
           <div className="flex w-full justify-between">
             <Menutabs
               userRole="ADMIN"
-              tabsConfig={DayOffTabsConfig} // Pass the config with iconKey
+              tabsConfig={DayOffTabsConfig}
               onTabChange={setActiveTab}
-              defaultTab="Leave History" // Optional: matches initial activeTab
+              defaultTab="Leave History"
             />
           </div>
         </CardHeader>

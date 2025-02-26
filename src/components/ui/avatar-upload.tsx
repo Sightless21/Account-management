@@ -1,12 +1,12 @@
 "use client"
 
 import { CameraIcon } from "lucide-react"
-import Image from "next/image"
 import { useCallback, useState } from "react"
 import { useDropzone } from "react-dropzone"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { CropModal } from "@/components/ui/crop-modal"
+import { Trash2 } from "lucide-react"
 
 interface AvatarUploadProps {
   value?: string
@@ -66,15 +66,16 @@ export function AvatarUpload({ value, onChange, defaultValue }: AvatarUploadProp
           </Button>
           {preview && (
             <Button
+              className="text-destructive"
               type="button"
-              variant="ghost"
+              variant={"outline"}
               size="sm"
               onClick={() => {
                 setPreview(null)
                 onChange?.(null)
               }}
             >
-              Remove
+              <Trash2 />
             </Button>
           )}
         </div>

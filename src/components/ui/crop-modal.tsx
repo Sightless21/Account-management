@@ -1,8 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 "use client"
 
-import { useState } from "react"
-import ReactCrop, { type Crop } from "react-image-crop"
+import { useState, useRef } from "react"
+import ReactCrop, { centerCrop, Crop, makeAspectCrop, PixelCrop } from "react-image-crop"
 import "react-image-crop/dist/ReactCrop.css"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -14,49 +14,64 @@ interface CropModalProps {
   onCropComplete: (croppedImage: string) => void
 }
 
+const ASPECT_RATIO = 1;
+const MIN_DIMENSION = 150;
+
 export function CropModal({ isOpen, onClose, imageSrc, onCropComplete }: CropModalProps) {
-  const [crop, setCrop] = useState<Crop>({
-    unit: "%",
-    width: 128, // Start with a smaller circular crop (50% of the image width)
-    height: 128, // Match height to width for a circle
-    x: 25, // Center the crop horizontally
-    y: 25, // Center the crop vertically
-    aspect: 1, // Ensure 1:1 aspect ratio for a circle
-  })
-  const [imageRef, setImageRef] = useState<HTMLImageElement | null>(null)
+  const [crop, setCrop] = useState<Crop>()
+  const imgRef = useRef<HTMLImageElement>(null)
+  const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null)
 
-  const onCrop = () => {
-    if (imageRef && crop.width && crop.height) {
-      const canvas = document.createElement("canvas")
-      const scaleX = imageRef.naturalWidth / imageRef.width
-      const scaleY = imageRef.naturalHeight / imageRef.height
-      const pixelRatio = window.devicePixelRatio
+  const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const { width, height } = e.currentTarget;
+    const cropWidthInPercent = (MIN_DIMENSION / width) * 100;
+    const crop = makeAspectCrop(
+      {
+        unit: "%",
+        width: cropWidthInPercent,
+      },
+      ASPECT_RATIO,
+      width,
+      height
+    );
+    const centeredCrop = centerCrop(crop, width, height);
+    setCrop(centeredCrop);
+  }
 
-      canvas.width = 128 // Desired output width for a circular crop
-      canvas.height = 128 // Match height for a circle
+  const getCroppedImage = async () => {
+    if (!completedCrop || !imgRef.current) return;
 
-      const ctx = canvas.getContext("2d")
+    const image = imgRef.current;
+    const canvas = document.createElement('canvas');
+    const scaleX = image.naturalWidth / image.width;
+    const scaleY = image.naturalHeight / image.height;
 
-      if (ctx) {
-        ctx.imageSmoothingQuality = "high"
+    canvas.width = completedCrop.width;
+    canvas.height = completedCrop.height;
+    const ctx = canvas.getContext('2d');
 
-        const cropX = crop.x * scaleX
-        const cropY = crop.y * scaleY
-        const cropWidth = crop.width * scaleX
-        const cropHeight = crop.height * scaleY
+    if (!ctx) return;
 
-        ctx.drawImage(imageRef, cropX, cropY, cropWidth, cropHeight, 0, 0, canvas.width, canvas.height)
+    ctx.drawImage(
+      image,
+      completedCrop.x * scaleX,
+      completedCrop.y * scaleY,
+      completedCrop.width * scaleX,
+      completedCrop.height * scaleY,
+      0,
+      0,
+      completedCrop.width,
+      completedCrop.height
+    );
 
-        const base64Image = canvas.toDataURL("image/jpeg", 0.9)
-        onCropComplete(base64Image)
-        onClose()
-      }
-    }
+    const base64Image = canvas.toDataURL('image/jpeg');
+    onCropComplete(base64Image);
+    onClose();
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-xl">
+      <DialogContent className="max-w-xl object-cover">
         <DialogHeader>
           <DialogTitle>Crop Image</DialogTitle>
           <DialogDescription>
@@ -66,17 +81,20 @@ export function CropModal({ isOpen, onClose, imageSrc, onCropComplete }: CropMod
         <div className="mt-4 flex items-center justify-center">
           <ReactCrop
             crop={crop}
-            onChange={(c) => setCrop(c)}
-            aspect={1} // 1:1 aspect ratio for a circle
-            circularCrop // Enable circular crop mask
-            className="w-[400px] h-[400px]" // Force square container for a perfect circle
+            onChange={(_, percentCrop) => setCrop(percentCrop)}
+            onComplete={(pixelCrop) => setCompletedCrop(pixelCrop)}
+            aspect={ASPECT_RATIO}
+            circularCrop
+            keepSelection
+            minWidth={MIN_DIMENSION}
           >
             <img
-              ref={setImageRef}
+              ref={imgRef}
               src={imageSrc || "/placeholder.svg"}
               alt="Crop preview"
-              className="w-full h-full object-cover" // Use object-contain to show the full image
-              style={{ maxWidth: "100%", maxHeight: "100%" }} // Ensure image doesn’t overflow
+              className="w-full h-full object-cover"
+              onLoad={onImageLoad}
+              style={{ maxHeight: "70vh" }}
             />
           </ReactCrop>
         </div>
@@ -84,7 +102,7 @@ export function CropModal({ isOpen, onClose, imageSrc, onCropComplete }: CropMod
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={onCrop}>
+          <Button onClick={getCroppedImage} disabled={!completedCrop}>
             Apply
           </Button>
         </DialogFooter>

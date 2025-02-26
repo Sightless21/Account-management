@@ -9,6 +9,7 @@ export const expenseSchema = z.object({
   }), // ISO string
   description: z.string().min(10, { message: "Description must be at least 10 characters." }),
   status: z.enum(["Pending", "Accepted", "Declined"]).default("Pending"),
+  attachment: z.instanceof(File).optional(),
   attachmentUrl: z.string().default(""),
   attachmentPublicId: z.string().default(""),
   useForeignCurrency: z.boolean().default(false),

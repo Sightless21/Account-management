@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import CustomerTable from "@/components/Table/Customer-Table/CustomerTable";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import CustomerTable from "@/components/Table/Customer-Table/CustomerTable"
+import React from "react";
 
 export default function Page() {
 

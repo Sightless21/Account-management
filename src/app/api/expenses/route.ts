@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { UploadApiResponse } from "cloudinary";
-import { ExpenseFormValues } from "@/schema/expenseFormSchema";
+import { Expense } from "@/schema/expenseFormSchema";
 import { uploadFileToCloud } from "@/lib/cloudinaryUtils"; // Helper function (see below)
 
 // GET: Fetch all expenses
@@ -19,17 +19,21 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-    const expenseData: ExpenseFormValues = {
+    const expenseData: Expense = {
       id: formData.get("id") as string,
       title: formData.get("title") as string,
       employeeName: formData.get("employeeName") as string,
-      transactionDate: new Date(formData.get("transactionDate") as string),
+      transactionDate: formData.get("transactionDate") as string,
       description: formData.get("description") as string,
-      status: formData.get("status") as ExpenseFormValues["status"],
+      status: formData.get("status") as Expense["status"],
       useForeignCurrency: formData.get("useForeignCurrency") === "true",
       country: formData.get("country") as string,
       expenses: JSON.parse(formData.get("expenses") as string),
       attachment: formData.get("attachment") as File | undefined,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      attachmentUrl: "",
+      attachmentPublicId: "",
     };
 
     let uploadResult: UploadApiResponse | undefined;
@@ -49,6 +53,8 @@ export async function POST(req: NextRequest) {
         useForeignCurrency: expenseData.useForeignCurrency,
         country: expenseData.country,
         expenses: expenseData.expenses,
+        createdAt: expenseData.createdAt,
+        updatedAt: expenseData.updatedAt,
       },
     });
 

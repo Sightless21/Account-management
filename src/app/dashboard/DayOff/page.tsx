@@ -1,9 +1,9 @@
 "use client";
-import React, { useState } from "react";
 import Menutabs from "@/components/menutabs";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { DayOffTabsConfig } from "@/Configs/tabsConfig"
 import DayOffTable from "@/components/Table/Dayoff-table/DayoffTable";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { DayOffTabsConfig } from "@/Configs/tabsConfig";
+import React, { useState } from "react";
 
 
 export default function Page() {

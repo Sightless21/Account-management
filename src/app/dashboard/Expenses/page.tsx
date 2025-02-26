@@ -1,7 +1,7 @@
 "use client";
+import ExpenseTable from "@/components/Table/Expense-table/ExpenseTable";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import ExpenseTable from "@/components/Table/Expense-table/ExpenseTable"
 
 //DONE : สร้างหน้า ClaimExpenses
 export default function Page() {

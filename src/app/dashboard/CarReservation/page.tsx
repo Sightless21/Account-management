@@ -1,7 +1,7 @@
 "use client";
+import CarReservationTable from "@/components/Table/CarReservation-table/CarReservationTable";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import CarReservationTable from "@/components/Table/CarReservation-table/CarReservationTable"
 
 
 export default function CarReservation() {

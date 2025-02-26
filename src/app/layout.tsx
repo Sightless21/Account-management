@@ -1,13 +1,11 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { ThemeProvider } from "@/context/ThemeProvider";
-import "./globals.css";
-// I get server session for use session in client component
-// if u want to use in server component use "import { getCachedSession } from "@/lib/sessionCache"; read more in lib/sessionCache"
-import { getServerSession } from "next-auth";
+import ReactQueryProvider from "@/context/ReactQueryProvider";
 import SessionProvider from "@/context/SessionProvider";
-import ReactQueryProvider from "@/context/ReactQueryProvider"
+import { ThemeProvider } from "@/context/ThemeProvider";
+import type { Metadata } from "next";
+import { getServerSession } from "next-auth";
+import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
+import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

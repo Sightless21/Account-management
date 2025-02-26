@@ -1,5 +1,5 @@
 import type { Control } from "react-hook-form"
-import type { ExpenseFormValues } from "@/schema/expenseFormSchema"
+import type { Expense } from "@/schema/expenseFormSchema"
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -14,7 +14,7 @@ export type ExpenseFields = {
 }
 
 // Create a more specific path type for each expense type
-type ExpenseTypeFields<T extends keyof ExpenseFormValues["expenses"]> = {
+type ExpenseTypeFields<T extends keyof Expense["expenses"]> = {
   fuel: "expenses.fuel.liters" | "expenses.fuel.totalCost"
   accommodation: "expenses.accommodation.nights" | "expenses.accommodation.totalCost"
   transportation: "expenses.transportation.origin" | "expenses.transportation.destination" | "expenses.transportation.totalCost"
@@ -24,8 +24,8 @@ type ExpenseTypeFields<T extends keyof ExpenseFormValues["expenses"]> = {
 }[T]
 
 interface ExpenseTypeInputsProps {
-  control: Control<ExpenseFormValues>
-  type: keyof ExpenseFormValues["expenses"]
+  control: Control<Expense>
+  type: keyof Expense["expenses"]
   fields: {
     name: ExpenseFields[keyof ExpenseFields]
     label: string

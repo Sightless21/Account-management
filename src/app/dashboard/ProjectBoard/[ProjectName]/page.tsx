@@ -1,16 +1,15 @@
 "use client";
 import { KanBanBoard } from "@/components/DnDKanBan/KanBanBoard";
-import { Button } from "@/components/ui/button";
-import { useRouter, useParams } from "next/navigation";
-import React from "react";
-import { ChevronLeft } from "lucide-react";
 import { TaskModal } from "@/components/Modal/modal-Task";
-import { Card, CardTitle , CardContent, CardHeader, CardFooter } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-// Import Zustand store
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useProjects } from "@/hooks/useProjectData";
 import { useTasksUIStore } from "@/store/useTasksUIStore";
-import { useProjects } from "@/hooks/useProjectData"
+import { ChevronLeft } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import React from "react";
 
 //DONE : Project Board page isLoading is Error
 export default function Page() {

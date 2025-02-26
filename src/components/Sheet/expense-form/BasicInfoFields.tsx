@@ -1,5 +1,5 @@
 import type { Control } from "react-hook-form"
-import type { ExpenseFormValues } from "@/schema/expenseFormSchema"
+import type { Expense } from "@/schema/expenseFormSchema"
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -11,7 +11,7 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 interface BasicInfoFieldsProps {
-  control: Control<ExpenseFormValues>
+  control: Control<Expense>
 }
 
 export function BasicInfoFields({ control }: BasicInfoFieldsProps) {
@@ -52,7 +52,7 @@ export function BasicInfoFields({ control }: BasicInfoFieldsProps) {
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
-                  selected={field.value}
+                  selected={field.value ? new Date(field.value) : undefined}
                   onSelect={field.onChange}
                   disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
                   initialFocus

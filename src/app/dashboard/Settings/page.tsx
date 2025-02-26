@@ -1,20 +1,22 @@
 "use client"
 
 import * as z from "zod"
-import { toast } from "sonner"
-import { useForm } from "react-hook-form"
-import { Form } from "@/components/ui/form"
-import { Button } from "@/components/ui/button"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Separator } from "@/components/ui/separator"
-import { H1, Muted } from "@/components/ui/typography"
-import { useState, useEffect, useCallback } from "react"
+
 import { Card, CardContent } from "@/components/ui/card"
-import SettingsTheme from "@/components/Settings/SettingsTheme"
+import { H1, Muted } from "@/components/ui/typography"
+import { useCallback, useEffect, useState } from "react"
+
 import SettingsAvatar from "@/components/Settings/SettingsAvatar"
-import SettingsProfile from "@/components/Settings/SettingsProfile"
-import SettingsPassword from "@/components/Settings/SettingsPassword"
 import SettingsInfo from "@/components/Settings/SettingsInfo"
+import SettingsPassword from "@/components/Settings/SettingsPassword"
+import SettingsProfile from "@/components/Settings/SettingsProfile"
+import SettingsTheme from "@/components/Settings/SettingsTheme"
+import { Button } from "@/components/ui/button"
+import { Form } from "@/components/ui/form"
+import { Separator } from "@/components/ui/separator"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 
 const settingsSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),

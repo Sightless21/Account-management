@@ -1,7 +1,7 @@
 "use client"
-import React from "react"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import BookingRoomTable from "@/components/Table/BookingRoom-table/BookingRoomTable"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import React from "react"
 
 export default function RoomBooking() {
 

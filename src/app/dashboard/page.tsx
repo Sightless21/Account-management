@@ -1,6 +1,6 @@
-import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Button } from "@/components/ui/button";
+import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
 //DONE : Fetch User Infomation

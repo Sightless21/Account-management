@@ -1,11 +1,11 @@
 import { type Control, useWatch } from "react-hook-form"
-import type { ExpenseFormValues } from "@/schema/expenseFormSchema"
+import type { Expense } from "@/schema/expenseFormSchema"
 import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface ForeignCurrencyFieldsProps {
-  control: Control<ExpenseFormValues>
+  control: Control<Expense>
 }
 
 export function ForeignCurrencyFields({ control }: ForeignCurrencyFieldsProps) {

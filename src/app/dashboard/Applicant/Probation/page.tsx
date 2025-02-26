@@ -1,7 +1,8 @@
 'use client'
-import React from "react";
 import ApplicantTable from "@/components/Table/Applicant-table/ApplicantTable";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import React from "react";
+
 export default function Page() {
   return (
     <div className="mr-3 flex flex-col gap-4 p-4 h-full">

@@ -1,13 +1,13 @@
 import type { Control } from "react-hook-form"
-import type { ExpenseFormValues } from "@/schema/expenseFormSchema"
+import type { Expense } from "@/schema/expenseFormSchema"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { ExpenseFields, ExpenseTypeInputs } from "./ExpenseTypeInputs"
 
 interface ExpenseTypeAccordionProps {
-  control: Control<ExpenseFormValues>
+  control: Control<Expense>
 }
 interface ExpenseTypeDefinition {
-  type: keyof ExpenseFormValues["expenses"]
+  type: keyof Expense["expenses"]
   label: string;
   fields: {
     name: ExpenseFields[keyof ExpenseFields]
@@ -74,7 +74,7 @@ export function ExpenseTypeAccordion({ control }: ExpenseTypeAccordionProps) {
           <AccordionContent>
             <ExpenseTypeInputs
               control={control}
-              type={expenseType.type as keyof ExpenseFormValues["expenses"]}
+              type={expenseType.type as keyof Expense["expenses"]}
               fields={expenseType.fields}
             />
           </AccordionContent>

@@ -1,7 +1,7 @@
 import SignInForm from "@/components/signinbox";
-import { H1 } from "@/components/ui/typography";
-import { Card, CardHeader, CardContent } from "@/components/ui/card"
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { H1 } from "@/components/ui/typography";
 
 export default function SignInPage() {
   return (

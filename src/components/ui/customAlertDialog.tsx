@@ -39,7 +39,7 @@ export default function CustomAlertDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className="max-w-xl">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-xl font-semibold text-gray-900">
+          <AlertDialogTitle className="text-xl font-semibold text-gray-900 dark:text-gray-100">
             {title}
           </AlertDialogTitle>
           <AlertDialogDescription className="text-base text-gray-600 mt-2">
@@ -50,7 +50,7 @@ export default function CustomAlertDialog({
           <AlertDialogCancel asChild>
             <Button
               variant={cancelVariant}
-              className={`flex items-center gap-2 ${cancelClassName}`}
+              className={`flex items-center gap-2 dark:text-white dark:hover:bg-gray-900 ${cancelClassName}`}
             >
               {CancelIcon && <CancelIcon className="h-4 w-4" />}
               <span>{cancelText}</span>
@@ -59,7 +59,7 @@ export default function CustomAlertDialog({
           <AlertDialogAction onClick={onConfirm} asChild>
             <Button
               variant={confirmVariant}
-              className={`flex items-center gap-2 ${confirmClassName}`}
+              className={`flex items-center gap-2 dark:text-white ${confirmClassName}`}
             >
               {ConfirmIcon && <ConfirmIcon className="h-4 w-4" />}
               <span>{confirmText}</span>

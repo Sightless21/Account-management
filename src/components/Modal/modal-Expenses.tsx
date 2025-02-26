@@ -104,10 +104,10 @@ export function ExpenseDialog({ expense, onClose, trigger, open }: ExpenseDialog
             {/* Expenses */}
             <div>
               <h4 className="mb-4 font-semibold">Expenses Summary</h4>
-              <div className="border border-gray-200 rounded-lg overflow-hidden">
+              <div className="border border-gray-200 rounded-lg overflow-hidde">
                 <Table>
                   <TableHeader>
-                    <TableRow className="bg-slate-100">
+                    <TableRow>
                       <TableHead className="w-[100px]">Type</TableHead>
                       <TableHead>Details</TableHead>
                       <TableHead className="text-right">Amount</TableHead>

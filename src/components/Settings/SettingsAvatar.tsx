@@ -8,8 +8,8 @@ export default function SettingsAvatar() {
       <Card className="border-0 shadow-none">
         <CardContent className="grid grid-cols-2">
           <div className="flex flex-col gap-3 space-y-1.5 p-6">
-            <H3 className="text-xl">Profile</H3>
-            <Muted> Manage your personal information. This information will be displayed publicly so be careful what you share.</Muted>
+            <H3 className="text-xl">Avatar Change</H3>
+            <Muted>You can change avatar to showing in website</Muted>
           </div>
           <div className="flex flex-col gap-3 space-y-1.5 p-6">
             <AvatarUpload />

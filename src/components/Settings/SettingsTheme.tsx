@@ -7,9 +7,9 @@ export default function SettingsTheme() {
     <div className="space-y-4">
       <Card className="border-0 shadow-none">
         <CardContent className="grid grid-cols-2 gap-3 space-y-1.5 p-6 items-center">
-          <div>
+          <div className="grid gap-3 space-y-1.5 p-6 items-center">
             <H3 className="text-xl">Theme</H3>
-            <Muted> Change your theme. After saving, you&apos;ll be logged out.</Muted>
+            <Muted> Change your theme.</Muted>
           </div>
           <ThemeSwitch />
         </CardContent>

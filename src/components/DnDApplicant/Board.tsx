@@ -1,11 +1,12 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+
 import React from "react";
 import { Column } from "./Columns";
 import BurnBarrel from "./BurnBarrel";
+import { FormApplicant } from "@/types/applicant";
 
 type BoardProp = {
-  data: any;
+  data: FormApplicant[];
 };
 
 export const Board = ({ data }: BoardProp) => {
@@ -19,7 +20,7 @@ export const Board = ({ data }: BoardProp) => {
         cards={data}
       />
       <Column
-        title="In progress interview"
+        title="Interview"
         column="PENDING_INTERVIEW"
         headingBgColor="bg-yellow-200/25 border border-yellow-600"
         headingColor="text-yellow-600 uppercase"

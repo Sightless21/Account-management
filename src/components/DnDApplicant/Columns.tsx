@@ -2,11 +2,11 @@
 "use client";
 import React, { useState } from "react";
 import Card from "./Card";
-import {  ColumnType } from "./types";
-import {FormApplicant} from "@/types/applicant"
+import { ColumnType } from "./types";
+import { FormApplicant } from "@/types/applicant"
 import { useUpdateApplicantStatus } from "@/hooks/useApplicantData";
 
-interface ColumnProps  {
+interface ColumnProps {
   title: string;
   headingBgColor: string;
   headingColor: string;
@@ -22,7 +22,7 @@ export const Column = ({
   column,
 }: ColumnProps) => {
   const [active, setActive] = useState(false);
-  const { mutateAsync: updateApplicantStatus} = useUpdateApplicantStatus()
+  const { mutateAsync: updateApplicantStatus, isPending: isLoading } = useUpdateApplicantStatus()
 
   const handleDragStart = (
     e: React.DragEvent<Element>,
@@ -74,7 +74,7 @@ export const Column = ({
       <div className={`flex items-center justify-between rounded-t-md p-2`}>
         <h3 className={`font-medium decoration-4 ${headingColor}`}>{title}</h3>
         <span className="text-sm text-muted-foreground">
-          Total : {filteredCards.length}
+          Total : {filteredCards.length} {isLoading && "(Updating...)"}
         </span>
       </div>
       <div

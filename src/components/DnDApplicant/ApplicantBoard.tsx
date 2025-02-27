@@ -1,25 +1,24 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+
 import React from "react";
 import { Board } from "./Board";
+import { FormApplicant } from "@/types/applicant";
 
 interface ApplicantBoardProps {
-  data: any;
+  data: FormApplicant[];
   searchQuery?: string | null;
-  selectProsition?: string | null;
+  selectPosition?: string | null;
 }
 
 export const ApplicantBoard = ({
   data,
   searchQuery,
-  selectProsition,
+  selectPosition,
 }: ApplicantBoardProps) => {
-  const filteredApplicants = data.filter((applicant: any) => {
+  const filteredApplicants = data.filter((applicant) => {
     return (
-      applicant.person.name
-        .toLowerCase()
-        .includes(searchQuery ?? "".toLowerCase()) &&
-      (selectProsition === " " || applicant.person.position === selectProsition)
+      applicant.person.name.toLowerCase().includes(searchQuery ?? "".toLowerCase()) &&
+      (selectPosition === " " || applicant.person.position === selectPosition)
     );
   });
   return (

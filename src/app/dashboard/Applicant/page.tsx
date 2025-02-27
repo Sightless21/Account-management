@@ -2,7 +2,7 @@
 
 import { ApplicantBoard } from "@/components/DnDApplicant/ApplicantBoard";
 // import ModalApplicant from "@/components/Modal/modal-Applicant";
-import { ApplicantDialog } from "@/components/Modal/modal-ApplicantV2";
+import { ApplicantDialog } from "@/components/Modal/modal-Applicant";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -60,9 +60,9 @@ export default function Page() {
             </Button>
           </div>
           <ApplicantBoard
-            data={applicants}
+            data={applicants || []}
             searchQuery={searchQuery}
-            selectProsition={selectedPosition}
+            selectPosition={selectedPosition}
           />
         </CardContent>
       </Card>

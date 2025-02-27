@@ -1,424 +1,418 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-// 1. External Libraries
-import { JSX, useEffect, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+
+import { useState, useCallback, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TiCancel, TiTick, TiEdit } from "react-icons/ti";
-import { SquareUserRound, UserRoundPlus, UserPen, Eye } from "lucide-react";
-import { toast } from "sonner";
-import { Label } from "@radix-ui/react-label";
-import { useMutation, useQueryClient } from "@tanstack/react-query"; // เพิ่ม React Query
-
-// 2. Internal Components
+import { useForm } from "react-hook-form";
+import { House, Mailbox, Mail, Phone, User, Briefcase, Globe, MapPin, Flag, Book, Banknote, BadgePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { DatePickerWithPresets } from "@/components/date-picker";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+import { Form } from "@/components/ui/form";
+import { FormInput } from "@/components/ui/formCustomerInput";
+import { formApplicantSchema, APPLICANT_FORM_DEFAULT_VALUES } from "@/schema/formApplicantV2";
+import { FormApplicant } from "@/types/applicant";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "sonner";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card, CardContent } from "@/components/ui/card";
+import { useCreateApplicant, useUpdateApplicant } from "@/hooks/useApplicantData";
 
-// 3. Internal Hooks & Utilities
-import { useApplicantData } from "@/hooks/useApplicantData"; // ใช้ hook React Query ใหม่
-
-// 4. Schemas & Constants
-import { formApplicantSchema, APPLICANT_FORM_FIELDS, APPLICANT_FORM_DEFAULT_VALUES } from "@/schema/formApplicant";
-
-interface ModalApplicantProps {
-  mode: "create" | "edit" | "view";
-  defaultValues?: z.infer<typeof formApplicantSchema>;
+interface ApplicantDialogProps {
+  applicant?: FormApplicant;
+  trigger?: React.ReactNode;
+  open?: boolean;
+  onClose?: () => void;
 }
 
-const DIALOG_CONFIG = {
-  create: {
-    buttonVariant: "default" as const,
-    buttonLabel: "New Applicant",
-    buttonIcon: <UserRoundPlus />,
-    title: "New Applicant",
-    description: "Fill in the form below to create a new applicant.",
-  },
-  edit: {
-    buttonVariant: "link" as const,
-    buttonLabel: "Edit Applicant",
-    buttonIcon: <UserPen />,
-    title: "Edit Applicant",
-    description: "Modify the applicant information below.",
-  },
-  view: {
-    buttonVariant: "link" as const,
-    buttonLabel: "Read More",
-    buttonIcon: <Eye />,
-    title: "View Applicant",
-    description: "Viewing applicant details.",
-  },
-};
+export function ApplicantDialog({ applicant, trigger, open: controlledOpen, onClose }: ApplicantDialogProps) {
+  const [open, setOpen] = useState(false);
+  const mode = applicant ? "edit" : "create";
+  const initialValues = applicant || APPLICANT_FORM_DEFAULT_VALUES;
+  const { mutateAsync: createApplicant } = useCreateApplicant();
+  const { mutateAsync: updateApplicant } = useUpdateApplicant();
 
-export default function ModalApplicant({ mode, defaultValues }: ModalApplicantProps) {
-  const form = useForm<z.infer<typeof formApplicantSchema>>({
+  const form = useForm<FormApplicant>({
+    mode: "onChange",
     resolver: zodResolver(formApplicantSchema),
-    mode: "all",
-    defaultValues: defaultValues || APPLICANT_FORM_DEFAULT_VALUES,
+    defaultValues: initialValues,
   });
-  const [currentMode, setCurrentMode] = useState(mode);
-  const [isReadyToSave, setIsReadyToSave] = useState(false);
-  const config = useMemo(() => DIALOG_CONFIG[mode], [mode]);
-  const queryClient = useQueryClient();
-  const { addApplicant, updateApplicant } = useApplicantData();
-
+  
+  // Reset ฟอร์มเมื่อ applicant เปลี่ยน
   useEffect(() => {
-    if (defaultValues) {
-      form.reset(defaultValues);
-    }
-  }, [defaultValues, form]);
+    console.log("Resetting form due to applicant change:", initialValues);
+    form.reset(initialValues);
+  }, [applicant, form, initialValues]);
 
-  const isEditing = currentMode === "edit";
-  const { control, formState: { isValid, isDirty, errors } } = form;
-  const { formState: { isSubmitting } } = form;
-
-  useEffect(() => {
-    console.log("Form is valid:", isValid);
-  }, [isValid]);
-
-  const addMutation = useMutation({
-    mutationFn: addApplicant,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["applicants"] });
-      toast.success("Applicant created");
-      form.reset();
+  const handleSubmit = useCallback(
+    (data: FormApplicant) => {
+      console.log("Submitted Data:", data);
+      if (mode === "edit" && applicant?.id) {
+        toast.promise(updateApplicant(data), {
+          loading: "Updating applicant...",
+          success: "Applicant updated successfully",
+          error: "Failed to update applicant",
+        });
+      } else {
+        toast.promise(createApplicant(data), {
+          loading: "Creating applicant...",
+          success: "Applicant created successfully",
+          error: "Failed to create applicant",
+        });
+      }
+      setOpen(false);
+      form.reset(initialValues);
+      if (onClose) onClose();
     },
-    onError: (error) => {
-      toast.error("Error creating applicant: " + (error instanceof Error ? error.message : "Unknown error"));
-    },
-  });
+    [mode, applicant, form, onClose, createApplicant, updateApplicant, initialValues]
+  );
 
-  const updateMutation = useMutation({
-    mutationFn: updateApplicant,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["applicants"] });
-      toast.success("Applicant updated");
-      setCurrentMode("view");
-      setIsReadyToSave(false);
+  const handleOpenChange = useCallback(
+    (isOpen: boolean) => {
+      const newOpen = controlledOpen !== undefined ? controlledOpen : isOpen;
+      setOpen(newOpen);
+      if (!newOpen) {
+        form.reset(initialValues);
+        if (onClose) onClose();
+      }
     },
-    onError: (error) => {
-      toast.error("Error updating applicant: " + (error instanceof Error ? error.message : "Unknown error"));
-    },
-  });
+    [form, initialValues, controlledOpen, onClose]
+  );
 
-  async function onSubmit(values: z.infer<typeof formApplicantSchema>) {
-    console.log("🚀 Form Data:", values);
-    if (!isValid) {
-      console.log("Form is invalid!");
-      return;
-    }
+  const handleClose = () => {
+    setOpen(false);
+    form.reset(initialValues);
+    if (onClose) onClose();
+  };
 
-    if (currentMode === "create") {
-      addMutation.mutate(values);
-    } else if (currentMode === "edit" && isReadyToSave) {
-      const updatedValues = { ...values, id: defaultValues?.id };
-      updateMutation.mutate(updatedValues as any);
-    }
-  }
+  const onError = (errors: any) => {
+    const missingFields = Object.keys(errors).map((key) => {
+      if (key === "person" || key === "info") {
+        return Object.keys(errors[key]).map((subKey) =>
+          `${key}.${subKey}: ${errors[key][subKey].message}`
+        );
+      } else if (key === "documents") {
+        return "Documents: At least one document is required";
+      }
+      return `${key}: ${errors[key].message}`;
+    }).flat();
+    toast.error("Please fill in all required fields:", {
+      style: {},
+      description: missingFields.join("\n"),
+    });
+  };
+
+  const iconMap = {
+    name: User,
+    phone: Phone,
+    email: Mail,
+    position: Briefcase,
+    expectSalary: Banknote,
+    houseNumber: House,
+    village: MapPin,
+    road: MapPin,
+    subDistrict: MapPin,
+    district: MapPin,
+    province: MapPin,
+    zipCode: Mailbox,
+    country: Flag,
+    nationality: Flag,
+    religion: Book,
+    race: Globe,
+  };
+
+  const requiredFields = [
+    "person.name",
+    "person.phone",
+    "person.email",
+    "person.position",
+    "birthdate", // แก้จาก "person.birthdate" เป็น "birthdate"
+    "info.address.houseNumber",
+    "info.address.subDistrict",
+    "info.address.district",
+    "info.address.province",
+    "info.address.zipCode",
+    "info.address.country",
+    "info.nationality",
+    "info.religion",
+    "info.race",
+    "expectSalary",
+    "military",
+    "marital",
+    "dwelling",
+    "documents",
+  ];
+
+  const documentOptions = [
+    { label: "National ID Card Copy", value: "national_id", description: "Clear copy of your national ID card (front and back)" },
+    { label: "House Registration Copy", value: "house_registration", description: "Official copy of your house registration document" },
+    { label: "Bank Account Details", value: "bank_details", description: "Copy of bank book or bank statement" },
+    { label: "Educational Certificates", value: "education_cert", description: "Copies of your educational certificates and transcripts" },
+    { label: "Resume/CV", value: "resume", description: "Updated resume or curriculum vitae" },
+  ];
+
+  const militaryOptions = [
+    { label: "Exempted", value: "pass" },
+    { label: "Discharged", value: "discharged" },
+    { label: "Not Exempted", value: "not pass" },
+  ];
+
+  const maritalOptions = [
+    { label: "Single", value: "single" },
+    { label: "Married", value: "married" },
+    { label: "Divorced", value: "divorced" },
+  ];
+
+  const dwellingOptions = [
+    { label: "Family House", value: "familyHouse" },
+    { label: "Own Home", value: "Home" },
+    { label: "Rented House", value: "RentHouse" },
+    { label: "Condo", value: "Condo" },
+  ];
 
   return (
-    <Dialog>
+    <Dialog open={controlledOpen !== undefined ? controlledOpen : open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant={config.buttonVariant}>
-          {config.buttonLabel}
-          {mode === "create" && config.buttonIcon}
-        </Button>
+        {trigger || (
+          <Button className="h-8" variant="default">
+            <BadgePlus /> Add Applicant
+          </Button>
+        )}
       </DialogTrigger>
-      <DialogContent className="min-h-20 w-[70%]">
+      <DialogContent
+        className="w-[1000px] max-h-[90vh] h-fit overflow-y-auto bg-white dark:bg-black border rounded-lg shadow-lg"
+        onEscapeKeyDown={handleClose}
+        onPointerDownOutside={handleClose}
+      >
         <DialogHeader>
-          <DialogTitle>{config.title}</DialogTitle>
-          <DialogDescription>{config.description}</DialogDescription>
+          <DialogTitle>{mode === "edit" ? "Edit Applicant" : "Add New Applicant"}</DialogTitle>
+          <DialogDescription>
+            {mode === "edit"
+              ? "Update applicant information below."
+              : "Enter new applicant information below."}
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-2 gap-4">
-            <Card className="col-span-2">
-              <CardHeader>
-                <CardTitle>Information</CardTitle>
-                <CardDescription>ข้อมูลส่วนตัว</CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-wrap items-center gap-2">
-                {Object.entries(APPLICANT_FORM_FIELDS.info).map(([key, value]) => {
-                  if (key === "address") {
-                    return Object.values(value).map((item) => (
-                      <FormField
-                        key={item.id}
-                        control={control}
-                        name={`info.address.${item.id}` as `info.address.${keyof typeof APPLICANT_FORM_FIELDS.info.address}`}
-                        render={({ field }) => (
-                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 leading-none">
-                            <Label>{item.label}</Label>
-                            <FormMessage />
-                            <FormControl>
-                              <Input
-                                className="h-5 w-40 text-center"
-                                {...field}
-                                value={typeof field.value === "string" ? field.value : ""}
-                                disabled={currentMode === "view" && !isEditing}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    ));
-                  } else {
-                    return (
-                      <FormField
-                        key={key}
-                        control={control}
-                        name={`info.${key}` as `info.${keyof typeof APPLICANT_FORM_FIELDS.info}`}
-                        render={({ field }) => (
-                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 leading-none">
-                            {"label" in value && <Label>{value.label}</Label>}
-                            <FormMessage />
-                            <FormControl>
-                              <Input
-                                className="h-5 w-40 text-center"
-                                {...field}
-                                value={typeof field.value === "string" ? field.value : ""}
-                                disabled={currentMode === "view" && !isEditing}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    );
-                  }
-                })}
-                <div className="flex w-full justify-between gap-4">
-                  <Card className="w-full">
-                    <CardHeader>
-                      <CardDescription>ภาวะทางการทหาร</CardDescription>
-                    </CardHeader>
+          <form onSubmit={form.handleSubmit(handleSubmit, onError)} className="space-y-6">
+            <Tabs defaultValue="personal" className="space-y-4">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="personal">Personal Information</TabsTrigger>
+                <TabsTrigger value="address">Address Details</TabsTrigger>
+                <TabsTrigger value="documents">Documents</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="personal" className="space-y-4">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <FormInput
+                    name="person.name"
+                    label="Applicant Name"
+                    icon={iconMap.name}
+                    placeholder="Enter applicant name"
+                    control={form.control}
+                    required={requiredFields.includes("person.name")}
+                  />
+                  <FormInput
+                    name="person.phone"
+                    label="Phone Number"
+                    icon={iconMap.phone}
+                    placeholder="0123456789"
+                    control={form.control}
+                    component="phone"
+                    required={requiredFields.includes("person.phone")}
+                  />
+                  <FormInput
+                    name="person.email"
+                    label="Email"
+                    icon={iconMap.email}
+                    placeholder="Enter email address"
+                    control={form.control}
+                    type="email"
+                    required={requiredFields.includes("person.email")}
+                  />
+                  <FormInput
+                    name="person.position"
+                    label="Position"
+                    icon={iconMap.position}
+                    placeholder="Enter position"
+                    control={form.control}
+                    required={requiredFields.includes("person.position")}
+                  />
+                  <FormInput
+                    name="person.expectSalary"
+                    label="Expected Salary"
+                    icon={iconMap.expectSalary}
+                    placeholder="Enter expected salary"
+                    control={form.control}
+                    required={requiredFields.includes("person.expectSalary")}
+                  />
+                  <FormInput
+                    name="birthdate"
+                    label="Birth Date"
+                    control={form.control}
+                    required={requiredFields.includes("birthdate")}
+                    component="birthdate"
+                  />
+                </div>
+                <div className="grid gap-4 grid-cols-3">
+                  <Card className="border-0 rounded-r-none shadow-none md:border-r md:border-gray-200">
                     <CardContent>
-                      {APPLICANT_FORM_FIELDS.military.map((item) => (
-                        <FormField
-                          key={item.id}
-                          control={control}
-                          name="itemsMilitary"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-row items-start space-x-3 space-y-0 leading-none">
-                              <FormControl>
-                                <Checkbox
-                                  className="mb-3"
-                                  checked={field.value?.includes(item.id)}
-                                  onCheckedChange={(checked) => {
-                                    const currentValue = Array.isArray(field.value) ? field.value : [];
-                                    return checked
-                                      ? field.onChange([...currentValue, item.id])
-                                      : field.onChange(currentValue.filter((value) => value !== item.id));
-                                  }}
-                                  disabled={currentMode === "view" && !isEditing}
-                                />
-                              </FormControl>
-                              <FormLabel className="font-normal">{item.lable}</FormLabel>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      ))}
+                      <FormInput
+                        name="military"
+                        label="Military Status"
+                        component="radio"
+                        control={form.control}
+                        options={militaryOptions}
+                        required={requiredFields.includes("military")}
+                        className="space-y-2"
+                      />
                     </CardContent>
                   </Card>
-                  <Card className="w-full">
-                    <CardHeader>
-                      <CardDescription>สถานภาพ</CardDescription>
-                    </CardHeader>
+                  <Card className="border-0 rounded-r-none shadow-none md:border-r md:border-gray-200">
                     <CardContent>
-                      {APPLICANT_FORM_FIELDS.marital.map((item) => (
-                        <FormField
-                          key={item.id}
-                          control={control}
-                          name="itemsMarital"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-row items-start space-x-3 space-y-0 leading-none">
-                              <FormControl>
-                                <Checkbox
-                                  className="mb-3"
-                                  checked={field.value?.includes(item.id)}
-                                  onCheckedChange={(checked) => {
-                                    const currentValue = Array.isArray(field.value) ? field.value : [];
-                                    return checked
-                                      ? field.onChange([...currentValue, item.id])
-                                      : field.onChange(currentValue.filter((value) => value !== item.id));
-                                  }}
-                                  disabled={currentMode === "view" && !isEditing}
-                                />
-                              </FormControl>
-                              <FormLabel className="font-normal">{item.label}</FormLabel>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      ))}
+                      <FormInput
+                        name="marital"
+                        label="Marital Status"
+                        component="radio"
+                        control={form.control}
+                        options={maritalOptions}
+                        required={requiredFields.includes("marital")}
+                        className="space-y-2"
+                      />
                     </CardContent>
                   </Card>
-                  <Card className="w-full">
-                    <CardHeader>
-                      <CardDescription>การอยู่อาศัย</CardDescription>
-                    </CardHeader>
+                  <Card className="border-0 shadow-none">
                     <CardContent>
-                      {APPLICANT_FORM_FIELDS.dwelling.map((item) => (
-                        <FormField
-                          key={item.id}
-                          control={control}
-                          name="itemsDwelling"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-row items-start space-x-3 space-y-0 leading-none">
-                              <FormControl>
-                                <Checkbox
-                                  className="mb-3"
-                                  checked={field.value?.includes(item.id)}
-                                  onCheckedChange={(checked) => {
-                                    const currentValue = Array.isArray(field.value) ? field.value : [];
-                                    return checked
-                                      ? field.onChange([...currentValue, item.id])
-                                      : field.onChange(currentValue.filter((value) => value !== item.id));
-                                  }}
-                                  disabled={currentMode === "view" && !isEditing}
-                                />
-                              </FormControl>
-                              <FormLabel className="font-normal">{item.label}</FormLabel>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      ))}
+                      <FormInput
+                        name="dwelling"
+                        label="Dwelling Type"
+                        component="radio"
+                        control={form.control}
+                        options={dwellingOptions}
+                        required={requiredFields.includes("dwelling")}
+                        className="space-y-2"
+                      />
                     </CardContent>
                   </Card>
                 </div>
-              </CardContent>
-            </Card>
+              </TabsContent>
 
-            <div className="col-span-2 grid grid-cols-5 gap-3">
-              <Card className="col-span-2 overflow-y-auto">
-                <CardHeader className="flex">
-                  <CardTitle>Documents</CardTitle>
-                  <CardDescription>เอกสารสำหรับสมัครงาน</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 gap-2">
-                    {APPLICANT_FORM_FIELDS.doc.map((item) => (
-                      <FormField
-                        key={item.id}
-                        control={control}
-                        name="documents"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 leading-none">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value?.includes(item.id)}
-                                onCheckedChange={(checked) => {
-                                  return checked
-                                    ? field.onChange([...(field.value || []), item.id])
-                                    : field.onChange(field.value?.filter((value) => value !== item.id));
-                                }}
-                                disabled={currentMode === "view" && !isEditing}
-                              />
-                            </FormControl>
-                            <FormLabel className="font-normal">{item.label}</FormLabel>
-                          </FormItem>
-                        )}
-                      />
-                    ))}
-                    <FormMessage />
-                  </div>
-                  <div className="mt-10 flex justify-center">
-                    <SquareUserRound size={70} />
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="col-span-3">
-                <CardHeader className="flex">
-                  <CardTitle>Personal</CardTitle>
-                </CardHeader>
-                <CardContent className="grid grid-cols-2 gap-2">
-                  {APPLICANT_FORM_FIELDS.person.map((item) => (
-                    <FormField
-                      key={item.id}
-                      control={control}
-                      name={`person.${item.id}`}
-                      render={({ field }) => (
-                        <FormItem key={item.id}>
-                          <div className="flex justify-between">
-                            <FormLabel>{item.label}</FormLabel>
-                            <FormMessage />
-                          </div>
-                          <FormControl>
-                            <Input
-                              placeholder={item.placeholder}
-                              {...field}
-                              value={typeof field.value === "string" ? field.value : ""}
-                              disabled={currentMode === "view" && !isEditing}
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                  ))}
-                  <FormField
-                    control={control}
-                    name="birthdate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <div className="flex justify-between">
-                          <FormLabel>Birth Date</FormLabel>
-                          <FormMessage />
-                        </div>
-                        <FormControl>
-                          <DatePickerWithPresets
-                            value={field.value}
-                            onChange={(date) => field.onChange(date.toISOString())}
-                            disabled={currentMode === "view" && !isEditing}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
+              <TabsContent value="address" className="space-y-4">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <FormInput
+                    name="info.address.houseNumber"
+                    label="House Number"
+                    icon={iconMap.houseNumber}
+                    placeholder="Enter house number"
+                    control={form.control}
+                    required={requiredFields.includes("info.address.houseNumber")}
                   />
-                </CardContent>
-              </Card>
-            </div>
+                  <FormInput
+                    name="info.address.village"
+                    label="Village"
+                    icon={iconMap.village}
+                    placeholder="Enter village (optional)"
+                    control={form.control}
+                  />
+                  <FormInput
+                    name="info.address.road"
+                    label="Road"
+                    icon={iconMap.road}
+                    placeholder="Enter road (optional)"
+                    control={form.control}
+                  />
+                  <FormInput
+                    name="info.address.subDistrict"
+                    label="Sub-District"
+                    icon={iconMap.subDistrict}
+                    placeholder="Enter sub-district"
+                    control={form.control}
+                    required={requiredFields.includes("info.address.subDistrict")}
+                  />
+                  <FormInput
+                    name="info.address.district"
+                    label="District"
+                    icon={iconMap.district}
+                    placeholder="Enter district"
+                    control={form.control}
+                    required={requiredFields.includes("info.address.district")}
+                  />
+                  <FormInput
+                    name="info.address.province"
+                    label="Province"
+                    icon={iconMap.province}
+                    placeholder="Enter province"
+                    control={form.control}
+                    required={requiredFields.includes("info.address.province")}
+                  />
+                  <FormInput
+                    name="info.address.zipCode"
+                    label="Zip Code"
+                    icon={iconMap.zipCode}
+                    placeholder="Enter zip code"
+                    control={form.control}
+                    required={requiredFields.includes("info.address.zipCode")}
+                  />
+                  <FormInput
+                    name="info.address.country"
+                    label="Country"
+                    icon={iconMap.country}
+                    placeholder="Enter country"
+                    control={form.control}
+                    required={requiredFields.includes("info.address.country")}
+                  />
+                </div>
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+                  <FormInput
+                    name="info.nationality"
+                    label="Nationality"
+                    icon={iconMap.nationality}
+                    placeholder="Enter nationality"
+                    control={form.control}
+                    required={requiredFields.includes("info.nationality")}
+                  />
+                  <FormInput
+                    name="info.religion"
+                    label="Religion"
+                    icon={iconMap.religion}
+                    placeholder="Enter religion"
+                    control={form.control}
+                    required={requiredFields.includes("info.religion")}
+                  />
+                  <FormInput
+                    name="info.race"
+                    label="Race"
+                    icon={iconMap.race}
+                    placeholder="Enter race"
+                    control={form.control}
+                    required={requiredFields.includes("info.race")}
+                  />
+                </div>
+              </TabsContent>
 
-            <div className="col-span-2 grid">
-              <div className="flex justify-end gap-2">
-                {(() => {
-                  const modeButtons: Record<string, JSX.Element> = {
-                    create: (
-                      <Button
-                        type="submit"
-                        disabled={!isValid || addMutation.isPending || updateMutation.isPending}
-                      >
-                        <TiTick /> Create Applicant
-                      </Button>
-                    ),
-                    edit: (
-                      <Button
-                        type="submit"
-                        disabled={!isValid || !isDirty || addMutation.isPending || updateMutation.isPending}
-                        onClick={() => setIsReadyToSave(true)}
-                      >
-                        <TiTick /> Save Changes
-                      </Button>
-                    ),
-                    view: (
-                      <Button type="button" onClick={() => setCurrentMode("edit")}>
-                        <TiEdit /> Edit
-                      </Button>
-                    ),
-                  };
+              <TabsContent value="documents">
+                <ScrollArea className="h-fit pr-4">
+                  <FormInput
+                    name="documents"
+                    label="Required Documents"
+                    description="Please ensure all required documents are submitted"
+                    component="checkbox"
+                    control={form.control}
+                    options={documentOptions}
+                    required
+                    className="space-y-4"
+                  />
+                </ScrollArea>
+              </TabsContent>
+            </Tabs>
 
-                  return modeButtons[currentMode] || null;
-                })()}
-                <DialogClose asChild>
-                  <Button type="button" variant="destructive">
-                    <TiCancel /> Close
-                  </Button>
-                </DialogClose>
-              </div>
+            <div className="flex justify-end gap-2">
+              <Button type="submit" className="px-8 rounded-md">
+                {mode === "edit" ? "Update Applicant" : "Add Applicant"}
+              </Button>
+              <DialogClose asChild>
+                <Button type="button" variant="destructive" onClick={handleClose}>
+                  Close
+                </Button>
+              </DialogClose>
             </div>
           </form>
         </Form>

@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { MdDragIndicator } from "react-icons/md";
 import { Badge } from "@/components/ui/badge";
 import { CardType } from "./types";
-import { DropIndicator } from "./DropIndicator";
 import { TaskModal } from "@/components/Modal/modal-Task";
 
 type CardProps = CardType & {
@@ -45,7 +44,6 @@ export const Card = ({
 
   return (
     <>
-      <DropIndicator beforeId={id} column={status} />
       <motion.div
         layout
         layoutId={id}

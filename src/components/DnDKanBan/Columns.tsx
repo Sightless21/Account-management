@@ -78,6 +78,7 @@ export const Column = ({
       status: column, // ✅ สถานะใหม่
       priority: cardToTransfer.priority,
       description: cardToTransfer.description,
+      projectId: projectID || "",
     });
   
     // อัพเดท state

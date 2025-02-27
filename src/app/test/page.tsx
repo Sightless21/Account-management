@@ -1,11 +1,11 @@
 'use client'
 import React from "react";
-import {ApplicantDialog} from "@/components/Modal/modal-ApplicantV2";
+import ModalApplicant from "@/components/Modal/modal-Applicant";
 
 export default function Page() {
   return (
    <div>
-    <ApplicantDialog/>
+    <ModalApplicant mode="create"/>
    </div> 
   );
 }

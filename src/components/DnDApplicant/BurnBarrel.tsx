@@ -1,5 +1,5 @@
-// src/components/DnDApplicant/BurnBarrel.tsx
 "use client";
+
 import { useState, DragEvent } from "react";
 import { FaFire } from "react-icons/fa";
 import { FiTrash } from "react-icons/fi";

@@ -5,18 +5,14 @@ import { Card, CardContent } from "@/components/ui/card"
 import { InputAddon } from "@/components/ui/input-addon"
 import { User2Icon, Mail } from "lucide-react"
 import { UseFormReturn } from "react-hook-form"
+import { SettingsForm } from "@/schema/formSettings"
 
 interface SettingsProfileProps {
-  form: UseFormReturn<{
-    username: string;
-    email: string;
-    currentPassword: string;
-    newPassword?: string;
-    confirmPassword?: string
-  }>
+  form: UseFormReturn<SettingsForm>
+  defaultValues: SettingsForm
 }
 
-export default function SettingsProfile({ form }: SettingsProfileProps) {
+export default function SettingsProfile({ form, defaultValues }: SettingsProfileProps) {
   const {
     register,
     formState: { errors },
@@ -33,17 +29,33 @@ export default function SettingsProfile({ form }: SettingsProfileProps) {
           <div className="flex flex-col gap-3 space-y-1.5 p-6">
             <div>
               <InputAddon
-                placeholder="Username"
+                defaultValue={defaultValues.firstName}
+                placeholder="Firstname"
                 leftIcon={User2Icon}
-                rightIconText="Username"
-                {...register("username")}
+                rightIconText="Firstname"
+                {...register("firstName")}
               />
-              {errors.username && (
-                <Muted className="text-red-500">{errors.username.message}</Muted>
+              {errors.firstName && (
+                <Muted className="text-red-500">{errors.firstName.message}</Muted>
               )}
             </div>
             <div>
               <InputAddon
+                defaultValue={defaultValues.lastName}
+                placeholder="Lastname"
+                leftIcon={User2Icon}
+                rightIconText="Lastname"
+                {...register("lastName")}
+              />
+              {errors.lastName && (
+                <Muted className="text-red-500">{errors.lastName.message}</Muted>
+              )}
+            </div>
+            <div>
+              <InputAddon
+                defaultValue={defaultValues.email}
+                type="text"
+                autoComplete={"one-time-code"}
                 placeholder="Email"
                 leftIcon={Mail}
                 rightIconText="Email"

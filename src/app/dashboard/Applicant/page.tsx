@@ -1,37 +1,27 @@
 "use client";
 
 import { ApplicantBoard } from "@/components/DnDApplicant/ApplicantBoard";
-import ModalApplicant from "@/components/Modal/modal-Applicant";
+// import ModalApplicant from "@/components/Modal/modal-Applicant";
+import { ApplicantDialog } from "@/components/Modal/modal-ApplicantV2";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useApplicantData } from "@/hooks/useApplicantData"; // ใช้ hook ใหม่
 import { TableOfContents } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as React from "react";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { useState } from "react";
+import { useApplicantData } from "@/hooks/useApplicantData"
 
 export default function Page() {
-  const { applicants, fetchApplicants, isLoading } = useApplicantData();
+  const { data: applicants, isLoading, } = useApplicantData();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPosition, setSelectedPosition] = useState(" ");
 
-  useEffect(() => {
-    fetchApplicants(); // รีเฟรชข้อมูลเมื่อโหลดหน้า
-  }, [fetchApplicants]);
 
   function handleProbationPage() {
-    toast.loading("Loading data", { duration: 2000 });
     router.push("/Dashboard/Applicant/Probation");
-    fetchApplicants().then(() => {
-      toast.dismiss();
-      toast.success("Successfully loaded data");
-    }).catch((error) => {
-      toast.error(error.message || "Failed to load data");
-    });
   }
 
   if (isLoading) return <div>Loading...</div>;
@@ -49,23 +39,23 @@ export default function Page() {
               placeholder="Search Task name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-64 rounded-lg border border-gray-300 px-3 py-2"
+              className="w-64 rounded-lg border border-gray-300 px-3 h-8 py-2"
             />
             <Select value={selectedPosition} onValueChange={setSelectedPosition}>
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger className="w-[200px] h-8">
                 <SelectValue placeholder="Filter Priority" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value=" ">All Position</SelectItem>
-                {[...new Set(applicants.map((applicant) => applicant.person.position))].map((position) => (
+                {[...new Set(applicants?.map((applicant) => applicant.person.position))].map((position) => (
                   <SelectItem key={position} value={position}>
                     {position}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            <ModalApplicant mode={"create"} />
-            <Button variant={"outline"} onClick={handleProbationPage}>
+            <ApplicantDialog />
+            <Button variant={"outline"} className="h-8" onClick={handleProbationPage}>
               Probationary Officer Table <TableOfContents />
             </Button>
           </div>
@@ -75,11 +65,6 @@ export default function Page() {
             selectProsition={selectedPosition}
           />
         </CardContent>
-        <CardFooter>
-          <p className={isLoading ? "text-yellow-500" : "text-green-500"}>
-            {isLoading ? "Loading..." : "Loaded Success"}
-          </p>
-        </CardFooter>
       </Card>
     </div>
   );

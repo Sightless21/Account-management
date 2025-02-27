@@ -1,16 +1,23 @@
-'use client'
+"use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ScrollArea } from "../ui/scroll-area"
-import { Label } from "../ui/label"
-import { Checkbox } from "../ui/checkbox"
-import { Separator } from "../ui/separator"
-import { Input } from "../ui/input"
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Separator } from "@/components/ui/separator"
+import { Input } from "@/components/ui/input"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { SettingsForm } from "@/schema/formSettings"
+import { UseFormReturn } from "react-hook-form"
 
-export default function SettingsInfo() {
+interface SettingsInfoProps {
+  form: UseFormReturn<SettingsForm>
+  defaultValues: SettingsForm
+}
 
+export default function SettingsInfo({ form , defaultValues}: SettingsInfoProps) {
+  const { register, formState: { errors } } = form
 
   return (
     <div className="space-y-4">
@@ -27,38 +34,70 @@ export default function SettingsInfo() {
               <Card className="border-0 shadow-none">
                 <CardHeader>
                   <CardTitle>Basic Information</CardTitle>
-                  <CardDescription>Your main profile information used across the platform</CardDescription>
+                  <CardDescription>You can change your employee information</CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-6">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="grid gap-2">
                       <Label htmlFor="name">Full Name</Label>
-                      <Input id="name" defaultValue="Mr. Messi" />
+                      <Input
+                        id="name"
+                        {...register("fullName")}
+                        defaultValue={defaultValues.fullName}
+                      />
+                      {errors.fullName && (
+                        <p className="text-sm text-red-500">{errors.fullName.message}</p>
+                      )}
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="email">Email</Label>
-                      <Input id="email" type="email" defaultValue="po.fegmpwegt@tni.ac.th" />
+                      <Input
+                        id="email"
+                        type="email"
+                        {...register("email")}
+                        defaultValue={defaultValues.email}
+                      />
+                      {errors.email && (
+                        <p className="text-sm text-red-500">{errors.email.message}</p>
+                      )}
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="phone">Phone Number</Label>
-                      <Input id="phone" defaultValue="0990798261" />
+                      <Input
+                        id="phone"
+                        {...register("phone")}
+                        defaultValue={defaultValues.phone}
+                      />
+                      {errors.phone && (
+                        <p className="text-sm text-red-500">{errors.phone.message}</p>
+                      )}
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="position">Position</Label>
-                      <Input id="position" defaultValue="Front-end Developer" />
+                      <Input
+                        id="position"
+                        {...register("position")}
+                        defaultValue={defaultValues.position}
+                      />
+                      {errors.position && (
+                        <p className="text-sm text-red-500">{errors.position.message}</p>
+                      )}
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <div className="grid gap-4 md:grid-cols-3">
-                <Card className="border-0 shadow-none md:border-r md:border-gray-200">
+              <div className="grid gap-4 grid-cols-3">
+                <Card className="border-0 rounded-r-none shadow-none md:border-r md:border-gray-200">
                   <CardHeader>
                     <CardTitle>Military Status</CardTitle>
                     <CardDescription>Your military service status</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <RadioGroup defaultValue="Exempted">
+                    <RadioGroup
+                      defaultValue={defaultValues.militaryStatus}
+                      {...register("militaryStatus")}
+                    >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="Exempted" id="military1" />
                         <Label htmlFor="military1">Exempted</Label>
@@ -72,28 +111,37 @@ export default function SettingsInfo() {
                         <Label htmlFor="military3">Pending</Label>
                       </div>
                     </RadioGroup>
+                    {errors.militaryStatus && (
+                      <p className="text-sm text-red-500">{errors.militaryStatus.message}</p>
+                    )}
                   </CardContent>
                 </Card>
-                <Card className="border-0 shadow-none md:border-r md:border-gray-200">
+                <Card className="border-0 rounded-r-none shadow-none md:border-r md:border-gray-200">
                   <CardHeader>
                     <CardTitle>Marital Status</CardTitle>
                     <CardDescription>Your current marital status</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <RadioGroup defaultValue="single">
+                    <RadioGroup
+                      defaultValue={defaultValues.maritalStatus}
+                      {...register("maritalStatus")}
+                    >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="single" id="single" />
-                        <Label htmlFor="Marital1">Single</Label>
+                        <Label htmlFor="single">Single</Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="married" id="married" />
-                        <Label htmlFor="Marital2">Married</Label>
+                        <Label htmlFor="married">Married</Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="divorced" id="divorced" />
-                        <Label htmlFor="Marital3">Divorced</Label>
+                        <Label htmlFor="divorced">Divorced</Label>
                       </div>
                     </RadioGroup>
+                    {errors.maritalStatus && (
+                      <p className="text-sm text-red-500">{errors.maritalStatus.message}</p>
+                    )}
                   </CardContent>
                 </Card>
                 <Card className="border-0 shadow-none">
@@ -102,7 +150,10 @@ export default function SettingsInfo() {
                     <CardDescription>Your current living arrangement</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <RadioGroup defaultValue="With Family">
+                    <RadioGroup
+                      defaultValue={defaultValues.livingSituation}
+                      {...register("livingSituation")}
+                    >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="With Family" id="living1" />
                         <Label htmlFor="living1">With Family</Label>
@@ -120,6 +171,9 @@ export default function SettingsInfo() {
                         <Label htmlFor="living4">Condo</Label>
                       </div>
                     </RadioGroup>
+                    {errors.livingSituation && (
+                      <p className="text-sm text-red-500">{errors.livingSituation.message}</p>
+                    )}
                   </CardContent>
                 </Card>
               </div>
@@ -135,27 +189,69 @@ export default function SettingsInfo() {
                   <div className="grid gap-4 sm:grid-cols-6">
                     <div className="grid gap-2 sm:col-span-2">
                       <Label htmlFor="address">House No.</Label>
-                      <Input id="address" defaultValue="211/2" />
+                      <Input
+                        id="address"
+                        {...register("houseNo")}
+                        defaultValue={defaultValues.houseNo}
+                      />
+                      {errors.houseNo && (
+                        <p className="text-sm text-red-500">{errors.houseNo.message}</p>
+                      )}
                     </div>
                     <div className="grid gap-2 sm:col-span-4">
                       <Label htmlFor="street">Street</Label>
-                      <Input id="street" defaultValue="เพชรบุรี" />
+                      <Input
+                        id="street"
+                        {...register("street")}
+                        defaultValue={defaultValues.street}
+                      />
+                      {errors.street && (
+                        <p className="text-sm text-red-500">{errors.street.message}</p>
+                      )}
                     </div>
                     <div className="grid gap-2 sm:col-span-3">
                       <Label htmlFor="district">District</Label>
-                      <Input id="district" defaultValue="บางกระปิ" />
+                      <Input
+                        id="district"
+                        {...register("district")}
+                        defaultValue={defaultValues.district}
+                      />
+                      {errors.district && (
+                        <p className="text-sm text-red-500">{errors.district.message}</p>
+                      )}
                     </div>
                     <div className="grid gap-2 sm:col-span-3">
                       <Label htmlFor="subdistrict">Sub-district</Label>
-                      <Input id="subdistrict" defaultValue="พระโขนง" />
+                      <Input
+                        id="subdistrict"
+                        {...register("subdistrict")}
+                        defaultValue={defaultValues.subdistrict}
+                      />
+                      {errors.subdistrict && (
+                        <p className="text-sm text-red-500">{errors.subdistrict.message}</p>
+                      )}
                     </div>
                     <div className="grid gap-2 sm:col-span-3">
                       <Label htmlFor="province">Province</Label>
-                      <Input id="province" defaultValue="กรุงเทพมหานคร" />
+                      <Input
+                        id="province"
+                        {...register("province")}
+                        defaultValue={defaultValues.province}
+                      />
+                      {errors.province && (
+                        <p className="text-sm text-red-500">{errors.province.message}</p>
+                      )}
                     </div>
                     <div className="grid gap-2 sm:col-span-3">
                       <Label htmlFor="postal">Postal Code</Label>
-                      <Input id="postal" defaultValue="10250" />
+                      <Input
+                        id="postal"
+                        {...register("postalCode")}
+                        defaultValue={defaultValues.postalCode}
+                      />
+                      {errors.postalCode && (
+                        <p className="text-sm text-red-500">{errors.postalCode.message}</p>
+                      )}
                     </div>
                   </div>
 
@@ -164,11 +260,25 @@ export default function SettingsInfo() {
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="grid gap-2">
                       <Label htmlFor="nationality">Nationality</Label>
-                      <Input id="nationality" defaultValue="Thai" />
+                      <Input
+                        id="nationality"
+                        {...register("nationality")}
+                        defaultValue={defaultValues.nationality}
+                      />
+                      {errors.nationality && (
+                        <p className="text-sm text-red-500">{errors.nationality.message}</p>
+                      )}
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="religion">Religion</Label>
-                      <Input id="religion" defaultValue="Buddhist" />
+                      <Input
+                        id="religion"
+                        {...register("religion")}
+                        defaultValue={defaultValues.religion}
+                      />
+                      {errors.religion && (
+                        <p className="text-sm text-red-500">{errors.religion.message}</p>
+                      )}
                     </div>
                   </div>
                 </CardContent>
@@ -185,7 +295,10 @@ export default function SettingsInfo() {
                   <ScrollArea className="h-[400px] pr-4">
                     <div className="grid gap-4">
                       <div className="flex items-center space-x-2">
-                        <Checkbox id="doc1" />
+                        <Checkbox
+                          id="doc1"
+                          {...register("documents.nationalIdCard")}
+                        />
                         <div className="grid gap-1.5">
                           <Label htmlFor="doc1">National ID Card Copy</Label>
                           <p className="text-sm text-muted-foreground">
@@ -195,7 +308,11 @@ export default function SettingsInfo() {
                       </div>
                       <Separator />
                       <div className="flex items-center space-x-2">
-                        <Checkbox id="doc2" defaultChecked />
+                        <Checkbox
+                          id="doc2"
+                          defaultChecked={defaultValues.documents?.houseRegistration}
+                          {...register("documents.houseRegistration")}
+                        />
                         <div className="grid gap-1.5">
                           <Label htmlFor="doc2">House Registration Copy</Label>
                           <p className="text-sm text-muted-foreground">Official copy of your house registration document</p>
@@ -203,7 +320,11 @@ export default function SettingsInfo() {
                       </div>
                       <Separator />
                       <div className="flex items-center space-x-2">
-                        <Checkbox id="doc3" defaultChecked />
+                        <Checkbox
+                          id="doc3"
+                          defaultChecked= {defaultValues.documents?.bankAccountDetails}
+                          {...register("documents.bankAccountDetails")}
+                        />
                         <div className="grid gap-1.5">
                           <Label htmlFor="doc3">Bank Account Details</Label>
                           <p className="text-sm text-muted-foreground">Copy of bank book or bank statement</p>
@@ -211,7 +332,11 @@ export default function SettingsInfo() {
                       </div>
                       <Separator />
                       <div className="flex items-center space-x-2">
-                        <Checkbox id="doc4" />
+                        <Checkbox
+                          id="doc4"
+                          defaultChecked={defaultValues.documents?.educationalCertificates}
+                          {...register("documents.educationalCertificates")}
+                        />
                         <div className="grid gap-1.5">
                           <Label htmlFor="doc4">Educational Certificates</Label>
                           <p className="text-sm text-muted-foreground">
@@ -221,7 +346,11 @@ export default function SettingsInfo() {
                       </div>
                       <Separator />
                       <div className="flex items-center space-x-2">
-                        <Checkbox id="doc5" />
+                        <Checkbox
+                          id="doc5"
+                          defaultChecked={defaultValues.documents?.resume}
+                          {...register("documents.resume")}
+                        />
                         <div className="grid gap-1.5">
                           <Label htmlFor="doc5">Resume/CV</Label>
                           <p className="text-sm text-muted-foreground">Updated resume or curriculum vitae</p>
@@ -229,6 +358,9 @@ export default function SettingsInfo() {
                       </div>
                     </div>
                   </ScrollArea>
+                  {errors.documents && (
+                    <p className="text-sm text-red-500 mt-2">Please check the required documents</p>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>

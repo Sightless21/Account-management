@@ -2,14 +2,15 @@
 "use client";
 import React, { useState } from "react";
 import Card from "./Card";
-import { CardType, ColumnType } from "./types";
-import { useApplicantData } from "@/hooks/useApplicantData";
+import {  ColumnType } from "./types";
+import {FormApplicant} from "@/types/applicant"
+import { useUpdateApplicantStatus } from "@/hooks/useApplicantData";
 
-type ColumnProps = {
+interface ColumnProps  {
   title: string;
   headingBgColor: string;
   headingColor: string;
-  cards: CardType[];
+  cards: FormApplicant[];
   column: ColumnType;
 };
 
@@ -21,14 +22,14 @@ export const Column = ({
   column,
 }: ColumnProps) => {
   const [active, setActive] = useState(false);
-  const { updateApplicantStatus } = useApplicantData();
+  const { mutateAsync: updateApplicantStatus} = useUpdateApplicantStatus()
 
   const handleDragStart = (
     e: React.DragEvent<Element>,
-    card: CardType,
+    card: FormApplicant,
     fromColumn: ColumnType
   ) => {
-    e.dataTransfer.setData("cardId", card.id);
+    e.dataTransfer.setData("cardId", card.id || "");
     e.dataTransfer.setData("fromColumn", fromColumn);
   };
 

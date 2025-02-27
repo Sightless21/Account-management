@@ -1,7 +1,11 @@
-export type Applicant = {
+import {formApplicantSchema} from "@/schema/formApplicantV2"
+import z from "zod"
+
+export type FormApplicant = z.infer<typeof formApplicantSchema>;
+
+export type Document = {
   id: string;
   name: string;
-  position: string;
-  createdAt: string;
-  status: string;
+  applicantId: string;
+  employeeId: string | null;
 };

@@ -29,9 +29,9 @@ model Applicant {
   person                Person
   birthdate             DateTime
   info                  Info
-  itemsMilitary         String
-  itemsMarital          String
-  itemsDwelling         String
+  military              String
+  marital               String
+  dwelling              String
   documents             Document[]
   status                ApplicantStatus
   convertedToEmployeeAt DateTime? // ✅ เช็คว่าเคยถูกโอนเป็น Employee แล้วหรือไม่

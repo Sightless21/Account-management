@@ -21,8 +21,8 @@ import {
 } from "@/components/ui/select";
 
 interface DatePickerWithPresetsProps {
-  value?: string | number | Date;
-  onChange?: (date: Date) => void;
+  value?: string | number | Date; // ค่าจาก React Hook Form
+  onChange?: (date: Date) => void; // อัปเดตค่าไปยัง React Hook Form
   [key: string]: unknown;
 }
 
@@ -35,45 +35,57 @@ export function DatePickerWithPresets({
     value ? new Date(value) : undefined,
   );
   const [selectedMonth, setSelectedMonth] = React.useState<number>(
-    new Date().getMonth(),
+    value ? new Date(value).getMonth() : new Date().getMonth(),
   );
   const [selectedYear, setSelectedYear] = React.useState<number>(
-    new Date().getFullYear(),
+    value ? new Date(value).getFullYear() : new Date().getFullYear(),
   );
 
   const handleDateChange = (date: Date | undefined) => {
-    setSelectedDate(date);
-    if (onChange) {
-      if (date) {
-        onChange(date); // อัปเดตค่ากลับไปที่ React Hook Form
+    if (date) {
+      setSelectedDate(date);
+      setSelectedMonth(date.getMonth());
+      setSelectedYear(date.getFullYear());
+      if (onChange) {
+        onChange(date); // อัปเดตค่าไปยัง React Hook Form
       }
     }
   };
 
-  // ฟังก์ชันอัปเดตเดือนและปีเมื่อเปลี่ยน dropdown
+  const toBuddhistYear = (year: number) => year + 543;
+  const fromBuddhistYear = (year: number) => year - 543;
+
   const updateCalendarDate = (month: number, year: number) => {
     const newDate = setYear(startOfMonth(new Date(year, month)), year);
     setSelectedDate(newDate);
+    setSelectedMonth(month);
+    setSelectedYear(year);
+    if (onChange) {
+      onChange(newDate); // อัปเดตเมื่อเปลี่ยนเดือนหรือปี
+    }
   };
 
-  // Handle การเปลี่ยนเดือน
   const handleMonthChange = (month: number) => {
     setSelectedMonth(month);
     updateCalendarDate(month, selectedYear);
   };
 
-  // Handle การเปลี่ยนปี
   const handleYearChange = (year: number) => {
-    setSelectedYear(year);
-    updateCalendarDate(selectedMonth, year);
+    const christianYear = fromBuddhistYear(year);
+    setSelectedYear(christianYear);
+    updateCalendarDate(selectedMonth, christianYear);
   };
 
+  // Sync ค่าจาก props (React Hook Form) เข้ากับ state ภายใน
   React.useEffect(() => {
-    if (selectedDate) {
-      setSelectedMonth(selectedDate.getMonth());
-      setSelectedYear(selectedDate.getFullYear());
+    if (value && (!selectedDate || new Date(value).getTime() !== selectedDate.getTime())) {
+      const newDate = new Date(value);
+      setSelectedDate(newDate);
+      setSelectedMonth(newDate.getMonth());
+      setSelectedYear(newDate.getFullYear());
     }
-  }, [selectedDate]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
 
   return (
     <Popover>
@@ -88,23 +100,32 @@ export function DatePickerWithPresets({
         >
           <CalendarIcon />
           {selectedDate ? (
-            selectedDate.toLocaleDateString("th-TH")
+            selectedDate.toLocaleDateString("th-TH", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })
           ) : (
-            <span>Pick a date</span>
+            <span>เลือกวันที่</span>
           )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="flex w-auto flex-col space-y-2 p-2">
         <div className="flex gap-4">
-          {/* Dropdown สำหรับเลือกเดือน */}
           <Select onValueChange={(value) => handleMonthChange(parseInt(value))}>
             <SelectTrigger>
-              <SelectValue placeholder="Month" />
+              <SelectValue
+                placeholder={
+                  selectedDate
+                    ? selectedDate.toLocaleString("th-TH", { month: "long" })
+                    : "เดือน"
+                }
+              />
             </SelectTrigger>
             <SelectContent position="popper">
               {Array.from({ length: 12 }).map((_, index) => (
                 <SelectItem key={index} value={index.toString()}>
-                  {new Date(0, index).toLocaleString("default", {
+                  {new Date(0, index).toLocaleString("th-TH", {
                     month: "long",
                   })}
                 </SelectItem>
@@ -112,18 +133,23 @@ export function DatePickerWithPresets({
             </SelectContent>
           </Select>
 
-          {/* Dropdown สำหรับเลือกปี */}
           <Select onValueChange={(value) => handleYearChange(parseInt(value))}>
             <SelectTrigger>
-              <SelectValue placeholder="Year" />
+              <SelectValue
+                placeholder={
+                  selectedDate
+                    ? toBuddhistYear(selectedDate.getFullYear()).toString()
+                    : "ปี"
+                }
+              />
             </SelectTrigger>
             <SelectContent position="popper">
               {Array.from({ length: 65 }, (_, index) => {
-                const year = new Date().getFullYear() - 18 - index; // ปี ค.ศ.
-                const yearEC = year + 543;
+                const yearCE = new Date().getFullYear() - 18 - index;
+                const yearBE = toBuddhistYear(yearCE);
                 return (
-                  <SelectItem key={yearEC} value={year.toString()}>
-                    {yearEC}
+                  <SelectItem key={yearBE} value={yearBE.toString()}>
+                    {yearBE}
                   </SelectItem>
                 );
               })}

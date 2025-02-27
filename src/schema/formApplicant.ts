@@ -1,9 +1,8 @@
 import { z } from "zod";
 
-//DONE : Form Applicant
+//FIXME : itemsMilitary, itemsMarital , itemsDwelling to be enum string
 export const formApplicantSchema = z.object({
     id: z.string()?.optional(),
-    //  ข้อมูลบุคคล
     person: z.object({
         name: z.string().min(2, { message: "*" }),
         phone: z
@@ -54,12 +53,14 @@ export const formApplicantSchema = z.object({
         .max(1, { message: "Please select only one dwelling type." }),
     createdAt: z.string().optional(),
     updatedAt: z.string().optional(),
-    //  เอกสาร (ต้องเลือกอย่างน้อย 1 อย่าง)
     documents: z
         .array(z.string())
         .min(1, { message: "You have to select at least one document." }),
     status: z.string(),
 });
+
+export type FormApplicant = z.infer<typeof formApplicantSchema>;
+
 
 export const APPLICANT_FORM_FIELDS = {
     doc: [

@@ -2,9 +2,10 @@ import { Card, CardContent } from "@/components/ui/card"
 import { H3, Muted } from "@/components/ui/typography"
 import { InputAddon } from "@/components/ui/input-addon"
 import { UseFormReturn } from "react-hook-form"
+import { SettingsForm } from "@/schema/formSettings"
 
 interface SettingsPasswordProps {
-  form: UseFormReturn<{ username: string; email: string; currentPassword: string; newPassword?: string; confirmPassword?: string }>
+  form: UseFormReturn<SettingsForm>
 }
 
 export default function SettingsPassword({ form }: SettingsPasswordProps) {
@@ -24,8 +25,8 @@ export default function SettingsPassword({ form }: SettingsPasswordProps) {
           <div className="flex flex-col gap-3 space-y-1.5 p-6">
             <div>
               <InputAddon
+                autoComplete={"off"}
                 placeholder="Current Password"
-                prefix="*"
                 type="password"
                 {...register("currentPassword")}
               />

@@ -3,15 +3,16 @@
 import React from "react";
 import { columns } from "./columns";
 import { DataTable } from "@/components/Table/Data-Table";
-import { useApplicantData } from "@/hooks/useApplicantData";
+import { useApplicantData, useDeleteApplicant } from "@/hooks/useApplicantData";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import {ArrowLeft} from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 
 //DONE : Applicant Table
 export default function ApplicantTable() {
-  const { applicants, deleteApplicant, isLoading } = useApplicantData();
+  const { data: applicants, isLoading } = useApplicantData();
+  const { mutateAsync : deleteApplicant }= useDeleteApplicant();
   const router = useRouter();
 
   if (isLoading) {
@@ -41,11 +42,11 @@ export default function ApplicantTable() {
     }
   };
 
-  const filteredApplicants = applicants.filter(
+  const filteredApplicants = applicants?.filter(
     (applicant) => applicant.status === "INTERVIEW_PASSED"
   );
 
-  const simplifiedApplicants = filteredApplicants.map((applicant) => ({
+  const simplifiedApplicants = filteredApplicants?.map((applicant) => ({
     id: applicant.id || "",
     name: applicant.person.name,
     email: applicant.person.email,
@@ -61,20 +62,20 @@ export default function ApplicantTable() {
       onClick={() => router.replace("/Dashboard/Applicant")}
       className="h-8"
     >
-      <ArrowLeft/> Back to Applicant Board
+      <ArrowLeft /> Back to Applicant Board
     </Button>
   );
 
   return (
     <div className="space-y-4">
-        <DataTable
-          columns={columns(handleNotPass, handlePassComplete)}
-          data={simplifiedApplicants}
-          searchColumn="name"
-          searchPlaceholder="Search by name..."
-          redirect={redirectButton}
-          dateColumn="createdAt"
-        />
+      <DataTable
+        columns={columns(handleNotPass, handlePassComplete)}
+        data={simplifiedApplicants || []}
+        searchColumn="name"
+        searchPlaceholder="Search by name..."
+        redirect={redirectButton}
+        dateColumn="createdAt"
+      />
     </div>
   );
 }

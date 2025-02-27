@@ -1,23 +1,29 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma"; // 📌 นำเข้า Prisma Client
+import { prisma } from "@/lib/prisma";
 
-//DONE : Applicant endpoint 
-export async function POST({ request }: { request: Request; }) {
+// DONE: Applicant endpoint
+export async function POST(request: Request) { 
   try {
+    // ดึงข้อมูลจาก body
     const data = await request.json();
     console.log("📌 Received Body:", data);
-    if (!request.body) {
+
+    // ตรวจสอบว่า data มีอยู่และถูกต้อง
+    if (!data) {
       console.error("❌ No payload received.");
       return NextResponse.json(
         { error: "No payload received" },
-        { status: 400 },
+        { status: 400 }
       );
     }
-    // ตรวจสอบว่า body มีค่าหรือไม่ และมี properties ที่ต้องการ
-    if (!data || !data.documents || !Array.isArray(data.documents)) {
+
+    // ตรวจสอบ documents array
+    if (!data.documents || !Array.isArray(data.documents)) {
       throw new Error("Missing or invalid documents array");
     }
+
+    // สร้าง applicant ด้วย Prisma
     const createApplicant = await prisma.applicant.create({
       data: {
         person: {
@@ -27,7 +33,7 @@ export async function POST({ request }: { request: Request; }) {
           position: data.person.position,
           expectSalary: data.person.expectSalary,
         },
-        birthdate: new Date(data.birthdate),
+        birthdate: new Date(data.person.birthdate),
         info: {
           address: {
             houseNumber: data.info.address.houseNumber,
@@ -43,40 +49,41 @@ export async function POST({ request }: { request: Request; }) {
           religion: data.info.religion,
           race: data.info.race,
         },
-        itemsDwelling: data.itemsDwelling[0],
-        itemsMarital: data.itemsMarital[0],
-        itemsMilitary: data.itemsMilitary[0],
-        documents:
-          data.documents.length > 0
-            ? { create: data.documents.map((doc: any) => ({ name: doc })) }
-            : undefined, // ✅ ป้องกัน `undefined.map()`
+        dwelling: data.dwelling,
+        marital: data.marital,  
+        military: data.military, 
+        documents: data.documents.length > 0
+          ? { create: data.documents.map((doc: any) => ({ name: doc })) }
+          : undefined,
         status: data.status || "NEW",
       },
     });
+
     console.log("createApplicant:", createApplicant);
 
     if (!createApplicant) {
-      throw new Error("createApplicant is null or undefined.");
+      throw new Error("Failed to create applicant");
     }
-    return NextResponse.json(createApplicant, { status: 202 });
+
+    return NextResponse.json(createApplicant, { status: 201 });
   } catch (error) {
     if (error instanceof Error) {
-      console.error("Error creating applicant: ", error.message || error);
+      console.error("Error creating applicant:", error.message);
       return NextResponse.json(
-        { error: "Internal Server Error", message: error },
-        { status: 500 },
+        { error: "Internal Server Error", message: error.message },
+        { status: 500 }
       );
     } else {
       console.error("Error creating applicant:", error);
       return NextResponse.json(
-        { error: "Internal Server Error", message: error },
-        { status: 500 },
+        { error: "Internal Server Error", message: String(error) },
+        { status: 500 }
       );
     }
   }
 }
 
-// อัปเดต Applicant from drag and drop
+// PATCH และ GET คงไว้เหมือนเดิม
 export async function PATCH(request: Request) {
   try {
     const { id, status } = await request.json();
@@ -88,7 +95,6 @@ export async function PATCH(request: Request) {
       );
     }
 
-    // 🔥 อัปเดต applicant ใน Prisma
     const updatedApplicant = await prisma.applicant.update({
       where: { id },
       data: { status },
@@ -108,9 +114,9 @@ export async function GET() {
   try {
     const applicants = await prisma.applicant.findMany({
       include: {
-        documents: true, // ดึงข้อมูลเอกสารที่เกี่ยวข้องมาด้วย
+        documents: true,
       },
-      orderBy: { id: "asc" }, // เรียงลำดับตาม order
+      orderBy: { id: "asc" },
     });
 
     return NextResponse.json(applicants, { status: 200 });

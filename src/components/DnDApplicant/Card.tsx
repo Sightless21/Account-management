@@ -1,13 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { motion } from "framer-motion";
 import { DragEvent } from "react";
 import { IoPersonSharp } from "react-icons/io5";
 import { MdDragIndicator } from "react-icons/md";
-import ModalApplicant from "@/components/Modal/modal-Applicant";
-import { CardType } from "./types";
+import { ApplicantDialog } from "@/components/Modal/modal-ApplicantV2";
+import { FormApplicant } from "@/types/applicant";
 
-type CardProps = CardType & {
-  handleDragStart: (e: DragEvent, card: CardType) => void;
+interface CardProps extends FormApplicant {
+  handleDragStart: (e: DragEvent, card: FormApplicant) => void;
 };
 
 const Card = ({
@@ -15,51 +16,46 @@ const Card = ({
   status,
   info,
   birthdate,
-  itemsMilitary,
-  itemsMarital,
-  itemsDwelling,
+  military,
+  marital,
+  dwelling,
   documents,
   id,
   handleDragStart,
 }: CardProps) => {
-  // console.log("🚀 ~ file: Card.tsx:19 ~ Card ~ person:", person)
   const { name, position, email, phone, expectSalary } = person;
   const { address, nationality, religion, race } = info;
 
   const data = {
     person: {
-      name: name,
-      phone: phone,
-      email: email,
-      position: position,
-      expectSalary: expectSalary,
+      name: name || "",
+      phone: phone || "",
+      email: email || "",
+      position: position || "",
+      expectSalary: expectSalary || "",
     },
-    id,
+    birthdate: birthdate ? new Date(birthdate) : new Date(new Date().setFullYear(new Date().getFullYear() - 18)),
+    id: id || "",
     info: {
       address: {
-        houseNumber: address.houseNumber,
-        village: address.village,
-        road: address.road,
-        subDistrict: address.subDistrict,
-        district: address.district,
-        province: address.province,
-        zipCode: address.zipCode,
-        country: address.country,
+        houseNumber: address?.houseNumber || "",
+        village: address?.village || "",
+        road: address?.road || "",
+        subDistrict: address?.subDistrict || "",
+        district: address?.district || "",
+        province: address?.province || "",
+        zipCode: address?.zipCode || "",
+        country: address?.country || "",
       },
-      nationality: nationality,
-      religion: religion,
-      race: race,
+      nationality: nationality || "",
+      religion: religion || "",
+      race: race || "",
     },
-    birthdate: new Date(birthdate),
-    itemsMilitary: Array.isArray(itemsMilitary)
-      ? itemsMilitary
-      : [itemsMilitary],
-    itemsMarital: Array.isArray(itemsMarital) ? itemsMarital : [itemsMarital],
-    itemsDwelling: Array.isArray(itemsDwelling)
-      ? itemsDwelling
-      : [itemsDwelling],
-    documents: documents.map((doc) => doc.name) || [],
-    status,
+    military: military || "pass",
+    marital: marital || "single",
+    dwelling: dwelling || "familyHouse",
+    documents: Array.isArray(documents) ? documents.map((doc: any) => doc?.name || "") : [],
+    status: status || "NEW",
   };
 
   return (
@@ -67,39 +63,7 @@ const Card = ({
       layout
       layoutId={id}
       draggable="true"
-      onDragStart={(e) =>
-        handleDragStart(e as unknown as DragEvent, {
-          person: {
-            name: "",
-            phone: "",
-            email: "",
-            position: "",
-            expectSalary: "",
-          },
-          id,
-          info: {
-            address: {
-              houseNumber: "",
-              village: "",
-              road: "",
-              subDistrict: "",
-              district: "",
-              province: "",
-              zipCode: "",
-              country: "",
-            },
-            nationality: "",
-            religion: "",
-            race: "",
-          },
-          birthdate: "",
-          itemsMilitary: "",
-          itemsMarital: "",
-          itemsDwelling: "",
-          status,
-          documents: [],
-        })
-      }
+      onDragStart={(e) => handleDragStart(e as unknown as DragEvent, { ...data, id })}
       className="mt-2 flex cursor-grab snap-center flex-col items-start justify-between rounded border border-neutral-700 bg-white hover:bg-neutral-300 active:cursor-grabbing"
       whileTap={{ scale: 1.04 }}
       whileHover={{ scale: 1.04 }}
@@ -119,7 +83,7 @@ const Card = ({
             {position}
           </p>
         </div>
-        <ModalApplicant mode="view" defaultValues={data} />
+        <ApplicantDialog applicant={data} />
       </div>
     </motion.div>
   );

@@ -48,11 +48,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               {isLoading ? (
                 <Skeleton className="h-full w-full m-3" />
               ) : (
-                <h3 className="text-2xl font-semibold tracking-tight">
+                <h3 className="flex flex-row gap-3 text-2xl font-semibold tracking-tight">
                   Hello : {user?.firstName?.toUpperCase()} {user?.lastName?.toUpperCase()}
+                  <ThemeToggle />
                 </h3>
               )}
-              {/* <DigitalClock /> */}
+              <DigitalClock />
             </div>
             <Skeleton className="h-full w-full m-3 " />
           </SidebarInset>
@@ -67,7 +68,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <AppSidebar collapsible="icon" variant="inset" user={user ?? null} />
         <SidebarInset>
           <div className="mt-4 flex items-center gap-2 px-4 justify-between">
-            <h3 className="flex flex-row  gap-3 text-2xl font-semibold tracking-tight">
+            <h3 className="flex flex-row gap-3 text-2xl font-semibold tracking-tight">
               Hello : {user?.firstName?.toUpperCase()} {user?.lastName?.toUpperCase()}
               <ThemeToggle />
             </h3>

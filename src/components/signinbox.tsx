@@ -58,7 +58,7 @@ export default function SignInForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="john.doe@gmail.com" {...field} />
+                <Input autoComplete="off" placeholder="john.doe@gmail.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -71,7 +71,7 @@ export default function SignInForm() {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <PasswordInput placeholder="Enter your password" {...field} />
+                <PasswordInput autoComplete="off" placeholder="Enter your password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

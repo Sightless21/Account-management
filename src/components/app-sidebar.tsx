@@ -38,7 +38,7 @@ const NAV_ITEMS = [
     ],
   },
   {
-    title: "Service",
+    title: "Management",
     url: "/Dashboard",
     icon: BookUser,
     roles: ["HR", "MANAGER", "ADMIN"],

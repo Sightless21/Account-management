@@ -8,7 +8,7 @@ interface InputAddonProps extends React.InputHTMLAttributes<HTMLInputElement> {
   suffix?: string
   leftIcon?: LucideIcon
   rightIcon?: LucideIcon
-  rightIconText? : string
+  rightIconText?: string
   containerClassName?: string
   prefixClassName?: string
   suffixClassName?: string
@@ -57,6 +57,7 @@ const InputAddon = React.forwardRef<HTMLInputElement, InputAddonProps>(
 
         {/* Input */}
         <Input
+          autoComplete={"off"}
           type={type}
           className={cn(
             "border-0 focus-visible:ring-0 focus-visible:ring-offset-0",

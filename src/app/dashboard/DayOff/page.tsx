@@ -1,10 +1,10 @@
 "use client";
+
 import Menutabs from "@/components/menutabs";
 import DayOffTable from "@/components/Table/Dayoff-table/DayoffTable";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DayOffTabsConfig } from "@/Configs/tabsConfig";
+import { DayOffTabsConfig } from "@/configs/tabsConfig";
 import React, { useState } from "react";
-
 
 export default function Page() {
   const [activeTab, setActiveTab] = useState("Leave History");

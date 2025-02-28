@@ -53,6 +53,14 @@ cd account-management
 npm install
 
 # Start the development server
+# Clone the repository
+git clone https://github.com/your-repo/account-management.git
+cd account-management
+
+# Install dependencies
+npm install
+
+# Start the development server
 npm run dev
 ```
 

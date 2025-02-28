@@ -1,232 +1,332 @@
 "use client"
+
 import { useState } from "react"
+import type React from "react"
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Calendar } from "@/components/ui/calendar"
-import { format } from "date-fns"
-import { cn } from "@/lib/utils"
-import { CalendarIcon, Clock, Plus, AlertCircle } from "lucide-react"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Label } from "@/components/ui/label"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
 import { toast } from "sonner"
-import { Badge } from "@/components/ui/badge"
+import { z } from "zod"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { Textarea } from "@/components/ui/textarea"
+import { ClipboardList, Edit } from "lucide-react"
+
+type TaskStatus = "TODO" | "DOING" | "DONE"
+type TaskPriority = "LOW" | "MEDIUM" | "HIGH"
 
 interface Task {
-  id: string
-  title: string
+  id?: string
+  taskName: string
   description: string
-  priority: "LOW" | "MEDIUM" | "HIGH"
-  status: "TODO" | "DOING" | "DONE"
-  dueDate?: Date
+  priority: TaskPriority
+  status: TaskStatus
 }
 
-interface CreateTaskProps {
-  onTaskCreated?: (task: Task) => void
+interface TaskModalProps {
+  mode: "create" | "edit" | "view"
+  defaultValues?: Task
+  onSave?: (task: Task) => void
+  trigger?: React.ReactNode
 }
 
-export function CreateTask({ onTaskCreated }: CreateTaskProps) {
+const formSchema = z.object({
+  id: z.string().optional(),
+  taskName: z.string().min(2, { message: "Task name must be at least 2 characters." }),
+  description: z.string().max(300, { message: "Description cannot exceed 300 characters." }),
+  priority: z.enum(["LOW", "MEDIUM", "HIGH"] as const),
+  status: z.enum(["TODO", "DOING", "DONE"] as const),
+})
+
+export function TaskModal({ mode: initialMode, defaultValues, onSave, trigger }: TaskModalProps) {
+  const [currentMode, setCurrentMode] = useState(initialMode)
   const [open, setOpen] = useState(false)
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
-  const [priority, setPriority] = useState<Task["priority"]>("MEDIUM")
-  const [dueDate, setDueDate] = useState<Date>()
-  const [error, setError] = useState<string | null>(null)
+  const [showAlert, setShowAlert] = useState(false)
 
-  const handleSubmit = () => {
-    // Validate
-    if (!title.trim()) {
-      setError("Title is required")
-      return
-    }
-
-    if (title.length < 3) {
-      setError("Title must be at least 3 characters")
-      return
-    }
-
-    if (!description.trim()) {
-      setError("Description is required")
-      return
-    }
-
-    // Create task object
-    const newTask: Task = {
-      id: `task-${Date.now()}`,
-      title: title.trim(),
-      description: description.trim(),
-      priority,
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: defaultValues || {
+      taskName: "",
+      description: "",
+      priority: "LOW",
       status: "TODO",
-      dueDate,
+    },
+  })
+
+  const charCount = form.watch("description")?.length || 0
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (currentMode === "view") return
+
+    if (charCount > 300) {
+      setShowAlert(true)
+      return
     }
 
-    // Call the callback
-    if (onTaskCreated) {
-      onTaskCreated(newTask)
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 500))
+
+    const task: Task = {
+      ...values,
+      id: values.id || `task-${Date.now()}`,
     }
 
-    // Show success message
-    toast.success("Task created successfully")
+    if (onSave) {
+      onSave(task)
+    }
 
-    // Reset form and close dialog
-    resetForm()
+    toast.success(currentMode === "create" ? "Task created successfully" : "Task updated successfully")
     setOpen(false)
+
+    if (currentMode === "create") {
+      form.reset({
+        taskName: "",
+        description: "",
+        priority: "LOW",
+        status: "TODO",
+      })
+    }
   }
 
-  const resetForm = () => {
-    setTitle("")
-    setDescription("")
-    setPriority("MEDIUM")
-    setDueDate(undefined)
-    setError(null)
-  }
-
-  const getPriorityColor = (p: Task["priority"]) => {
-    switch (p) {
+  const getPriorityDetails = (priority: TaskPriority) => {
+    switch (priority) {
       case "HIGH":
-        return "text-red-700 bg-red-50 border-red-200 hover:bg-red-100"
+        return { color: "bg-red-500", label: "High" }
       case "MEDIUM":
-        return "text-yellow-700 bg-yellow-50 border-yellow-200 hover:bg-yellow-100"
+        return { color: "bg-yellow-500", label: "Medium" }
       case "LOW":
-        return "text-green-700 bg-green-50 border-green-200 hover:bg-green-100"
+        return { color: "bg-green-500", label: "Low" }
+    }
+  }
+
+  const getStatusDetails = (status: TaskStatus) => {
+    switch (status) {
+      case "DONE":
+        return { color: "bg-green-500", label: "Done" }
+      case "DOING":
+        return { color: "bg-blue-500", label: "In Progress" }
+      case "TODO":
+        return { color: "bg-gray-500", label: "To Do" }
     }
   }
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(newOpen) => {
-        setOpen(newOpen)
-        if (!newOpen) resetForm()
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button className="gap-2">
-          <Plus className="h-4 w-4" />
-          Create Task
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[525px] w-[700px]">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">Create New Task</DialogTitle>
-        </DialogHeader>
-
-        <div className="space-y-6 py-4">
-          {error && (
-            <div className="flex items-center gap-2 text-red-600 text-sm bg-red-50 p-3 rounded-md">
-              <AlertCircle className="h-4 w-4" />
-              {error}
-            </div>
-          )}
-
-          {/* Title Input */}
-          <div className="space-y-2">
-            <Label htmlFor="title">Task Title</Label>
-            <Input
-              id="title"
-              placeholder="Enter task title"
-              value={title}
-              onChange={(e) => {
-                setTitle(e.target.value)
-                setError(null)
+    <>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          {trigger || (
+            <Button
+              variant={currentMode === "create" ? "default" : "outline"}
+              className="h-8 flex items-center gap-2"
+              onClick={() => {
+                setCurrentMode(initialMode)
               }}
-            />
-          </div>
-
-          {/* Description Input */}
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              placeholder="Enter task description"
-              className="resize-none min-h-[100px]"
-              value={description}
-              onChange={(e) => {
-                setDescription(e.target.value)
-                setError(null)
-              }}
-            />
-          </div>
-
-          {/* Priority Selection */}
-          <div className="space-y-2">
-            <Label>Priority Level</Label>
-            <RadioGroup
-              className="flex gap-2"
-              defaultValue={priority}
-              onValueChange={(value) => setPriority(value as Task["priority"])}
             >
-              {(["LOW", "MEDIUM", "HIGH"] as const).map((p) => (
-                <Label
-                  key={p}
-                  className={cn(
-                    "flex-1 cursor-pointer rounded-md border p-4 text-center [&:has([data-state=checked])]:border-primary",
-                    getPriorityColor(p),
-                  )}
-                >
-                  <RadioGroupItem value={p} className="sr-only" />
-                  {p.charAt(0) + p.slice(1).toLowerCase()}
-                </Label>
-              ))}
-            </RadioGroup>
-          </div>
+              <ClipboardList className="h-4 w-4" />
+              <span>{currentMode === "create" ? "Create Task" : "View Task"}</span>
+            </Button>
+          )}
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[600px] md:max-w-[700px] lg:max-w-[900px]">
+          <DialogHeader>
+            <DialogTitle className="text-xl">
+              {currentMode === "view" ? "View Task" : currentMode === "edit" ? "Edit Task" : "Create Task"}
+            </DialogTitle>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="taskName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base">Task Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter task name"
+                        {...field}
+                        disabled={currentMode === "view"}
+                        className="h-10"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          {/* Due Date Selection */}
-          <div className="space-y-2">
-            <Label>Due Date (Optional)</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn("w-full justify-start text-left font-normal", !dueDate && "text-muted-foreground")}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {dueDate ? format(dueDate, "PPP") : "Pick a date"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={dueDate}
-                  onSelect={setDueDate}
-                  initialFocus
-                  disabled={(date) => date < new Date()}
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base">Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Enter task description"
+                        className="resize-none min-h-[100px]"
+                        disabled={currentMode === "view"}
+                        {...field}
+                      />
+                    </FormControl>
+                    <div className="text-xs text-muted-foreground text-right">{charCount}/300</div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          {/* Task Preview */}
-          <div className="rounded-lg border bg-muted/50 p-4 space-y-3">
-            <div className="text-sm font-medium">Task Preview</div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="font-medium">{title || "Task Title"}</div>
-                <Badge className={cn("capitalize", getPriorityColor(priority))}>{priority.toLowerCase()}</Badge>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {currentMode === "view" ? (
+                  <>
+                    <div>
+                      <FormLabel className="text-base block mb-2">Priority</FormLabel>
+                      <div className="flex items-center gap-2 p-2 border rounded-md">
+                        <div
+                          className={`w-3 h-3 rounded-full ${getPriorityDetails(form.getValues("priority")).color}`}
+                        />
+                        {getPriorityDetails(form.getValues("priority")).label}
+                      </div>
+                    </div>
+                    <div>
+                      <FormLabel className="text-base block mb-2">Status</FormLabel>
+                      <div className="flex items-center gap-2 p-2 border rounded-md">
+                        <div className={`w-3 h-3 rounded-full ${getStatusDetails(form.getValues("status")).color}`} />
+                        {getStatusDetails(form.getValues("status")).label}
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <FormField
+                      control={form.control}
+                      name="priority"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">Priority</FormLabel>
+                          <FormControl>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="outline" className="w-full justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <div
+                                      className={`w-3 h-3 rounded-full ${getPriorityDetails(field.value as TaskPriority).color}`}
+                                    />
+                                    {getPriorityDetails(field.value as TaskPriority).label}
+                                  </div>
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent className="w-56">
+                                <DropdownMenuLabel>Select Priority</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuRadioGroup value={field.value} onValueChange={field.onChange}>
+                                  {(["HIGH", "MEDIUM", "LOW"] as const).map((priority) => (
+                                    <DropdownMenuRadioItem
+                                      key={priority}
+                                      value={priority}
+                                      className="flex items-center gap-2"
+                                    >
+                                      <div className={`w-3 h-3 rounded-full ${getPriorityDetails(priority).color}`} />
+                                      {getPriorityDetails(priority).label}
+                                    </DropdownMenuRadioItem>
+                                  ))}
+                                </DropdownMenuRadioGroup>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="status"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">Status</FormLabel>
+                          <FormControl>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="outline" className="w-full justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <div className={`w-3 h-3 rounded-full ${getStatusDetails(field.value).color}`} />
+                                    {getStatusDetails(field.value).label}
+                                  </div>
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent className="w-56">
+                                <DropdownMenuLabel>Select Status</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuRadioGroup value={field.value} onValueChange={field.onChange}>
+                                  {(["TODO", "DOING", "DONE"] as const).map((status) => (
+                                    <DropdownMenuRadioItem
+                                      key={status}
+                                      value={status}
+                                      className="flex items-center gap-2"
+                                    >
+                                      <div className={`w-3 h-3 rounded-full ${getStatusDetails(status).color}`} />
+                                      {getStatusDetails(status).label}
+                                    </DropdownMenuRadioItem>
+                                  ))}
+                                </DropdownMenuRadioGroup>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </>
+                )}
               </div>
-              <div className="text-sm text-muted-foreground line-clamp-2">
-                {description || "Task description will appear here"}
-              </div>
-              {dueDate && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Clock className="h-4 w-4" />
-                  Due {format(dueDate, "PPP")}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit}>Create Task</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+              <DialogFooter className="gap-2 sm:gap-0 pt-4">
+                {currentMode === "view" ? (
+                  <Button type="button" onClick={() => setCurrentMode("edit")} className="flex items-center gap-2">
+                    <Edit className="h-4 w-4" />
+                    Edit
+                  </Button>
+                ) : currentMode === "create" ? (
+                  <Button type="submit">Create</Button>
+                ) : (
+                  <>
+                    <Button type="submit" className="mr-2">
+                      Save Changes
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setCurrentMode("view")
+                        form.reset(defaultValues)
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </>
+                )}
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={showAlert} onOpenChange={setShowAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Description Too Long</AlertDialogTitle>
+            <AlertDialogDescription>
+              The description cannot exceed 300 characters. Please shorten it.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setShowAlert(false)}>OK</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   )
 }
 

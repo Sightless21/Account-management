@@ -75,7 +75,7 @@ export const GenericColumn = <T,>({
   );
 
   return (
-    <div className={`h-[550px] w-72 shrink-0 rounded-md border ${headingBgColor}`}>
+    <div className={`h-[550px] w-[300px] shrink-0 rounded-md border ${headingBgColor}`}>
       <div className={`flex items-center justify-between rounded-t-md p-2`}>
         <h3 className={`font-medium decoration-4 ${headingColor}`}>{title}</h3>
         <span className="text-sm text-muted-foreground">
@@ -86,8 +86,7 @@ export const GenericColumn = <T,>({
         onDrop={handleDragEnd}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        className={`h-[500px] w-full overflow-auto border-t-2 border-dotted p-4 transition-colors ${active ? "bg-neutral-800/20" : "bg-neutral-800/0"
-          }`}
+        className={`h-[500px] w-full overflow-auto border-t-2 border-dotted p-4 transition-colors ${active ? "bg-neutral-800/20" : "bg-neutral-800/0"}`}
       >
         {filteredItems.map((item) => (
           <React.Fragment key={String(item[idKey])}>

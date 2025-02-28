@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Account-management
 
-## Getting Started
+## ✨ Introduction
 
-First, run the development server:
+Account-management is an internal web application designed to facilitate various administrative tasks within the company. This project is part of the **Cooperative Education Program** and is developed based on company requirements. The system incorporates multiple management functions, including:
+
+- Meeting room booking system
+- Kanban board for task management
+- Job applicant management system
+- Expense reimbursement system
+- Vehicle booking system
+- Leave request system
+- Customer information management
+- **User Account Settings**
+
+The system follows a **Role-Based Access Control (RBAC)** mechanism, ensuring that different roles within the company have distinct functionalities. For example, HR Managers have the ability to create user accounts.
+
+## 🛠️ Features
+
+- **Role-Based Access Control (RBAC):** Different roles have different privileges.
+- **CRUD Operations:** Every system module supports Create, Read, Update, and Delete actions.
+- **Drag and Drop Support:** Available for job applicant management and task management (To-Do list).
+- **Automated Employee Onboarding:** If an applicant passes the probationary period, a system account is automatically created.
+- **Internal Email Creation:** Enables the automatic generation of company email accounts.
+- **User Account Settings:** Users can manage their own profiles and preferences.
+- **Authentication with NextAuth:** Secure authentication and session management using NextAuth.js.
+
+## ⚙️ Tech Stack
+
+- **Frontend:** Next.js, React, Zustand, React Query
+- **Backend:** Prisma, MongoDB
+- **Authentication:** NextAuth.js
+- **Other Technologies:** Axios, TailwindCSS
+
+## 🔧 Installation & Setup
+
+### Prerequisites
+
+Ensure you have the following installed:
+
+- Node.js (latest LTS version)
+- MongoDB
+- Git
+
+### Steps
 
 ```bash
+# Clone the repository
+git clone https://github.com/your-repo/account-management.git
+cd account-management
+
+# Install dependencies
+npm install
+
+# Start the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Environment Variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Create a `.env` file in the root directory and configure necessary environment variables following `.env.example`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🌟 Usage
 
-## Learn More
+After setting up the project, users can log in based on their assigned role to access specific functionalities:
 
-To learn more about Next.js, take a look at the following resources:
+- HR Managers: Manage employees and applicants
+- Employees: Book meeting rooms, request leaves, and submit expense claims
+- Admins: Oversee all system operations
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📝 Contributing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+We welcome contributions! Please follow these steps:
 
-## Deploy on Vercel
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature-branch`)
+3. Commit your changes (`git commit -m "Add new feature"`)
+4. Push to the branch (`git push origin feature-branch`)
+5. Open a Pull Request
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📢 License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is licensed under the MIT License.
+
+## 💬 Contact & Support
+
+For any inquiries or issues, please contact us via:
+
+- Email: <firstsecondwork@gmail.com>

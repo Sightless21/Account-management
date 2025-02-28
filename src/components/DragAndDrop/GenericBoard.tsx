@@ -33,7 +33,7 @@ export const GenericBoard = <T,>({
   showBurnBarrel = true,
 }: GenericBoardProps<T>) => {
   return (
-    <div className="flex gap-5 p-2">
+    <div className="flex gap-1 p-2">
       {columns.map((col) => (
         <GenericColumn
           key={col.columnKey}

@@ -44,7 +44,7 @@ export const formApplicantSchema = z.object({
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
   documents: z.array(z.string()).min(1, "At least one document is required"),
-  status: z.string(),
+  status: z.enum(["NEW", "PENDING_INTERVIEW", "INTERVIEW_PASSED"]).default("NEW"),
 });
 
 export const APPLICANT_FORM_DEFAULT_VALUES: FormApplicant = {

@@ -33,7 +33,7 @@ export async function POST(request: Request) {
           position: data.person.position,
           expectSalary: data.person.expectSalary,
         },
-        birthdate: new Date(data.person.birthdate),
+        birthdate: new Date(data.birthdate),
         info: {
           address: {
             houseNumber: data.info.address.houseNumber,

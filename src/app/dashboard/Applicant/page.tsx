@@ -1,6 +1,6 @@
 "use client";
 
-import { ApplicantBoard } from "@/components/DnDApplicant/ApplicantBoard";
+import { ApplicantBoard } from "@/components/ApplicantBoard"
 // import ModalApplicant from "@/components/Modal/modal-Applicant";
 import { ApplicantDialog } from "@/components/Modal/modal-Applicant";
 import { Button } from "@/components/ui/button";
@@ -11,10 +11,12 @@ import { TableOfContents } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { useState } from "react";
-import { useApplicantData } from "@/hooks/useApplicantData"
+import { useApplicantData, useDeleteApplicant, useUpdateApplicantStatus } from "@/hooks/useApplicantData"
 
 export default function Page() {
   const { data: applicants, isLoading, } = useApplicantData();
+  const { mutate: updateApplicantStatus } = useUpdateApplicantStatus();
+  const { mutate: deleteApplicant } = useDeleteApplicant();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPosition, setSelectedPosition] = useState(" ");
@@ -59,11 +61,7 @@ export default function Page() {
               Probationary Officer Table <TableOfContents />
             </Button>
           </div>
-          <ApplicantBoard
-            data={applicants || []}
-            searchQuery={searchQuery}
-            selectPosition={selectedPosition}
-          />
+          <ApplicantBoard data={applicants || []} onUpdateStatus={updateApplicantStatus} onDelete={deleteApplicant} />
         </CardContent>
       </Card>
     </div>

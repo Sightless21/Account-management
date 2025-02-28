@@ -39,7 +39,6 @@ export function ApplicantDialog({ applicant, trigger, open: controlledOpen, onCl
   
   // Reset ฟอร์มเมื่อ applicant เปลี่ยน
   useEffect(() => {
-    console.log("Resetting form due to applicant change:", initialValues);
     form.reset(initialValues);
   }, [applicant, form, initialValues]);
 
@@ -125,7 +124,7 @@ export function ApplicantDialog({ applicant, trigger, open: controlledOpen, onCl
     "person.phone",
     "person.email",
     "person.position",
-    "birthdate", // แก้จาก "person.birthdate" เป็น "birthdate"
+    "birthdate",
     "info.address.houseNumber",
     "info.address.subDistrict",
     "info.address.district",

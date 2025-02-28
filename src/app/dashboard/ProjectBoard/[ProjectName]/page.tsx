@@ -38,7 +38,7 @@ export default function Page() {
             {/* 🔍 Input สำหรับค้นหา Task */}
             <div className="flex flex-rowl gap-3 ml-4">
               {/* Features */}
-              <Button variant={"outline"} onClick={handleProjectPage}>
+              <Button variant={"outline"} className="h-8" onClick={handleProjectPage}>
                 <ChevronLeft />
                 Project Page
               </Button>
@@ -47,14 +47,14 @@ export default function Page() {
                 placeholder="Search Task name..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-64 rounded-lg border border-gray-300 px-3 py-2"
+                className="w-64 rounded-lg border border-gray-300 px-3 py-2 h-8"
               />
               {/* 🏷️ Dropdown สำหรับกรอง Priority */}
               <Select
                 value={selectedPriority}
                 onValueChange={setSelectedPriority}
               >
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-40 h-8">
                   <SelectValue placeholder="Filter Priority" />
                 </SelectTrigger>
                 <SelectContent>
@@ -64,7 +64,7 @@ export default function Page() {
                   <SelectItem value="LOW">Low</SelectItem>
                 </SelectContent>
               </Select>
-              <TaskModal mode="create" setLoading={setLoading} defaultValues={{
+              <TaskModal  mode="create" setLoading={setLoading} defaultValues={{
                 taskName: "",
                 description: "",
                 priority: "LOW"

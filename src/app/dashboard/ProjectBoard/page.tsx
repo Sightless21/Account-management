@@ -125,17 +125,17 @@ export default function Page() {
                 placeholder="Search Project..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-64 rounded-lg border border-gray-300 px-3 py-2"
+                className="w-64 rounded-lg border border-gray-300 px-3 py-2 h-8"
               />
               {searchQuery && (
-                <Button variant={"destructive"} onClick={() => setSearchQuery("")}>
+                <Button className="h-8" variant={"destructive"} onClick={() => setSearchQuery("")}>
                   Clear
                 </Button>
               )}
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="flex items-center gap-2 w-44">
+                  <Button variant="outline" className="flex items-center gap-2 w-44 h-8">
                     {sortOption}
                     <ChevronDown className="h-4 w-4" />
                   </Button>

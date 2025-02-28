@@ -120,9 +120,9 @@ export function TaskModal({ defaultValues, mode, projectId, setLoading }: TaskMo
             <Dialog>
                 <DialogTrigger asChild>
                     {currentMode === "view" || currentMode === "edit" ? (
-                        <Button variant="link" onClick={() => setCurrentMode("view")}>View Task</Button>
+                        <Button variant="link" className="h-8 dark:text-black" onClick={() => setCurrentMode("view")}>View Task</Button>
                     ) : (
-                        <Button variant="default">Create Task</Button>
+                        <Button variant="default" className="h-8">Create Task</Button>
                     )}
                 </DialogTrigger>
                 <DialogContent className="w-[900px]">

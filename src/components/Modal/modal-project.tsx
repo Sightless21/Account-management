@@ -53,7 +53,7 @@ export function ModalProject({ createProject }: ModalProjectProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="default">Create Project</Button>
+        <Button variant="default" className="h-8">Create Project</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>

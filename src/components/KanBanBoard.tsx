@@ -90,7 +90,7 @@ export const KanbanBoard = ({ data, onUpdateStatus, onDelete }: KanbanBoardProps
             />
           </div>
           <div className="flex w-full items-center justify-between gap-2 p-2">
-            <Badge className="bg-slate-200">{getPriorityColor(item.priority)}</Badge>
+            <Badge className="bg-slate-200 ">{getPriorityColor(item.priority)}</Badge>
             <TaskModal mode={"view"} defaultValues={item} projectId={item.projectId} />
           </div>
         </>

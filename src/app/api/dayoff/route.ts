@@ -1,7 +1,6 @@
 import {prisma} from "@/lib/prisma";
 import { NextResponse, NextRequest } from "next/server";
 
-//DONE : endpoint for fetching dayoff
 export async function GET() {
   try {
     const allDayoff = await prisma.dayoff.findMany({

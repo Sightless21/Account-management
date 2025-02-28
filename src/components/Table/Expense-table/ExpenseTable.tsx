@@ -12,7 +12,6 @@ interface ExpenseTableProps {
   userRole: string;
 }
 
-// DONE : Expense Table
 export default function ExpenseTable({ userRole }: ExpenseTableProps) {
   const { data: expensesData, isLoading, error } = useExpenses();
   const { mutateAsync: updateExpenseMutation } = useUpdateExpense();

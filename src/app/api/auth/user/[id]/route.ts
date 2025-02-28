@@ -1,8 +1,6 @@
 import { NextRequest , NextResponse} from "next/server"
 import { prisma } from "@/lib/prisma";
 
-//DONE : User Infomation enpoint
-// ✅ GET: Fetch User Infomation
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
     const { id } = await params;
   try{

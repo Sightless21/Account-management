@@ -3,7 +3,6 @@ import ExpenseTable from "@/components/Table/Expense-table/ExpenseTable";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import React from "react";
 
-//DONE : สร้างหน้า ClaimExpenses
 export default function Page() {
   return (
     <div className="mr-3 flex flex-col gap-4 p-4 h-full">

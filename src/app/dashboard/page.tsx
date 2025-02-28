@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
-//DONE : Fetch User Infomation
+
 async function fetchUser(userID: string) {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/user/${userID}`, {

@@ -11,7 +11,6 @@ import { ChevronLeft } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import React from "react";
 
-//DONE : Project Board page isLoading is Error
 export default function Page() {
   const router = useRouter();
   const params = useParams();

@@ -8,7 +8,6 @@ import { Customer } from "@/schema/formCustomer";
 import { CustomerDialog } from "@/components/Modal/modal-Customer";
 import { toast } from "sonner";
 
-//DONE : Customer Table
 export default function CustomerTable() {
   const { data: customers } = useCustomer();
   const { mutateAsync: deleteCustomer } = useDeleteCustomer();

@@ -1,7 +1,6 @@
 import {prisma} from "@/lib/prisma";
 import { NextResponse, NextRequest } from "next/server";
 
-//DONE : endpoint to fetch customer
 export async function GET() {
   try {
     const allCustomer = await prisma.customer.findMany();

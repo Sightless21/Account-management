@@ -2,7 +2,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// DONE: Applicant endpoint
 export async function POST(request: Request) { 
   try {
     // ดึงข้อมูลจาก body

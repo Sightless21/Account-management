@@ -4,7 +4,6 @@ import { columns } from "./columns"
 import { DataTable } from "@/components/Table/Data-Table"
 import { useRoomBookings } from "@/hooks/useRoomBookingData"
 
-//DONE: Room Booking Table
 export default function BookingRoomTable() {
   const { data: roombookings, isLoading, error } = useRoomBookings()
 

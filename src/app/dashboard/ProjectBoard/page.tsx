@@ -13,7 +13,6 @@ import { ChevronDown } from "lucide-react"
 import { useCallback, useEffect, useMemo } from "react"
 import { toast } from "sonner"
 
-//DONE : Project Board
 export default function Page() {
   const { sortOption, searchQuery, currentPage, setSortOption, setSearchQuery, setCurrentPage } = useProjectUIStore()
   const { data: projects } = useProjects()

@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-//DONE : fetching Tasks endpoint
 export async function GET() {
   try {
     const tasks = await prisma.task.findMany();

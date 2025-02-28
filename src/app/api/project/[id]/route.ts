@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-//CRUD Task in Project
 
-//DONE : fetching Tasks endpoint 
-// ดึง Project และ Task ทั้งหมด
 export async function GET(
   request: Request,
   { params }: { params: { id: string } },

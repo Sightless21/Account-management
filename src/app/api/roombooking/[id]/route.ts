@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-//DONE : Room Booking endpoin (DELETE PATCH)
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   const { id } = await params;
   try {

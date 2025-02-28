@@ -4,8 +4,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-
-//DONE :  NextAuth config endpoint 
 interface CustomUser  {
   id: string;
   role: string;

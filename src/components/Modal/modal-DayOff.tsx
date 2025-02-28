@@ -108,7 +108,6 @@ export function DayoffModal({ defaultValue, mode }: DayoffModalProps) {
       },
     };
 
-    //DONE : API calling 
     if (mode === "edit") {
       toast.promise(updateDayOff({ id: formatData.id, newData: formatData }),{
         loading: "Saving...",

@@ -1,6 +1,5 @@
 import { create } from "zustand";
 
-//DONE : Tasks UI Store Zustand
 interface TasksUIState {
   searchQuery: string;
   setSearchQuery: (query: string) => void;

@@ -2,7 +2,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { DayoffType } from "@/types/day-off"
 
-//DONE  : Fetching Day-off React-Query
 const fetchDayOff = async () => {
   const response = await axios.get<DayoffType[]>("/api/dayoff");
   return response.data;

@@ -12,7 +12,6 @@ import { CarReservationType, TripStatus } from "@/types/car-reservation"
 import { useUpdateCarReservation } from "@/hooks/useCarReservationData";
 import { toast } from "sonner";
 
-//DONE : Car-Reservation Table
 interface CarReservationTableProps {
   userRole: Role
 }

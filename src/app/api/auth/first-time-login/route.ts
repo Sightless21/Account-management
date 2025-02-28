@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 
-
-//DONE : First Time Login endpoint 
 const MIN_PASSWORD_LENGTH = 6;
 
 export const POST = async (req: NextRequest) => {

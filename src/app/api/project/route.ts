@@ -1,9 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-//CRUD Project
-//DONE : fetching Project endpoint
-// ดึงข้อมูล Project //Get all projects and Task in Project
 export async function GET() {
   try {
     const projects = await prisma.project.findMany({

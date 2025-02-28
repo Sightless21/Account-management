@@ -1,6 +1,5 @@
 import { create } from "zustand";
 
-//DONE : Project UI Store Zustand
 interface ProjectUIState {
   sortOption: string;
   searchQuery: string;

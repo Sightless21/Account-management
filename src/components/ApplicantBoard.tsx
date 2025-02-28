@@ -2,8 +2,8 @@ import { GenericBoard } from "@/components/DragAndDrop/GenericBoard"
 import { GenericCard } from "@/components/DragAndDrop/GenericCard"
 import { FormApplicant } from "@/types/applicant";
 import { GripVertical, User } from "lucide-react";
-import { Button } from "./ui/button";
-import { ApplicantDialog } from "./Modal/modal-Applicant";
+import { Button } from "@/components/ui/button";
+import { ApplicantDialog } from "@/components/Modal/modal-Applicant";
 import { Document, ApplicantStatusType } from "@/types/applicant";
 
 
@@ -91,6 +91,7 @@ export const ApplicantBoard = ({ data, onUpdateStatus, onDelete }: ApplicantBoar
       onCardDrop={handleCardDrop}
       onCardDelete={onDelete}
       renderItem={renderApplicantCard}
+      showBurnBarrel={true}
     />
   );
 };

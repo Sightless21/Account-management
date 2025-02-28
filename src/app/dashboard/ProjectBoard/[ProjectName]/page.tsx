@@ -1,11 +1,11 @@
 "use client";
-import { KanBanBoard } from "@/components/DnDKanBan/KanBanBoard";
+import { KanbanBoard } from "@/components/KanBanBoard"
 import { TaskModal } from "@/components/Modal/modal-Task";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useProjects } from "@/hooks/useProjectData";
+import { useDeleteTask, useProjects, useTask, useUpdateTask } from "@/hooks/useProjectData";
 import { useTasksUIStore } from "@/store/useTasksUIStore";
 import { ChevronLeft } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -15,19 +15,13 @@ import React from "react";
 export default function Page() {
   const router = useRouter();
   const params = useParams();
-  const projectName =
-    typeof params?.ProjectName === "string"
-      ? decodeURIComponent(params.ProjectName)
-      : null;
-
-  // Zustand store states for UI
-  const { searchQuery, setSearchQuery, selectedPriority, setSelectedPriority, loading, setLoading } = useTasksUIStore();
   const { data: projectsData } = useProjects();
-
-  // Set projectId after fetching projects
+  const projectName = typeof params?.ProjectName === "string" ? decodeURIComponent(params.ProjectName) : null;
   const projectId = (projectsData?.find((project) => project.projectName === projectName))?.id ?? null;
-
-  // Handle redirect back to Project page
+  const { data: tasks = [] } = useTask(projectId);
+  const { mutate: updateTaskStatus } = useUpdateTask();
+  const { mutate: deleteTask } = useDeleteTask();
+  const { searchQuery, setSearchQuery, selectedPriority, setSelectedPriority, loading, setLoading } = useTasksUIStore();
   async function handleProjectPage(): Promise<void> {
     router.push("/Dashboard/ProjectBoard");
   }
@@ -77,10 +71,7 @@ export default function Page() {
               }}
                 projectId={projectId} />
             </div>
-            <KanBanBoard
-              projectID={projectId}
-              projectName={projectName}
-            />
+            <KanbanBoard data={tasks || []} onUpdateStatus={updateTaskStatus} onDelete={deleteTask} />
           </CardContent>
           <CardFooter>
             <p className={loading ? "text-yellow-500" : "text-green-500"}>

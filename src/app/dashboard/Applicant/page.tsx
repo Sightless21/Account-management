@@ -1,7 +1,6 @@
 "use client";
 
 import { ApplicantBoard } from "@/components/ApplicantBoard"
-// import ModalApplicant from "@/components/Modal/modal-Applicant";
 import { ApplicantDialog } from "@/components/Modal/modal-Applicant";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

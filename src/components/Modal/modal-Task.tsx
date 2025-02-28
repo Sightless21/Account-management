@@ -1,33 +1,17 @@
 'use client';
 import { useEffect, useState, } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useUpdateTask, useCreateTask } from "@/hooks/useProjectData"
-import { ColumnType } from "../DnDKanBan/types";
+import { StatusTasks } from "@/types/projects"
 import { toast } from "sonner";
 import { z } from "zod";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuLabel,
-    DropdownMenuRadioGroup,
-    DropdownMenuRadioItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader,AlertDialogTitle } from "@/components/ui/alert-dialog";
 import FormTextareaWithCount from "../ui/FormTextareaWithCount";
 
 type TaskModalProps = {
@@ -42,7 +26,7 @@ const formSchema = z.object({
     taskName: z.string().min(2, { message: "Task name must be at least 2 characters." }),
     description: z.string(),
     priority: z.string(),
-    status: z.enum(["todo", "doing", "done"]).optional(),
+    status: z.enum(["TODO", "DOING", "DONE"]).optional(),
 });
 
 export function TaskModal({ defaultValues, mode, projectId, setLoading }: TaskModalProps) {
@@ -61,7 +45,7 @@ export function TaskModal({ defaultValues, mode, projectId, setLoading }: TaskMo
             taskName: "",
             description: "",
             priority: "LOW",
-            status: "todo",
+            status: "TODO",
         },
     });
 
@@ -73,62 +57,63 @@ export function TaskModal({ defaultValues, mode, projectId, setLoading }: TaskMo
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         if (currentMode === "view") {
-          return; // ไม่ทำงานหากอยู่ในโหมด view
+            return; // ไม่ทำงานหากอยู่ในโหมด view
         }
-      
+
         console.log("submit form: ", values);
-      
+
         const card = {
-          projectId: projectId || "",
-          id: values.id || "",
-          taskName: values.taskName.trim(),
-          description: values.description.trim(),
-          priority: values.priority,
-          status: (values.status as ColumnType) || "todo",
+            projectId: projectId || "",
+            id: values.id || "",
+            taskName: values.taskName.trim(),
+            description: values.description.trim(),
+            priority: values.priority,
+            status: (values.status as StatusTasks) || "TODO",
         };
-      
+
         console.log("card form: ", card);
-      
+
         if (currentMode === "create") {
-          if (charCount > 300) {
-            setShowAlert(true);
-            return;
-          }
-          if (!projectId) {
-            toast.error("Project ID is required");
-            return;
-          }
-          const projectIdStr = projectId as string;
-          toast.promise(createTask({ id: projectIdStr, newTask: card }), {
-            loading: "Creating task...",
-            success: "Task created",
-            error: "Error creating task",
-          });
-        } else if (currentMode === "edit") {
-          if (setLoading) setLoading(false);
-      
-          if (!values.id) {
-            toast.error("Task ID is required");
-            return;
-          }
-      
-          const taskId = values.id; // ✅ ใช้ taskId แทน projectId
-          toast.promise(
-            updateTask({
-              id: taskId, // ✅ ต้องใช้ `id` เป็น Task ID
-              taskName: card.taskName,
-              description: card.description,
-              priority: card.priority,
-              status: card.status,
-            }),
-            {
-              loading: "Updating task...",
-              success: "Task updated",
-              error: "Error updating task",
+            if (charCount > 300) {
+                setShowAlert(true);
+                return;
             }
-          );
+            if (!projectId) {
+                toast.error("Project ID is required");
+                return;
+            }
+            const projectIdStr = projectId as string;
+            toast.promise(createTask({ id: projectIdStr, newTask: card }), {
+                loading: "Creating task...",
+                success: "Task created",
+                error: "Error creating task",
+            });
+        } else if (currentMode === "edit") {
+            if (setLoading) setLoading(false);
+
+            if (!values.id) {
+                toast.error("Task ID is required");
+                return;
+            }
+
+            const taskId = values.id;
+            toast.promise(
+                updateTask({
+                    id: taskId,
+                    projectId: card.projectId,
+                    taskName: card.taskName,
+                    description: card.description,
+                    priority: card.priority,
+                    status: card.status as StatusTasks,
+                }),
+                {
+                    loading: "Updating task...",
+                    success: "Task updated",
+                    error: "Error updating task",
+                }
+            );
         }
-      };
+    };
 
     return (
         <>

@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { CardType, ColumnType } from "./types";
 import { Card } from "./Card";
-import { DropIndicator } from "./DropIndicator";
 import { useUpdateTask } from "@/hooks/useProjectData";
 
 type ColumnProps = {
@@ -123,7 +122,6 @@ export const Column = ({
             />
           );
         })}
-        <DropIndicator beforeId={null} column={column} />
       </div>
     </div>
   );

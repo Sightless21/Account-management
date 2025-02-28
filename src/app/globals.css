@@ -90,4 +90,8 @@
   body {
     @apply bg-background text-foreground;
   }
+  .custom-progress {
+    --color-done: 142 76% 36%; /* Green color */
+  }
 }
+

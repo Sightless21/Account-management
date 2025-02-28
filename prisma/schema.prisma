@@ -64,7 +64,7 @@ model Task {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
   taskName    String
   description String
-  status      TaskStatus @default(todo)
+  status      TaskStatus @default(TODO)
   priority    Priority   @default(LOW)
   Project     Project?   @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId   String?    @db.ObjectId
@@ -73,9 +73,9 @@ model Task {
 }
 
 enum TaskStatus {
-  todo
-  doing
-  done
+  TODO
+  DOING
+  DONE
 }
 
 enum Priority {

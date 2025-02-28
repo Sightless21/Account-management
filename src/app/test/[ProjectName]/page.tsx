@@ -6,21 +6,16 @@ import { useParams } from "next/navigation";
 
 export default function Page() {
   const params = useParams();
-  const projectName =
-    typeof params?.ProjectName === "string"
-      ? decodeURIComponent(params.ProjectName)
-      : null;
-
+  const projectName = typeof params?.ProjectName === "string" ? decodeURIComponent(params.ProjectName): null;
   const { data: projectsData } = useProjects();
   const projectId = (projectsData?.find((project) => project.projectName === projectName))?.id ?? null;
   const { data: tasks = [] } = useTask(projectId);
-  const { mutate: updateApplicantStatus } = useUpdateTask();
-  const { mutate: deleteApplicant } = useDeleteTask();
-
+  const { mutate: updateTaskStatus } = useUpdateTask();
+  const { mutate: deleteTask } = useDeleteTask();
 
   return (
     <div>
-      <KanbanBoard data={tasks || []} onUpdateStatus={updateApplicantStatus} onDelete={deleteApplicant} />
+      <KanbanBoard data={tasks || []} onUpdateStatus={updateTaskStatus} onDelete={deleteTask} />
     </div>
   );
 }

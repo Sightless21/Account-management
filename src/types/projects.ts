@@ -1,5 +1,5 @@
-export type StatusTasks = "todo" | "doing" | "done";
-export interface Task {
+export type StatusTasks = "TODO" | "DOING" | "DONE";
+export type Task = {
   id: string;
   status: StatusTasks;
   taskName: string;
@@ -8,13 +8,13 @@ export interface Task {
   projectId: string;
 }
 
-export interface Project {
+export type Project = {
   id: string;
   projectName: string;
   task: Task[];
 }
 
-export interface ChartData {
+export type ChartData = {
   projectId: string;
   projectName: string;
   chartData: {

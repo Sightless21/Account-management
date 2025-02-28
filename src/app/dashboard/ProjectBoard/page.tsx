@@ -1,39 +1,46 @@
-"use client";
-import { RadialChart } from "@/components/Chart/radialchart-text";
-import { ModalProject } from "@/components/Modal/modal-project";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { useCreateProject, useProjects } from "@/hooks/useProjectData";
-import { useProjectUIStore } from "@/store/useProjectUIStore";
-import { ChartData, Project } from "@/types/projects";
-import { useQueryClient } from "@tanstack/react-query";
-import { ChevronDown } from "lucide-react";
-import { useCallback, useEffect, useMemo } from "react";
-import { toast } from "sonner";
+"use client"
+import { RadialChart } from "@/components/Chart/radialchart-text"
+import { ModalProject } from "@/components/Modal/modal-project"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Input } from "@/components/ui/input"
+import { useCreateProject, useProjects } from "@/hooks/useProjectData"
+import { useProjectUIStore } from "@/store/useProjectUIStore"
+import type { ChartData, Project, Task } from "@/types/projects"
+import { useQueryClient } from "@tanstack/react-query"
+import { ChevronDown } from "lucide-react"
+import { useCallback, useEffect, useMemo } from "react"
+import { toast } from "sonner"
 
 //DONE : Project Board
 export default function Page() {
-  const { sortOption, searchQuery, currentPage, setSortOption, setSearchQuery, setCurrentPage } = useProjectUIStore();
-  const { data: projects } = useProjects();
-  const { mutateAsync: createProject } = useCreateProject();
-  const queryClient = useQueryClient();
+  const { sortOption, searchQuery, currentPage, setSortOption, setSearchQuery, setCurrentPage } = useProjectUIStore()
+  const { data: projects } = useProjects()
+  const { mutateAsync: createProject } = useCreateProject()
+  const queryClient = useQueryClient()
 
   const generateChartData = useCallback((project: Project): ChartData => {
-    const doneTasks = project.task?.filter((task) => task.status === "done").length;
-    const totalTasks = project.task?.length;
-    const donePercentage = totalTasks > 0 ? (doneTasks / totalTasks) * 100 : 0;
-    const doneAngle = (donePercentage * 360) / 100;
-    const projectId = project.id;
+    const doneTasks = project.task?.filter((task: Task) => task.status === "DONE").length
+    const totalTasks = project.task?.length
+    const donePercentage = totalTasks > 0 ? (doneTasks / totalTasks) * 100 : 0
+    const doneAngle = (donePercentage * 360) / 100
+    const projectId = project.id
 
+    // Choose color based on completion percentage
+    let fillColor = "hsl(173 58% 39%)"
+    if (donePercentage < 30) {
+      fillColor = "hsl(0, 76%, 50%)"
+    } else if (donePercentage < 70) {
+      fillColor = "hsl(40, 76%, 50%)"
+    }
     return {
       projectName: project.projectName,
       chartData: [
         {
           name: "Done Tasks",
           value: donePercentage,
-          fill: "var(--color-done)",
+          fill: fillColor,
         },
       ],
       chartConfig: { value: { label: "Done" } },
@@ -42,8 +49,8 @@ export default function Page() {
       totalTasks,
       doneTasks,
       projectId,
-    };
-  }, []);
+    }
+  }, [])
 
   async function handleAddProject(projectName: string) {
     try {
@@ -51,61 +58,57 @@ export default function Page() {
         id: "",
         projectName: projectName,
         task: [],
-      };
+      }
       toast.promise(createProject(newProject), {
         loading: "Adding project...",
         success: "Successfully added project",
         error: "Error adding project",
-      });
+      })
     } catch (error) {
-      console.error("Error adding project:", error);
+      console.error("Error adding project:", error)
     }
   }
 
   // 📌 รีเฟรชข้อมูลทุกครั้งที่หน้า Page นี้ถูกเปิด
   useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: ["projects"] });
-    queryClient.invalidateQueries({ queryKey: ["tasks"] });
-  }, [queryClient]);
+    queryClient.invalidateQueries({ queryKey: ["projects"] })
+    queryClient.invalidateQueries({ queryKey: ["tasks"] })
+  }, [queryClient])
 
   // 📌 เรียงลำดับโครงการตามเงื่อนไขที่เลือก
   const sortedProjects = useMemo(() => {
-    if (!projects) return [];
-    const sorted = [...projects];
+    if (!projects) return []
+    const sorted = [...projects]
     switch (sortOption) {
       case "Sort A-Z":
-        sorted.sort((a, b) => a.projectName.localeCompare(b.projectName));
-        break;
+        sorted.sort((a, b) => a.projectName.localeCompare(b.projectName))
+        break
       case "Sort Z-A":
-        sorted.sort((a, b) => b.projectName.localeCompare(a.projectName));
-        break;
+        sorted.sort((a, b) => b.projectName.localeCompare(a.projectName))
+        break
       case "Most task":
-        sorted.sort((a, b) => (b.task?.length ?? 0) - (a.task?.length ?? 0));
-        break;
+        sorted.sort((a, b) => (b.task?.length ?? 0) - (a.task?.length ?? 0))
+        break
       case "Less task":
-        sorted.sort((a, b) => (a.task?.length ?? 0) - (b.task?.length ?? 0));
-        break;
+        sorted.sort((a, b) => (a.task?.length ?? 0) - (b.task?.length ?? 0))
+        break
     }
 
-    return sorted;
-  }, [projects, sortOption]);
+    return sorted
+  }, [projects, sortOption])
 
   const filteredProjects = useMemo(() => {
-    return sortedProjects.filter((project) =>
-      project.projectName.toLowerCase().includes(searchQuery.toLowerCase()),
-    );
-  }, [sortedProjects, searchQuery]);
+    return sortedProjects.filter((project) => project.projectName.toLowerCase().includes(searchQuery.toLowerCase()))
+  }, [sortedProjects, searchQuery])
 
-  const projectsPerPage = 8;
+  const projectsPerPage = 8
   const paginatedProjects = useMemo(() => {
-    const startIndex = (currentPage - 1) * projectsPerPage;
-    return filteredProjects
-      .slice(startIndex, startIndex + projectsPerPage)
-      .map(generateChartData);
-  }, [filteredProjects, currentPage, projectsPerPage, generateChartData]);
+    const startIndex = (currentPage - 1) * projectsPerPage
+    return filteredProjects.slice(startIndex, startIndex + projectsPerPage).map(generateChartData)
+  }, [filteredProjects, currentPage, projectsPerPage, generateChartData])
 
-  const totalPages = Math.ceil(filteredProjects.length / projectsPerPage);
-  const projectnum = paginatedProjects.length === 0 ? true : false;
+  const totalPages = Math.ceil(filteredProjects.length / projectsPerPage)
+  const projectnum = paginatedProjects.length === 0 ? true : false
 
   return (
     <div className="ml-3 mr-3 flex flex-col gap-4">
@@ -116,11 +119,7 @@ export default function Page() {
           </CardHeader>
           <CardContent>
             <div className="mb-4 mr-2 flex items-center justify-end gap-3">
-              {projectnum ? (
-                ""
-              ) : (
-                <ModalProject createProject={handleAddProject} />
-              )}
+              {projectnum ? "" : <ModalProject createProject={handleAddProject} />}
               <Input
                 type="text"
                 placeholder="Search Project..."
@@ -129,10 +128,7 @@ export default function Page() {
                 className="w-64 rounded-lg border border-gray-300 px-3 py-2"
               />
               {searchQuery && (
-                <Button
-                  variant={"destructive"}
-                  onClick={() => setSearchQuery("")}
-                >
+                <Button variant={"destructive"} onClick={() => setSearchQuery("")}>
                   Clear
                 </Button>
               )}
@@ -145,13 +141,11 @@ export default function Page() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  {["Sort A-Z", "Sort Z-A", "Most task", "Less task"].map(
-                    (option) => (
-                      <DropdownMenuItem key={option} onClick={() => setSortOption(option)}>
-                        {option}
-                      </DropdownMenuItem>
-                    ),
-                  )}
+                  {["Sort A-Z", "Sort Z-A", "Most task", "Less task"].map((option) => (
+                    <DropdownMenuItem key={option} onClick={() => setSortOption(option)}>
+                      {option}
+                    </DropdownMenuItem>
+                  ))}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -185,7 +179,11 @@ export default function Page() {
               <span className="flex items-center px-4">
                 Page {currentPage} of {totalPages}
               </span>
-              <Button variant="outline" disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}>
+              <Button
+                variant="outline"
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(currentPage + 1)}
+              >
                 Next
               </Button>
             </div>
@@ -193,5 +191,6 @@ export default function Page() {
         </Card>
       </div>
     </div>
-  );
+  )
 }
+

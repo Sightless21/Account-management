@@ -1,99 +1,147 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient , QueryClient} from "@tanstack/react-query";
 import axios from "axios";
 import { Project, Task } from "@/types/projects";
 
-//DONE : Fetching Project React-Query
-export const fetchProjects = async () => {
-  const response = await axios.get<Project[]>("/api/project");
-  return response.data;
+
+const fetchProjects = async () => {
+  const { data } = await axios.get<Project[]>("/api/project");
+  return data;
 };
+const createProject = async (newProject: Project) => {
+  try {
+    const res = await axios.post("/api/project", newProject);
+    console.log("API response:", res.status);
+    return res.data;
+  } catch (error) {
+    console.error("API call failed:", error);
+    throw error;
+  }
+}
+const updateProject = async ({ id, NewNameProject }: { id: string; NewNameProject: string }) => {
+  try {
+    const res = await axios.patch("/api/project", { id, projectName: NewNameProject });
+    console.log("API response:", res.status);
+    return res.data;
+  } catch (error) {
+    console.error("API call failed:", error);
+    throw error;
+  }
+}
+const deleteProject = async (id: string) => {
+  try {
+    const res = await axios.delete(`/api/project/?id=${id}`)
+    console.log("API response:", res.status);
+    return res.data;
+  } catch (error) {
+    console.error("API call failed:", error);
+    throw error;
+  }
+}
+const invalidateProjects = (queryClient: QueryClient) => {
+  queryClient.invalidateQueries({ queryKey: ["projects"] });
+}
 
 export const useProjects = () => {
   return useQuery({
     queryKey: ["projects"],
     queryFn: fetchProjects,
-    staleTime: 1000 * 60 * 5, // Cache data for 5 minutes
+    refetchInterval: 5 * 60 * 1000,
   });
 };
-
-// Add new project
 export const useCreateProject = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (newProject: Project) => {
-      const response = await axios.post("/api/project", newProject);
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["projects"] });
-    },
+    mutationFn: createProject,
+    onSuccess: () => invalidateProjects(queryClient),
   });
 };
-
-// Update project name
 export const useUpdateProject = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, NewNameProject }: { id: string; NewNameProject: string }) => {
-      const response = await axios.patch(`/api/project/`, { id, projectName: NewNameProject });
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["projects"] });
-    },
+    mutationFn: updateProject,
+    onSuccess: () => invalidateProjects(queryClient),
   });
 };
-
-// Delete project
 export const useDeleteProject = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (id: string) => {
-      await axios.delete(`/api/project/?id=${id}`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["projects"] });
-    },
+    mutationFn: deleteProject,
+    onSuccess: () => invalidateProjects(queryClient),
   });
 };
 
+
+
+const fetchTasks = async (projectID: string) => {
+  try {
+    const res = await axios.get<Project>(`/api/project/${projectID}`);
+    console.log("Full Project Response:", res.data);
+    const tasks = res.data.task;
+    console.log("Filtered Tasks:", tasks);
+    return tasks;
+  } catch (error) {
+    console.error("API call failed:", error);
+    throw error;
+  }
+}
+const createTask = async ({ id, newTask }: { id: string; newTask: Task }) => {
+  try {
+    const res = await axios.post(`/api/project/${id}`, newTask);
+    console.log("API response:", res.status);
+    return res.data;
+  } catch (error) {
+    console.error("API call failed:", error);
+    throw error;
+  }
+}
+const updateTask = async ({ id, taskName, status, priority, description }: Task) => {
+  try {
+    const res = await axios.patch(`/api/project/${id}`, {
+      taskName,
+      status,
+      priority,
+      description
+    });
+    console.log("API response:", res.status);
+    return res.data;
+  } catch (error) {
+    console.error("API call failed:", error);
+    throw error;
+  }
+}
+const deleteTask = async (id: string) => {
+  try {
+    const res = await axios.delete(`/api/project/${id}`);
+    console.log("API response:", res.status);
+    return res.data;
+  } catch (error) {
+    console.error("API call failed:", error);
+    throw error;
+  }
+}
+const invalidateTasks = (queryClient: QueryClient) => {
+  queryClient.invalidateQueries({ queryKey: ["tasks"] });
+}
+
 export const useTask = (projectID: string | null) => {
   return useQuery({
-    queryKey: ["tasks", projectID], // ✅ ใช้ projectID เป็น key เพื่อแยก cache
-    queryFn: async () => {
-      if (!projectID) return []; // ✅ ป้องกัน fetch โดยไม่จำเป็น
-      const response = await axios.get<{ task: Task[] }>(`/api/project/${projectID}`);
-      return response.data.task; // ✅ ดึงเฉพาะ `task[]` ออกมา
-    },
-    enabled: !!projectID, // ✅ หยุด fetch ถ้าไม่มี projectID
-    staleTime: 1000 * 60 * 5, // ✅ Cache data for 5 minutes
+    queryKey: ["tasks", projectID],
+    queryFn: () => fetchTasks(projectID || ""),
+    enabled: !!projectID,
+    refetchInterval: 5 * 60 * 1000,
   });
 };
 export const useCreateTask = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, newTask }: { id: string; newTask: Task }) => {
-      const response = await axios.post(`/api/project/${id}`, newTask);
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
-    },
+    mutationFn: createTask,
+    onSuccess: () => invalidateTasks(queryClient),
   });
 }
-
 export const useUpdateTask = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, taskName, status, priority, description }: Task) => {
-      const response = await axios.patch(`/api/project/${id}`, {
-        taskName,
-        status,
-        priority,
-        description
-      });
-      return response.data;
-    },
+    mutationFn: updateTask,
     onMutate: async (updateTask) => {
       await queryClient.cancelQueries({ queryKey: ['tasks'] });
       const previousTasks = queryClient.getQueryData<Task[]>(["tasks"]);
@@ -104,22 +152,16 @@ export const useUpdateTask = () => {
       })
       return { previousTasks };
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] }); 
-    },
+    onSettled: () => invalidateTasks(queryClient),
     onError: (error, _variables, context) => {
       queryClient.setQueryData(["tasks"], context?.previousTasks);
     },
   });
 };
-
-
 export const useDeleteTask = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (id: string) => {
-      await axios.delete(`/api/tasks/${id}`); // ✅ ใช้ URL ที่ถูกต้อง
-    },
+    mutationFn: deleteTask,
     onMutate: async (id) => {
       await queryClient.cancelQueries({ queryKey: ["tasks"] });
       const previousTasks = queryClient.getQueryData<Task[]>(["tasks"]);
@@ -128,5 +170,9 @@ export const useDeleteTask = () => {
       });
       return { previousTasks };
     },
+    onSettled: () => invalidateTasks(queryClient),
+    onError: (error, _variables, context) => {
+      queryClient.setQueryData(["tasks"], context?.previousTasks);
+    }
   });
 };

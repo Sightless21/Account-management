@@ -97,14 +97,10 @@ export const useUpdateApplicantStatus = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: updateApplicantStatus, // ฟังก์ชันที่ส่ง request ไปยัง server
-    // Optimistic Update: อัปเดต UI ก่อนส่ง request
+    mutationFn: updateApplicantStatus, 
     onMutate: async (updateApplicant: { id: string; status: ApplicantStatusType }) => {
-      // ยกเลิก query ที่กำลังทำงานเพื่อป้องกัน race condition
       await queryClient.cancelQueries({ queryKey: ["applicants"] });
-      // ดึงข้อมูลเก่าก่อนอัปเดต เพื่อใช้ rollback ถ้าล้มเหลว
       const previousApplicants = queryClient.getQueryData<FormApplicant[]>(["applicants"]) || [];
-      // อัปเดตข้อมูลใน cache ทันที (optimistic update)
       queryClient.setQueryData<FormApplicant[]>(["applicants"], (oldApplicants) => {
         if (!oldApplicants) return [];
         return oldApplicants.map((applicant) =>
@@ -113,17 +109,13 @@ export const useUpdateApplicantStatus = () => {
             : applicant
         );
       });
-      // ส่งข้อมูลเก่ากลับไปเพื่อใช้ใน onError
       return { previousApplicants };
     },
-    // ถ้าสำเร็จ: invalidate cache เพื่อ sync กับ server
     onSuccess: () => invalidateApplicants(queryClient),
-    // ถ้าล้มเหลว: rollback กลับไปใช้ข้อมูลเก่า
     onError: (error, updateApplicant, context) => {
       console.error("Error updating applicant status:", error);
       queryClient.setQueryData(["applicants"], context?.previousApplicants);
     },
-    // เมื่อ mutation เสร็จสิ้น (ไม่ว่าจะสำเร็จหรือล้มเหลว): invalidate เพื่อให้แน่ใจว่าได้ข้อมูลล่าสุด
     onSettled: () => invalidateApplicants(queryClient),
   });
 };

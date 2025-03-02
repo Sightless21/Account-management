@@ -3,71 +3,94 @@ import z from "zod"
 
 //FIX
 export const settingsSchema = z.object({
-  firstName: z.string().min(3, "First name must be at least 3 characters"),
-  lastName: z.string().min(3, "Last name must be at least 3 characters"),
-  fullName: z.string().min(3, "Full name must be at least 3 characters"),
-  email: z.string().email("Invalid email address"),
-  currentPassword: z.string().min(6, "Password must be at least 6 characters"),
-  newPassword: z.string().min(6, "Password must be at least 6 characters").optional(),
-  confirmPassword: z.string().optional(),
-  phone: z.string().min(10, "Phone number must be at least 10 digits").optional(),
-  position: z.string().min(1, "Position is required").optional(),
-  militaryStatus: z.enum(["Exempted", "Not Exempted", "Pending"]).optional(),
-  maritalStatus: z.enum(["Single", "Married", "Divorced"]).optional(),
-  livingSituation: z.enum(["FamilyHouse", "Home", "RentHouse", "Condo"]).optional(),
-  houseNo: z.string().min(1, "House number is required").optional(),
-  street: z.string().min(1, "Street is required").optional(),
-  district: z.string().min(1, "District is required").optional(),
-  subdistrict: z.string().min(1, "Sub-district is required").optional(),
-  province: z.string().min(1, "Province is required").optional(),
-  postalCode: z.string().min(5, "Postal code must be at least 5 characters").optional(),
-  nationality: z.string().min(1, "Nationality is required").optional(),
-  religion: z.string().min(1, "Religion is required").optional(),
-  documents: z.object({
-    nationalIdCard: z.boolean().optional(),
-    houseRegistration: z.boolean().optional(),
-    bankAccountDetails: z.boolean().optional(),
-    educationalCertificates: z.boolean().optional(),
-    resume: z.boolean().optional(),
-  }).optional(),
-}).refine((data) => {
-  if (data.newPassword || data.confirmPassword) {
-    return data.newPassword === data.confirmPassword
-  }
-  return true
-}, {
-  message: "Passwords must match",
-  path: ["confirmPassword"],
+  profile: z.object({
+    person: z.object({
+      fullName: z.string().min(3, "Full name must be at least 3 characters"),
+      phone: z.string().min(10, "Phone number must be at least 10 digits").optional(),
+      email: z.string().email("Invalid email address"),
+      position: z.string().min(1, "Position is required").optional(),
+    })
+  }),
+  user: z.object({
+    firstName: z.string().min(3, "First name must be at least 3 characters"),
+    lastName: z.string().min(3, "Last name must be at least 3 characters"),
+    email: z.string().email("Invalid email address"),
+    currentPassword: z.string().min(6, "Password must be at least 6 characters"),
+    newPassword: z.string().min(6, "Password must be at least 6 characters").optional(),
+    confirmPassword: z.string().optional(),
+  }),
+  info: z.object({
+    address: z.object({
+      houseNumber: z.string().min(1, "House number is required"),
+      village: z.string().optional(),
+      road: z.string().optional(),
+      subDistrict: z.string().min(2, "Sub-district must be at least 2 characters"),
+      district: z.string().min(2, "District must be at least 2 characters"),
+      province: z.string().min(2, "Province must be at least 2 characters"),
+      zipCode: z.string().length(5, "Zip code must be 5 characters"),
+      country: z.string().min(2, "Country must be at least 2 characters"),
+    }),
+    nationality: z.string().min(2, "Nationality must be at least 2 characters"),
+    religion: z.string().min(2, "Religion must be at least 2 characters"),
+    race: z.string().min(2, "Race must be at least 2 characters"),
+  }),
+  birthdate: z.preprocess(
+    (arg) => (typeof arg === "string" || arg instanceof Date ? new Date(arg) : arg),
+    z.date()
+      .refine((date) => date < new Date(), { message: "Birthdate must be in the past" })
+      .refine((date) => {
+        const today = new Date();
+        const age = today.getFullYear() - date.getFullYear();
+        const isBeforeBirthday =
+          today.getMonth() < date.getMonth() ||
+          (today.getMonth() === date.getMonth() && today.getDate() < date.getDate());
+        return age > 18 || (age === 18 && !isBeforeBirthday);
+      }, { message: "Age must be at least 18 years old" })
+  ),
+  military: z.enum(["pass", "discharged", "not pass"], { message: "Military status is required" }),
+  marital: z.enum(["single", "married", "divorced"], { message: "Marital status is required" }),
+  dwelling: z.enum(["familyHouse", "Home", "RentHouse", "Condo"], { message: "Dwelling type is required" }),
+  documents: z.array(z.string()).min(1, "At least one document is required"),
 })
 
 export const defaultValuesSettings = {
-  firstName: "John",
-  lastName: "Doe",
-  fullName: "John Doe",
-  email: " john@example.com",
-  currentPassword: "",
-  newPassword: "",
-  confirmPassword: "",
-  phone: "091230321",
-  position: "Fullstack Developer",
-  militaryStatus: "Pending",
-  maritalStatus: "single",
-  livingSituation: "With Family",
-  houseNo: "123/2",
-  street: "321",
-  district: "321",
-  subdistrict: "321",
-  province: "321",
-  postalCode: "321",
-  nationality: "Thai",
-  religion: "Thai",
-  documents: {
-    nationalIdCard: false,
-    houseRegistration: true,
-    bankAccountDetails: false,
-    educationalCertificates: false,
-    resume: false,
+  profile: {
+    person: {
+      fullName: "John Doe",
+      phone: "091230321",
+      email: " john@example.com",
+      position: "Fullstack Developer",
+    }
   },
+  birthdate: new Date(new Date().setFullYear(new Date().getFullYear() - 18)),
+  user: {
+    firstName: "John",
+    lastName: "Doe",
+    email: " john@example.com",
+    currentPassword: "password",
+    newPassword: "newpassword",
+    confirmPassword: "newpassword",
+  },
+  info: {
+    address: {
+      houseNumber: "123",
+      village: "Village",
+      road: "Road",
+      subDistrict: "Sub District",
+      district: "District",
+      province: "Province",
+      zipCode: "12345",
+      country: "Country",
+    },
+    nationality: "Nationality",
+    religion: "Religion",
+    race: "Race",
+  },
+  military: "pass",
+  marital: "single",
+  dwelling: "familyHouse",
+  documents: [],
+
 }
 
 export type SettingsForm = z.infer<typeof settingsSchema>

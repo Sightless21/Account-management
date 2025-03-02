@@ -16,7 +16,7 @@ interface SettingsInfoProps {
   defaultValues: SettingsForm
 }
 
-export default function SettingsInfo({ form , defaultValues}: SettingsInfoProps) {
+export default function SettingsInfo({ form, defaultValues }: SettingsInfoProps) {
   const { register, formState: { errors } } = form
 
   return (
@@ -322,7 +322,7 @@ export default function SettingsInfo({ form , defaultValues}: SettingsInfoProps)
                       <div className="flex items-center space-x-2">
                         <Checkbox
                           id="doc3"
-                          defaultChecked= {defaultValues.documents?.bankAccountDetails}
+                          defaultChecked={defaultValues.documents?.bankAccountDetails}
                           {...register("documents.bankAccountDetails")}
                         />
                         <div className="grid gap-1.5">

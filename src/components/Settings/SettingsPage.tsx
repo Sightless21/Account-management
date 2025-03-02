@@ -26,9 +26,9 @@ export default function SettingsPage() {
     resolver: zodResolver(settingsSchema),
     defaultValues: {
       ...defaultValuesSettings,
-      militaryStatus: "Pending",
-      maritalStatus: "Single",
-      livingSituation: "FamilyHouse",
+      military: "pass",
+      marital: "single",
+      dwelling: "familyHouse",
       ...defaultValuesSettings.documents,
     }
   })

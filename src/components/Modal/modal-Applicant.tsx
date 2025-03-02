@@ -4,18 +4,15 @@
 import { useState, useCallback, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { House, Mailbox, Mail, Phone, User, Briefcase, Globe, MapPin, Flag, Book, Banknote, BadgePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
-import { FormInput } from "@/components/ui/formCustomerInput";
 import { formApplicantSchema, APPLICANT_FORM_DEFAULT_VALUES } from "@/schema/formApplicantV2";
 import { FormApplicant } from "@/types/applicant";
 import { toast } from "sonner";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Card, CardContent } from "@/components/ui/card";
 import { useCreateApplicant, useUpdateApplicant } from "@/hooks/useApplicantData";
-import { ReusableTabs } from "@/components/tabInfo"
+import { TabsInformation } from "@/components/TabInformation";
+import { BadgePlus } from "lucide-react";
 
 interface ApplicantDialogProps {
   applicant?: FormApplicant;
@@ -100,25 +97,6 @@ export function ApplicantDialog({ applicant, trigger, open: controlledOpen, onCl
     });
   };
 
-  const iconMap = {
-    name: User,
-    phone: Phone,
-    email: Mail,
-    position: Briefcase,
-    expectSalary: Banknote,
-    houseNumber: House,
-    village: MapPin,
-    road: MapPin,
-    subDistrict: MapPin,
-    district: MapPin,
-    province: MapPin,
-    zipCode: Mailbox,
-    country: Flag,
-    nationality: Flag,
-    religion: Book,
-    race: Globe,
-  };
-
   const requiredFields = [
     "person.name",
     "person.phone",
@@ -168,222 +146,6 @@ export function ApplicantDialog({ applicant, trigger, open: controlledOpen, onCl
     { label: "Condo", value: "Condo" },
   ];
 
-  const personalTabContent = (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        <FormInput
-          name="person.name"
-          label="Applicant Name"
-          icon={iconMap.name}
-          placeholder="Enter applicant name"
-          control={form.control}
-          required={requiredFields.includes("person.name")}
-        />
-        <FormInput
-          name="person.phone"
-          label="Phone Number"
-          icon={iconMap.phone}
-          placeholder="0123456789"
-          control={form.control}
-          component="phone"
-          required={requiredFields.includes("person.phone")}
-        />
-        <FormInput
-          name="person.email"
-          label="Email"
-          icon={iconMap.email}
-          placeholder="Enter email address"
-          control={form.control}
-          type="email"
-          required={requiredFields.includes("person.email")}
-        />
-        <FormInput
-          name="person.position"
-          label="Position"
-          icon={iconMap.position}
-          placeholder="Enter position"
-          control={form.control}
-          required={requiredFields.includes("person.position")}
-        />
-        <FormInput
-          name="person.expectSalary"
-          label="Expected Salary"
-          icon={iconMap.expectSalary}
-          placeholder="Enter expected salary"
-          control={form.control}
-          required={requiredFields.includes("person.expectSalary")}
-        />
-        <FormInput
-          name="birthdate"
-          label="Birth Date"
-          control={form.control}
-          required={requiredFields.includes("birthdate")}
-          component="birthdate"
-        />
-      </div>
-      <div className="grid gap-4 grid-cols-3">
-        <Card className="border-0 rounded-r-none shadow-none md:border-r md:border-gray-200">
-          <CardContent>
-            <FormInput
-              name="military"
-              label="Military Status"
-              component="radio"
-              control={form.control}
-              options={militaryOptions}
-              required={requiredFields.includes("military")}
-              className="space-y-2"
-            />
-          </CardContent>
-        </Card>
-        <Card className="border-0 rounded-r-none shadow-none md:border-r md:border-gray-200">
-          <CardContent>
-            <FormInput
-              name="marital"
-              label="Marital Status"
-              component="radio"
-              control={form.control}
-              options={maritalOptions}
-              required={requiredFields.includes("marital")}
-              className="space-y-2"
-            />
-          </CardContent>
-        </Card>
-        <Card className="border-0 shadow-none">
-          <CardContent>
-            <FormInput
-              name="dwelling"
-              label="Dwelling Type"
-              component="radio"
-              control={form.control}
-              options={dwellingOptions}
-              required={requiredFields.includes("dwelling")}
-              className="space-y-2"
-            />
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
-
-  // เนื้อหาของแท็บ Address Details
-  const addressTabContent = (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        <FormInput
-          name="info.address.houseNumber"
-          label="House Number"
-          icon={iconMap.houseNumber}
-          placeholder="Enter house number"
-          control={form.control}
-          required={requiredFields.includes("info.address.houseNumber")}
-        />
-        <FormInput
-          name="info.address.village"
-          label="Village"
-          icon={iconMap.village}
-          placeholder="Enter village (optional)"
-          control={form.control}
-        />
-        <FormInput
-          name="info.address.road"
-          label="Road"
-          icon={iconMap.road}
-          placeholder="Enter road (optional)"
-          control={form.control}
-        />
-        <FormInput
-          name="info.address.subDistrict"
-          label="Sub-District"
-          icon={iconMap.subDistrict}
-          placeholder="Enter sub-district"
-          control={form.control}
-          required={requiredFields.includes("info.address.subDistrict")}
-        />
-        <FormInput
-          name="info.address.district"
-          label="District"
-          icon={iconMap.district}
-          placeholder="Enter district"
-          control={form.control}
-          required={requiredFields.includes("info.address.district")}
-        />
-        <FormInput
-          name="info.address.province"
-          label="Province"
-          icon={iconMap.province}
-          placeholder="Enter province"
-          control={form.control}
-          required={requiredFields.includes("info.address.province")}
-        />
-        <FormInput
-          name="info.address.zipCode"
-          label="Zip Code"
-          icon={iconMap.zipCode}
-          placeholder="Enter zip code"
-          control={form.control}
-          required={requiredFields.includes("info.address.zipCode")}
-        />
-        <FormInput
-          name="info.address.country"
-          label="Country"
-          icon={iconMap.country}
-          placeholder="Enter country"
-          control={form.control}
-          required={requiredFields.includes("info.address.country")}
-        />
-      </div>
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-        <FormInput
-          name="info.nationality"
-          label="Nationality"
-          icon={iconMap.nationality}
-          placeholder="Enter nationality"
-          control={form.control}
-          required={requiredFields.includes("info.nationality")}
-        />
-        <FormInput
-          name="info.religion"
-          label="Religion"
-          icon={iconMap.religion}
-          placeholder="Enter religion"
-          control={form.control}
-          required={requiredFields.includes("info.religion")}
-        />
-        <FormInput
-          name="info.race"
-          label="Race"
-          icon={iconMap.race}
-          placeholder="Enter race"
-          control={form.control}
-          required={requiredFields.includes("info.race")}
-        />
-      </div>
-    </div>
-  );
-
-  // เนื้อหาของแท็บ Documents
-  const documentsTabContent = (
-    <ScrollArea className="h-fit pr-4">
-      <FormInput
-        name="documents"
-        label="Required Documents"
-        description="Please ensure all required documents are submitted"
-        component="checkbox"
-        control={form.control}
-        options={documentOptions}
-        required
-        className="space-y-4"
-      />
-    </ScrollArea>
-  );
-
-  // รายการแท็บ
-  const tabs = [
-    { label: "Personal Information", value: "personal", content: personalTabContent },
-    { label: "Address Details", value: "address", content: addressTabContent },
-    { label: "Documents", value: "documents", content: documentsTabContent },
-  ];
-
   return (
     <Dialog open={controlledOpen !== undefined ? controlledOpen : open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
@@ -408,9 +170,14 @@ export function ApplicantDialog({ applicant, trigger, open: controlledOpen, onCl
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit, onError)} className="space-y-6">
-
-            <ReusableTabs tabs={tabs} defaultValue="personal" className="space-y-4" />
-
+            <TabsInformation
+              form={form}
+              requiredFields={requiredFields}
+              documentOptions={documentOptions}
+              militaryOptions={militaryOptions}
+              maritalOptions={maritalOptions}
+              dwellingOptions={dwellingOptions}
+            />
             <div className="flex justify-end gap-2">
               <Button type="submit" className="px-8 rounded-md">
                 {mode === "edit" ? "Update Applicant" : "Add Applicant"}

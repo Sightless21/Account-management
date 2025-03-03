@@ -4,6 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import { Session } from "next-auth";
 interface CustomUser  {
   id: string;
   role: string;
@@ -11,6 +12,7 @@ interface CustomUser  {
   lastName?: string;
   email?: string;
   hashedPassword?: string;
+  profileImage?: string | null;
 };
 
 export const authOptions: NextAuthOptions = {
@@ -35,6 +37,7 @@ export const authOptions: NextAuthOptions = {
           return {
             id: user.id.toString(),
             role: user.role.toString(),
+            profileImage: user.profileImage || null, // แนบ URL รูปโปรไฟล์ (ถ้ามี)
           };
         } else {
           throw new Error("Invalid email or password");
@@ -51,13 +54,15 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.role = user.role as string;
+        token.profileImage = user.profileImage;
       }
       return token;
     },
-    session: async ({ session, token }: { session: any; token: any }) => {
+    session: async ({ session, token }: { session: Session; token: any }) => {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
+        session.user.profileImage = token.profileImage;
       }
       return session;
     },

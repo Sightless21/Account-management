@@ -9,18 +9,20 @@ datasource db {
 
 // 📌 Model สำหรับผู้ใช้ (Client + Employee รวมกัน)
 model User {
-  id             String    @id @default(auto()) @map("_id") @db.ObjectId
-  firstName      String
-  lastName       String
-  email          String    @unique
-  hashedPassword String
-  phone          String
-  role           Role      @default(EMPLOYEE)
-  isVerify       Boolean   @default(false)
-  employee       Employee? @relation("UserEmployee")
-  employeeId     String?   @db.ObjectId
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  id                   String    @id @default(auto()) @map("_id") @db.ObjectId
+  profileImage         String?
+  profilePublicImageId String?
+  firstName            String
+  lastName             String
+  email                String    @unique
+  hashedPassword       String
+  phone                String
+  role                 Role      @default(EMPLOYEE)
+  isVerify             Boolean   @default(false)
+  employee             Employee? @relation("UserEmployee")
+  employeeId           String?   @db.ObjectId
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 }
 
 // 📌 Model สำหรับผู้สมัคร

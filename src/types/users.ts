@@ -7,4 +7,5 @@ export type User = {
   email: string;
   role: Role;
   isVerify: boolean;
+  profileImage : string;
 };

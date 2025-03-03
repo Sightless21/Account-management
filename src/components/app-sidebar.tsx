@@ -65,7 +65,7 @@ export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sideb
       name: user ? `${user.firstName} ${user.lastName}` : "Guest",
       email: user?.email,
       role: user?.role,
-      avatar: "",
+      avatar: user?.profileImage,
     },
     navMain: getFilteredNavItems(user?.role),
   };

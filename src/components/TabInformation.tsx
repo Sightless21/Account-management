@@ -5,7 +5,6 @@ import { FormInput } from "@/components/ui/formCustomizeInput";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent } from "@/components/ui/card";
 import { House, Mailbox, Mail, Phone, User, Briefcase, Globe, MapPin, Flag, Book, Banknote } from "lucide-react";
-
 import { FieldValues } from "react-hook-form";
 
 interface TabsInformationProps<T extends FieldValues> {
@@ -15,6 +14,7 @@ interface TabsInformationProps<T extends FieldValues> {
   militaryOptions: { label: string; value: string }[];
   maritalOptions: { label: string; value: string }[];
   dwellingOptions: { label: string; value: string }[];
+  fieldMapping?: Record<string, string>; // แมปชื่อฟิลด์จาก base name ไปยัง real name
 }
 
 const iconMap = {
@@ -43,58 +43,64 @@ export function TabsInformation<T extends FieldValues>({
   militaryOptions,
   maritalOptions,
   dwellingOptions,
+  fieldMapping = {}, // Default เป็น empty object
 }: TabsInformationProps<T>) {
+  // ฟังก์ชันช่วยในการแมปชื่อฟิลด์
+  const getMappedFieldName = (baseName: string) => fieldMapping[baseName] || baseName;
+  // ฟังก์ชันตรวจสอบว่าเป็นฟิลด์ที่ต้องกรอกหรือไม่
+  const isRequired = (baseName: string) => requiredFields.includes(getMappedFieldName(baseName));
+
   const personalTabContent: ReactNode = (
     <div className="space-y-4">
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         <FormInput
-          name="profile.person.fullName"
+          name={getMappedFieldName("person.name")}
           label="Full Name"
           icon={iconMap.name}
           placeholder="Enter full name"
           control={form.control}
-          required={requiredFields.includes("profile.person.fullName")}
+          required={isRequired("person.name")}
         />
         <FormInput
-          name="profile.person.phone"
+          name={getMappedFieldName("person.phone")}
           label="Phone Number"
           icon={iconMap.phone}
           placeholder="0123456789"
           control={form.control}
           component="phone"
-          required={requiredFields.includes("profile.person.phone")}
+          required={isRequired("person.phone")}
         />
         <FormInput
-          name="profile.person.email"
+          name={getMappedFieldName("person.email")}
           label="Email"
           icon={iconMap.email}
           placeholder="Enter email address"
           control={form.control}
           type="email"
-          required={requiredFields.includes("profile.person.email")}
+          required={isRequired("person.email")}
         />
         <FormInput
-          name="profile.person.position"
+          name={getMappedFieldName("person.position")}
           label="Position"
           icon={iconMap.position}
           placeholder="Enter position"
           control={form.control}
-          required={requiredFields.includes("profile.person.position")}
+          required={isRequired("person.position")}
         />
         <FormInput
-          name="profile.person.salary"
+          name={getMappedFieldName("person.expectSalary")}
           label="Expected Salary"
           icon={iconMap.expectSalary}
           placeholder="Enter expected salary"
           control={form.control}
           component="currency"
-          required={requiredFields.includes("profile.person.salary")}
+          required={isRequired("person.expectSalary")}
         />
         <FormInput
-          name="birthdate"
+          name={getMappedFieldName("birthdate")}
           label="Birth Date"
           control={form.control}
-          required={requiredFields.includes("birthdate")}
+          required={isRequired("birthdate")}
           component="birthdate"
         />
       </div>
@@ -102,12 +108,12 @@ export function TabsInformation<T extends FieldValues>({
         <Card className="border-0 rounded-r-none shadow-none md:border-r md:border-gray-200">
           <CardContent>
             <FormInput
-              name="military"
+              name={getMappedFieldName("military")}
               label="Military Status"
               component="radio"
               control={form.control}
               options={militaryOptions}
-              required={requiredFields.includes("military")}
+              required={isRequired("military")}
               className="space-y-2"
             />
           </CardContent>
@@ -115,12 +121,12 @@ export function TabsInformation<T extends FieldValues>({
         <Card className="border-0 rounded-r-none shadow-none md:border-r md:border-gray-200">
           <CardContent>
             <FormInput
-              name="marital"
+              name={getMappedFieldName("marital")}
               label="Marital Status"
               component="radio"
               control={form.control}
               options={maritalOptions}
-              required={requiredFields.includes("marital")}
+              required={isRequired("marital")}
               className="space-y-2"
             />
           </CardContent>
@@ -128,12 +134,12 @@ export function TabsInformation<T extends FieldValues>({
         <Card className="border-0 shadow-none">
           <CardContent>
             <FormInput
-              name="dwelling"
+              name={getMappedFieldName("dwelling")}
               label="Dwelling Type"
               component="radio"
               control={form.control}
               options={dwellingOptions}
-              required={requiredFields.includes("dwelling")}
+              required={isRequired("dwelling")}
               className="space-y-2"
             />
           </CardContent>
@@ -146,93 +152,94 @@ export function TabsInformation<T extends FieldValues>({
     <div className="space-y-4">
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         <FormInput
-          name="info.address.houseNumber"
+          name={getMappedFieldName("info.address.houseNumber")}
           label="House Number"
           icon={iconMap.houseNumber}
           placeholder="Enter house number"
           control={form.control}
-          required={requiredFields.includes("info.address.houseNumber")}
+          required={isRequired("info.address.houseNumber")}
         />
         <FormInput
-          name="info.address.village"
+          name={getMappedFieldName("info.address.village")}
           label="Village"
           icon={iconMap.village}
           placeholder="Enter village (optional)"
           control={form.control}
+          required={isRequired("info.address.village")}
         />
         <FormInput
-          name="info.address.road"
+          name={getMappedFieldName("info.address.road")}
           label="Road"
           icon={iconMap.road}
           placeholder="Enter road"
           control={form.control}
-          required={requiredFields.includes("info.address.road")}
+          required={isRequired("info.address.road")}
         />
         <FormInput
-          name="info.address.subDistrict"
+          name={getMappedFieldName("info.address.subDistrict")}
           label="Sub-District"
           icon={iconMap.subDistrict}
           placeholder="Enter sub-district"
           control={form.control}
-          required={requiredFields.includes("info.address.subDistrict")}
+          required={isRequired("info.address.subDistrict")}
         />
         <FormInput
-          name="info.address.district"
+          name={getMappedFieldName("info.address.district")}
           label="District"
           icon={iconMap.district}
           placeholder="Enter district"
           control={form.control}
-          required={requiredFields.includes("info.address.district")}
+          required={isRequired("info.address.district")}
         />
         <FormInput
-          name="info.address.province"
+          name={getMappedFieldName("info.address.province")}
           label="Province"
           icon={iconMap.province}
           placeholder="Enter province"
           control={form.control}
-          required={requiredFields.includes("info.address.province")}
+          required={isRequired("info.address.province")}
         />
         <FormInput
-          name="info.address.zipCode"
+          name={getMappedFieldName("info.address.zipCode")}
           label="Zip Code"
           icon={iconMap.zipCode}
           placeholder="Enter zip code"
           control={form.control}
-          required={requiredFields.includes("info.address.zipCode")}
+          required={isRequired("info.address.zipCode")}
         />
         <FormInput
-          name="info.address.country"
+          name={getMappedFieldName("info.address.country")}
           label="Country"
           icon={iconMap.country}
           placeholder="Enter country"
           control={form.control}
-          required={requiredFields.includes("info.address.country")}
+          required={isRequired("info.address.country")}
         />
       </div>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
         <FormInput
-          name="info.nationality"
+          name={getMappedFieldName("info.nationality")}
           label="Nationality"
           icon={iconMap.nationality}
           placeholder="Enter nationality"
           control={form.control}
-          required={requiredFields.includes("info.nationality")}
+          required={isRequired("info.nationality")}
         />
         <FormInput
-          name="info.religion"
+          name={getMappedFieldName("info.religion")}
           label="Religion"
           icon={iconMap.religion}
           placeholder="Enter religion"
           control={form.control}
-          required={requiredFields.includes("info.religion")}
+          required={isRequired("info.religion")}
         />
         <FormInput
-          name="info.race"
+          name={getMappedFieldName("info.race")}
           label="Race"
           icon={iconMap.race}
           placeholder="Enter race"
           control={form.control}
-          required={requiredFields.includes("info.race")}
+          required={isRequired("info.race")}
         />
       </div>
     </div>
@@ -241,13 +248,13 @@ export function TabsInformation<T extends FieldValues>({
   const documentsTabContent: ReactNode = (
     <ScrollArea className="h-fit pr-4">
       <FormInput
-        name="documents"
+        name={getMappedFieldName("documents")}
         label="Required Documents"
         description="Please ensure all required documents are submitted"
         component="checkbox"
         control={form.control}
         options={documentOptions}
-        required={requiredFields.includes("documents")}
+        required={isRequired("documents")}
         className="space-y-4"
       />
     </ScrollArea>

@@ -69,6 +69,29 @@ export default function SettingsInfo({ form }: SettingsInfoProps) {
         militaryOptions={militaryOptions}
         maritalOptions={maritalOptions}
         dwellingOptions={dwellingOptions}
+        fieldMapping={{
+          "person.name": "profile.person.fullName",
+          "person.phone": "profile.person.phone",
+          "person.email": "profile.person.email",
+          "person.position": "profile.person.position",
+          "person.expectSalary": "profile.person.salary",
+          "birthdate": "birthdate",
+          "info.address.houseNumber": "info.address.houseNumber",
+          "info.address.village": "info.address.village",
+          "info.address.road": "info.address.road",
+          "info.address.subDistrict": "info.address.subDistrict",
+          "info.address.district": "info.address.district",
+          "info.address.province": "info.address.province",
+          "info.address.zipCode": "info.address.zipCode",
+          "info.address.country": "info.address.country",
+          "info.nationality": "info.nationality",
+          "info.religion": "info.religion",
+          "info.race": "info.race",
+          "military": "military",
+          "marital": "marital",
+          "dwelling": "dwelling",
+          "documents": "documents",
+        }}
       />
     </div>
   );

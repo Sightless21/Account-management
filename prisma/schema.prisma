@@ -47,6 +47,9 @@ model Employee {
   person    Person?
   birthdate DateTime
   info      Info?
+  military  String
+  marital   String
+  dwelling  String
   documents Document[] @relation("EmployeeDocuments")
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt

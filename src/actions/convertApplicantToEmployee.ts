@@ -79,6 +79,9 @@ export async function convertApplicantToEmployee(data: ConvertApplicantData) {
           userId: user.id, // เชื่อมโยงกับ User ทันที
           createdAt: new Date(),
           updatedAt: new Date(),
+          military: applicant.military || "", 
+          marital: applicant.marital || "", 
+          dwelling: applicant.dwelling || "", 
         },
       });
       console.log("Employee created:", employee);

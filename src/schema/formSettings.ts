@@ -1,7 +1,8 @@
-// schema/formSettings.ts
 import z from "zod";
 
 export const settingsSchema = z.object({
+  avatar: z.string().optional(),
+  avatarPublicId: z.string().optional(), 
   profile: z.object({
     person: z.object({
       fullName: z.string().min(3, "Full name must be at least 3 characters"),
@@ -83,13 +84,15 @@ export const settingsSchema = z.object({
         return age > 18 || (age === 18 && !isBeforeBirthday);
       }, { message: "Age must be at least 18 years old" })
   ),
-  military: z.enum(["pass", "discharged", "not pass"], { message: "Military status is required" }),
-  marital: z.enum(["single", "married", "divorced"], { message: "Marital status is required" }),
-  dwelling: z.enum(["familyHouse", "Home", "RentHouse", "Condo"], { message: "Dwelling type is required" }),
+  military: z.enum(["pass", "discharged", "not pass"], { message: "Military status is required" }).default("pass"),
+  marital: z.enum(["single", "married", "divorced"], { message: "Marital status is required" }).default("single"),
+  dwelling: z.enum(["familyHouse", "Home", "RentHouse", "Condo"], { message: "Dwelling type is required" }).default("familyHouse"),
   documents: z.array(z.string()).min(1, "At least one document is required"),
 });
 
 export const defaultValuesSettings = {
+  avatar : "",
+  avatarPublicId : "",
   profile: {
     person: {
       fullName: "John Doe",
@@ -123,9 +126,9 @@ export const defaultValuesSettings = {
     religion: "Religion",
     race: "Race",
   },
-  military: "pass",
-  marital: "single",
-  dwelling: "familyHouse",
+  military: "pass" as SettingsForm["military"],
+  marital: "single" as SettingsForm["marital"],
+  dwelling: "familyHouse" as SettingsForm["dwelling"],
   documents: [],
 };
 

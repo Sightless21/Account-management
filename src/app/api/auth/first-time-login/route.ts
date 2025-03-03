@@ -42,47 +42,53 @@ export const POST = async (req: NextRequest) => {
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    // ✅ 1. อัปเดตรหัสผ่านของผู้ใช้
+    // อัปเดตรหัสผ่านของผู้ใช้
     await prisma.user.update({
       where: { id: userId },
-      data: { hashedPassword, isVerify: false },
+      data: { hashedPassword },
     });
 
-    console.log("Updated User:", userId);
+    console.log("Updated User Password:", userId);
 
-    // ✅ 2. สร้าง Employee และตรวจสอบค่าที่ได้
-    const createdEmployee = await prisma.employee.create({
-      data: {
-        userId: user.id,
-        birthdate: new Date(),
-        person: null,
-        info: null,
-        documents: { create: [] },
-      },
-    });
+    let employeeId = user.employeeId;
 
-    console.log("Created Employee:", createdEmployee);
+    // ตรวจสอบว่ามี employeeId หรือไม่ ถ้าไม่มีถึงจะสร้างใหม่
+    if (!employeeId) {
+      const createdEmployee = await prisma.employee.create({
+        data: {
+          userId: user.id,
+          birthdate: new Date(),
+          person: null,
+          info: null,
+          documents: { create: [] },
+        },
+      });
 
-    if (!createdEmployee || !createdEmployee.id) {
-      console.error("❌ Failed to create Employee!");
-      return NextResponse.json({ message: "Failed to create Employee" }, { status: 500 });
+      console.log("Created Employee:", createdEmployee);
+
+      if (!createdEmployee || !createdEmployee.id) {
+        console.error("❌ Failed to create Employee!");
+        return NextResponse.json({ message: "Failed to create Employee" }, { status: 500 });
+      }
+
+      employeeId = createdEmployee.id;
     }
 
-    // ✅ 3. อัปเดต employeeId ใน user
+    // อัปเดต user ด้วย employeeId และตั้ง isVerify เป็น true
     await prisma.user.update({
       where: { id: user.id },
       data: { 
         isVerify: true,
-        employeeId: createdEmployee.id
-       },
+        employeeId: employeeId
+      },
     });
 
     console.log("Updated User:", userId);
 
     return NextResponse.json({ 
       status: "success",
-      message: "User verified and employee created",
-     }, { status: 200 });
+      message: "User verified" + (!user.employeeId ? " and employee created" : ""),
+    }, { status: 200 });
 
   } catch (error) {
     console.error("❌ Error:", error);

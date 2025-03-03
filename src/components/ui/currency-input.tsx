@@ -14,7 +14,7 @@ interface CurrencyInputProps extends Omit<React.ComponentProps<"input">, "onChan
 }
 
 export const CurrencyInput = React.forwardRef<HTMLInputElement, CurrencyInputProps>(
-  ({ value, onValueChange, placeholder, className, currencySymbol = "" ,...props }, ref) => {
+  ({ value, onValueChange, placeholder, className, currencySymbol ,...props }, ref) => {
     const [displayValue, setDisplayValue] = React.useState<string>("");
 
     // แปลงค่าเริ่มต้นให้มีลูกน้ำเมื่อ component โหลด
@@ -42,7 +42,7 @@ export const CurrencyInput = React.forwardRef<HTMLInputElement, CurrencyInputPro
         value={displayValue}
         onChange={handleChange}
         placeholder={placeholder}
-        className={cn("text-start", className)} // จัดขวาเพื่อให้ดูเป็นสไตล์เงิน
+        className={cn("text-start", className)}
         {...props}
       />
     );

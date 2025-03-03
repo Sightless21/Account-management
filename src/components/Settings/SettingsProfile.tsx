@@ -13,10 +13,7 @@ interface SettingsProfileProps {
 }
 
 export default function SettingsProfile({ form, defaultValues }: SettingsProfileProps) {
-  const {
-    register,
-    formState: { errors },
-  } = form
+  const { register, formState: { errors } } = form
 
   return (
     <div className="space-y-4">

@@ -1,8 +1,7 @@
-// TabsInformation.tsx
 import { ReactNode } from "react";
 import { UseFormReturn } from "react-hook-form";
-import { ReusableTabs } from "@/components/tabInfo";
-import { FormInput } from "@/components/ui/formCustomerInput";
+import { ReusableTabs } from "@/components/ui/customTabs";
+import { FormInput } from "@/components/ui/formCustomizeInput";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent } from "@/components/ui/card";
 import { House, Mailbox, Mail, Phone, User, Briefcase, Globe, MapPin, Flag, Book, Banknote } from "lucide-react";
@@ -49,46 +48,47 @@ export function TabsInformation<T extends FieldValues>({
     <div className="space-y-4">
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         <FormInput
-          name="person.name"
+          name="profile.person.fullName"
           label="Full Name"
           icon={iconMap.name}
           placeholder="Enter full name"
           control={form.control}
-          required={requiredFields.includes("person.name")}
+          required={requiredFields.includes("profile.person.fullName")}
         />
         <FormInput
-          name="person.phone"
+          name="profile.person.phone"
           label="Phone Number"
           icon={iconMap.phone}
           placeholder="0123456789"
           control={form.control}
           component="phone"
-          required={requiredFields.includes("person.phone")}
+          required={requiredFields.includes("profile.person.phone")}
         />
         <FormInput
-          name="person.email"
+          name="profile.person.email"
           label="Email"
           icon={iconMap.email}
           placeholder="Enter email address"
           control={form.control}
           type="email"
-          required={requiredFields.includes("person.email")}
+          required={requiredFields.includes("profile.person.email")}
         />
         <FormInput
-          name="person.position"
+          name="profile.person.position"
           label="Position"
           icon={iconMap.position}
           placeholder="Enter position"
           control={form.control}
-          required={requiredFields.includes("person.position")}
+          required={requiredFields.includes("profile.person.position")}
         />
         <FormInput
-          name="person.expectSalary"
+          name="profile.person.salary"
           label="Expected Salary"
           icon={iconMap.expectSalary}
           placeholder="Enter expected salary"
           control={form.control}
-          required={requiredFields.includes("person.expectSalary")}
+          component="currency"
+          required={requiredFields.includes("profile.person.salary")}
         />
         <FormInput
           name="birthdate"
@@ -164,8 +164,9 @@ export function TabsInformation<T extends FieldValues>({
           name="info.address.road"
           label="Road"
           icon={iconMap.road}
-          placeholder="Enter road (optional)"
+          placeholder="Enter road"
           control={form.control}
+          required={requiredFields.includes("info.address.road")}
         />
         <FormInput
           name="info.address.subDistrict"

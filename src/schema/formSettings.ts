@@ -1,7 +1,6 @@
-import z from "zod"
+// schema/formSettings.ts
+import z from "zod";
 
-
-//FIX
 export const settingsSchema = z.object({
   profile: z.object({
     person: z.object({
@@ -9,21 +8,58 @@ export const settingsSchema = z.object({
       phone: z.string().min(10, "Phone number must be at least 10 digits").optional(),
       email: z.string().email("Invalid email address"),
       position: z.string().min(1, "Position is required").optional(),
-    })
+      salary: z.string().min(1, "Salary is required"),
+    }),
   }),
   user: z.object({
     firstName: z.string().min(3, "First name must be at least 3 characters"),
     lastName: z.string().min(3, "Last name must be at least 3 characters"),
     email: z.string().email("Invalid email address"),
-    currentPassword: z.string().min(6, "Password must be at least 6 characters"),
-    newPassword: z.string().min(6, "Password must be at least 6 characters").optional(),
-    confirmPassword: z.string().optional(),
-  }),
+    currentPassword: z.string().optional(), // ทำให้ optional
+    newPassword: z.string().optional(), // ทำให้ optional
+    confirmPassword: z.string().optional(), // ทำให้ optional
+  }).refine(
+    (data) => {
+      // ถ้ามีการกรอก newPassword หรือ confirmPassword ต้องมี currentPassword
+      if ((data.newPassword || data.confirmPassword) && !data.currentPassword) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Current password is required when changing to a new password",
+      path: ["currentPassword"],
+    }
+  ).refine(
+    (data) => {
+      // ถ้ามี newPassword และ confirmPassword ต้องตรงกัน
+      if (data.newPassword && data.confirmPassword && data.newPassword !== data.confirmPassword) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "New password and confirm password must match",
+      path: ["confirmPassword"],
+    }
+  ).refine(
+    (data) => {
+      // ถ้ามี newPassword ต้องมีความยาวอย่างน้อย 6 ตัวอักษร
+      if (data.newPassword && data.newPassword.length < 6) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "New password must be at least 6 characters",
+      path: ["newPassword"],
+    }
+  ),
   info: z.object({
     address: z.object({
       houseNumber: z.string().min(1, "House number is required"),
       village: z.string().optional(),
-      road: z.string().optional(),
+      road: z.string().min(2, "Road must be at least 2 characters"),
       subDistrict: z.string().min(2, "Sub-district must be at least 2 characters"),
       district: z.string().min(2, "District must be at least 2 characters"),
       province: z.string().min(2, "Province must be at least 2 characters"),
@@ -51,25 +87,26 @@ export const settingsSchema = z.object({
   marital: z.enum(["single", "married", "divorced"], { message: "Marital status is required" }),
   dwelling: z.enum(["familyHouse", "Home", "RentHouse", "Condo"], { message: "Dwelling type is required" }),
   documents: z.array(z.string()).min(1, "At least one document is required"),
-})
+});
 
 export const defaultValuesSettings = {
   profile: {
     person: {
       fullName: "John Doe",
-      phone: "091230321",
-      email: " john@example.com",
+      phone: "(123) 123-1231",
+      email: "john@example.com",
       position: "Fullstack Developer",
-    }
+      salary: "20,000",
+    },
   },
   birthdate: new Date(new Date().setFullYear(new Date().getFullYear() - 18)),
   user: {
     firstName: "John",
     lastName: "Doe",
-    email: " john@example.com",
-    currentPassword: "password",
-    newPassword: "newpassword",
-    confirmPassword: "newpassword",
+    email: "john@example.com",
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   },
   info: {
     address: {
@@ -90,7 +127,6 @@ export const defaultValuesSettings = {
   marital: "single",
   dwelling: "familyHouse",
   documents: [],
+};
 
-}
-
-export type SettingsForm = z.infer<typeof settingsSchema>
+export type SettingsForm = z.infer<typeof settingsSchema>;

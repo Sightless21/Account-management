@@ -15,7 +15,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
-import { FormInput } from "@/components/ui/formCustomerInput";
+import { FormInput } from "@/components/ui/formCustomizeInput";
 import { type CustomerFormData, customerSchema } from "@/schema/formCustomer";
 import { useCreateCustomer, useUpdateCustomer } from "@/hooks/useCustomerData";
 import { toast } from "sonner";

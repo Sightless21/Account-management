@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { H3, Muted } from "@/components/ui/typography"
-import { ThemeSwitch } from "@/components/theme-switch"
+import { ThemeSelector } from "@/components/ThemeSelector"
 
 export default function SettingsTheme() {
   return (
@@ -11,7 +11,7 @@ export default function SettingsTheme() {
             <H3 className="text-xl">Theme</H3>
             <Muted> Change your theme.</Muted>
           </div>
-          <ThemeSwitch />
+          <ThemeSelector variant={"select"} />
         </CardContent>
       </Card>
     </div>

@@ -1,5 +1,5 @@
 import SignInForm from "@/components/signinbox";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeSelector } from "@/components/ThemeSelector";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { H1 } from "@/components/ui/typography";
 
@@ -9,7 +9,7 @@ export default function SignInPage() {
       <Card>
         <CardHeader className="flex flex-row gap-4">
           <H1>Login</H1>
-          <ThemeToggle />
+          <ThemeSelector variant={"toggle"} />
         </CardHeader>
         <CardContent className="w-[500px]">
           <SignInForm />

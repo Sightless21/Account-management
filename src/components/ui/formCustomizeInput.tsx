@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Muted } from "@/components/ui/typography";
 import { DatePickerWithPresets } from "@/components/date-picker";
+import { CurrencyInput } from "@/components/ui/currency-input";
 
 interface FormInputProps {
   name: string;
@@ -22,7 +23,7 @@ interface FormInputProps {
   placeholder?: string;
   control?: Control<any>;
   type?: string;
-  component?: "input" | "textarea" | "phone" | "radio" | "checkbox" | "birthdate";
+  component?: "input" | "textarea" | "phone" | "radio" | "checkbox" | "birthdate" | "currency";
   required?: boolean;
   className?: string;
   options?: { label: string; value: string; description?: string }[];
@@ -109,6 +110,18 @@ export function FormInput({
                 <Separator />
               </div>
             ))}
+          </div>
+        );
+      case "currency":
+        return (
+          <div className="relative">
+            {Icon && <Icon className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />}
+            <CurrencyInput
+              currencySymbol="THB"
+              {...field}
+              className={`pl-9 ${className || ""}`}
+              placeholder={placeholder}
+            />
           </div>
         );
       case "input":

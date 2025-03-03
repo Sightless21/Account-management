@@ -2,7 +2,7 @@
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { DigitalClock } from "@/components/digital-clock";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeSelector } from "@/components/ThemeSelector";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUserData } from "@/hooks/useUserData";
@@ -50,7 +50,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               ) : (
                 <h3 className="flex flex-row gap-3 text-2xl font-semibold tracking-tight">
                   Hello : {user?.firstName?.toUpperCase()} {user?.lastName?.toUpperCase()}
-                  <ThemeToggle />
+                  <ThemeSelector variant={"toggle"} />
                 </h3>
               )}
               <DigitalClock />
@@ -70,7 +70,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="mt-4 flex items-center gap-2 px-4 justify-between">
             <h3 className="flex flex-row gap-3 text-2xl font-semibold tracking-tight">
               Hello : {user?.firstName?.toUpperCase()} {user?.lastName?.toUpperCase()}
-              <ThemeToggle />
+              <ThemeSelector variant={"toggle"} />
             </h3>
           </div>
           <DigitalClock />

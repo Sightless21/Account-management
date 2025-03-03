@@ -29,40 +29,40 @@ export default function SettingsProfile({ form, defaultValues }: SettingsProfile
           <div className="flex flex-col gap-3 space-y-1.5 p-6">
             <div>
               <InputAddon
-                defaultValue={defaultValues.firstName}
+                defaultValue={defaultValues.user.firstName}
                 placeholder="Firstname"
                 leftIcon={User2Icon}
                 rightIconText="Firstname"
-                {...register("firstName")}
+                {...register("user.firstName")}
               />
-              {errors.firstName && (
-                <Muted className="text-red-500">{errors.firstName.message}</Muted>
+              {errors.user?.firstName && (
+                <Muted className="text-red-500">{errors.user.firstName.message}</Muted>
               )}
             </div>
             <div>
               <InputAddon
-                defaultValue={defaultValues.lastName}
+                defaultValue={defaultValues.user.lastName}
                 placeholder="Lastname"
                 leftIcon={User2Icon}
                 rightIconText="Lastname"
-                {...register("lastName")}
+                {...register("user.lastName")}
               />
-              {errors.lastName && (
-                <Muted className="text-red-500">{errors.lastName.message}</Muted>
+              {errors.user?.lastName && (
+                <Muted className="text-red-500">{errors.user?.lastName.message}</Muted>
               )}
             </div>
             <div>
               <InputAddon
-                defaultValue={defaultValues.email}
+                defaultValue={defaultValues.user.email}
                 type="text"
                 autoComplete={"one-time-code"}
                 placeholder="Email"
                 leftIcon={Mail}
                 rightIconText="Email"
-                {...register("email")}
+                {...register("user.email")}
               />
-              {errors.email && (
-                <Muted className="text-red-500">{errors.email.message}</Muted>
+              {errors.user?.email && (
+                <Muted className="text-red-500">{errors.user.email.message}</Muted>
               )}
             </div>
           </div>

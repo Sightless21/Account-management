@@ -1,26 +1,25 @@
-"use client"
+// SettingsPage.tsx
+"use client";
 
-import { Card, CardContent } from "@/components/ui/card"
-import { H1, Muted } from "@/components/ui/typography"
-import { useCallback, useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Form } from "@/components/ui/form"
-import { Separator } from "@/components/ui/separator"
-import SettingsAvatar from "@/components/Settings/SettingsAvatar"
-import SettingsInfo from "@/components/Settings/SettingsInfo"
-import SettingsPassword from "@/components/Settings/SettingsPassword"
-import SettingsProfile from "@/components/Settings/SettingsProfile"
-import SettingsTheme from "@/components/Settings/SettingsTheme"
-import { toast } from "sonner"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { SettingsForm , settingsSchema , defaultValuesSettings } from "@/schema/formSettings"
+import { Card, CardContent } from "@/components/ui/card";
+import { H1, Muted } from "@/components/ui/typography";
+import { useCallback, useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
+import { Separator } from "@/components/ui/separator";
+import SettingsAvatar from "@/components/Settings/SettingsAvatar";
+import SettingsInfo from "@/components/Settings/SettingsInfo";
+import SettingsPassword from "@/components/Settings/SettingsPassword";
+import SettingsProfile from "@/components/Settings/SettingsProfile";
+import SettingsTheme from "@/components/Settings/SettingsTheme";
+import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SettingsForm, settingsSchema, defaultValuesSettings } from "@/schema/formSettings";
 
-
-//FIXME: submit form each component
 export default function SettingsPage() {
-  const [isDirty, setIsDirty] = useState(false)
-  const [toastId, setToastId] = useState<string | number | null>(null)
+  const [isDirty, setIsDirty] = useState(false);
+  const [toastId, setToastId] = useState<string | number | null>(null);
 
   const form = useForm<SettingsForm>({
     resolver: zodResolver(settingsSchema),
@@ -30,31 +29,35 @@ export default function SettingsPage() {
       marital: "single",
       dwelling: "familyHouse",
       ...defaultValuesSettings.documents,
-    }
-  })
+    },
+  });
 
-  const onSubmit = useCallback(async (data: SettingsForm) => {
-    try {
-      console.log("Form submitted:", data)
-      toast.success("Settings saved successfully!", {
-        position: "top-center"
-      })
-      form.reset(data)
-      setIsDirty(false)
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(`Failed to save settings: ${error.message}`, { position: "top-center" });
-      } else {
-        toast.error("An unknown error occurred while saving settings.", { position: "top-center" });
+  const onSubmit = useCallback(
+    async (data: SettingsForm) => {
+      try {
+        console.log("Form submitted:", data); // แสดงข้อมูลทั้งหมด
+        toast.success("Settings saved successfully!", {
+          position: "top-center",
+        });
+        form.reset(data); // รีเซ็ตฟอร์มด้วยข้อมูลที่ submit
+        setIsDirty(false);
+      } catch (error) {
+        if (error instanceof Error) {
+          toast.error(`Failed to save settings: ${error.message}`, { position: "top-center" });
+        } else {
+          toast.error("An unknown error occurred while saving settings.", { position: "top-center" });
+        }
       }
-    }
-  }, [form])
+    },
+    [form]
+  );
+
   useEffect(() => {
     const subscription = form.watch(() => {
-      setIsDirty(form.formState.isDirty)
-    })
-    return () => subscription.unsubscribe()
-  }, [form])
+      setIsDirty(form.formState.isDirty);
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
 
   useEffect(() => {
     if (isDirty && !toastId) {
@@ -69,13 +72,13 @@ export default function SettingsPage() {
               variant="outline"
               size="sm"
               onClick={() => {
-                form.reset()
-                setIsDirty(false)
-                toast.dismiss(id)
+                form.reset();
+                setIsDirty(false);
+                toast.dismiss(id);
                 toast.success("Changes discarded", {
                   position: "top-center",
-                  duration: 500
-                })
+                  duration: 500,
+                });
               }}
             >
               Reset
@@ -84,9 +87,9 @@ export default function SettingsPage() {
               size="sm"
               className="h-8"
               onClick={async () => {
-                await form.handleSubmit(onSubmit)()
+                await form.handleSubmit(onSubmit)();
                 if (Object.keys(form.formState.errors).length === 0) {
-                  toast.dismiss(id)
+                  toast.dismiss(id);
                 }
               }}
             >
@@ -94,35 +97,51 @@ export default function SettingsPage() {
             </Button>
           </div>
         ),
-      })
-      setToastId(id)
+      });
+      setToastId(id);
     } else if (!isDirty && toastId) {
-      toast.dismiss(toastId)
-      setToastId(null)
+      toast.dismiss(toastId);
+      setToastId(null);
     }
-  }, [isDirty, toastId, form, onSubmit])
+  }, [isDirty, toastId, form, onSubmit]);
 
   return (
     <div className="mr-3 flex flex-col gap-4 p-4 h-full">
       <H1 className="mb-2">Settings</H1>
       <Muted>Manage your account settings and information</Muted>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <Card>
             <CardContent className="flex flex-col gap-2 pt-6">
               <SettingsAvatar />
               <Separator />
-              <SettingsProfile form={form} defaultValues={form.getValues()}/>
+              <SettingsProfile form={form} defaultValues={form.getValues()} />
               <Separator />
               <SettingsPassword form={form} />
               <Separator />
-              <SettingsInfo form={form} defaultValues={form.getValues()}/>
+              <SettingsInfo form={form} defaultValues={form.getValues()} />
               <Separator />
               <SettingsTheme />
             </CardContent>
           </Card>
+          <div className="flex justify-end gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                form.reset();
+                setIsDirty(false);
+                toast.success("Changes discarded", { position: "top-center" });
+              }}
+            >
+              Reset
+            </Button>
+            <Button type="submit" disabled={!isDirty}>
+              Save Changes
+            </Button>
+          </div>
         </form>
       </Form>
     </div>
-  )
+  );
 }

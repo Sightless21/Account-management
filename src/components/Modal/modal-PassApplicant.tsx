@@ -70,12 +70,12 @@ const FormField = ({
   type = "text",
   placeholder,
 }: FormFieldProps) => (
-  <div>
+  <div className="w-full">
     <Label htmlFor={id}>{label}</Label>
     {id === "phone" ? (
       <PhoneInput id={id} name={id} value={value} onChange={onChange} disabled={disabled} className="w-full"/>
     ) : id.includes("password") ? (
-      <PasswordInput id={id} name={id} placeholder={placeholder} value={value} onChange={onChange} disabled={disabled} className="w-full"/>
+      <PasswordInput id={id} name={id} placeholder={placeholder} value={value} onChange={onChange} disabled={disabled} className="w-full max-w-full"/>
     ) : (
       <Input id={id} name={id} type={type} value={value} onChange={onChange} disabled={disabled} className="w-full"/>
     )}
@@ -130,7 +130,7 @@ export const PassDialog = ({ applicant, onPassComplete }: PassDialogProps) => {
     setErrors((prev) => ({ ...prev, [fieldName]: "" }));
   };
 
-  const handleGeneratePassword = () => {
+  const handleGeneratePassword: () => void = () => {
     const newPassword = generateCustomPassword({
       length: 6,
       includeUppercase: true,
@@ -181,7 +181,7 @@ export const PassDialog = ({ applicant, onPassComplete }: PassDialogProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="default" disabled={isLoading} onClick={() => setIsOpen(true)}>
+        <Button variant="default" disabled={isLoading} onClick={() => setIsOpen(true)} size={"sm"}>
           Pass
         </Button>
       </DialogTrigger>

@@ -13,19 +13,31 @@ import { useState } from "react";
 import { useApplicantData, useDeleteApplicant, useUpdateApplicantStatus } from "@/hooks/useApplicantData"
 
 export default function Page() {
-  const { data: applicants, isLoading, } = useApplicantData();
+  const { data: applicants, isLoading } = useApplicantData();
   const { mutate: updateApplicantStatus } = useUpdateApplicantStatus();
   const { mutate: deleteApplicant } = useDeleteApplicant();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPosition, setSelectedPosition] = useState(" ");
 
-
   function handleProbationPage() {
     router.push("/Dashboard/Applicant/Probation");
   }
 
   if (isLoading) return <div>Loading...</div>;
+
+  // ฟังก์ชันสำหรับกรองข้อมูล
+  const filteredApplicants = applicants?.filter((applicant) => {
+    const matchesSearch = applicant.person.name
+      ?.toLowerCase()
+      .includes(searchQuery.toLowerCase()) || false;
+    
+    const matchesPosition = selectedPosition === " " 
+      ? true 
+      : applicant.person.position === selectedPosition;
+    
+    return matchesSearch && matchesPosition;
+  }) || [];
 
   return (
     <div className="m-3 flex flex-col gap-4">
@@ -60,7 +72,11 @@ export default function Page() {
               Probationary Officer Table <TableOfContents />
             </Button>
           </div>
-          <ApplicantBoard data={applicants || []} onUpdateStatus={updateApplicantStatus} onDelete={deleteApplicant} />
+          <ApplicantBoard 
+            data={filteredApplicants} 
+            onUpdateStatus={updateApplicantStatus} 
+            onDelete={deleteApplicant} 
+          />
         </CardContent>
       </Card>
     </div>

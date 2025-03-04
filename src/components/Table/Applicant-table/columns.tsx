@@ -38,7 +38,7 @@ const ActionsCell = ({
   return (
     <div className="flex gap-2">
       <PassDialog applicant={applicant} onPassComplete={onPassComplete} />
-      <Button variant={"outline"} onClick={() => setIsDialogOpen(true)}>
+      <Button variant={"outline"} onClick={() => setIsDialogOpen(true)} size={"sm"}>
         Not Pass
       </Button>
       <CustomAlertDialog
@@ -62,6 +62,9 @@ export const columns = (
     {
       accessorKey: "name",
       header: "Name",
+      meta: {
+        title: "Applicant Name"
+      },
     },
     {
       accessorKey: "position",
@@ -74,6 +77,9 @@ export const columns = (
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
+      meta: {
+        title: "Position"
+      },
     },
     {
       accessorKey: "createdAt",
@@ -97,6 +103,9 @@ export const columns = (
         const formatted = date.toLocaleDateString();
         return <div className="font-medium">{formatted}</div>;
       },
+      meta: {
+        title: "Last Applied"
+      },
     },
     {
       id: "actions",
@@ -112,6 +121,9 @@ export const columns = (
             />
           </div>
         );
+      },
+      meta: {
+        title: "Actions"
       },
     },
   ];

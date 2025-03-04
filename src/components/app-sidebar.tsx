@@ -3,7 +3,7 @@
 
 import Image from "next/image";
 import React from "react";
-import { Briefcase, Users, Github, Send, Settings, BookUser } from "lucide-react";
+import { Briefcase, Users, Github, Send, Settings, Building2 } from "lucide-react";
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser } from "@/components/nav-user";
@@ -28,9 +28,9 @@ const NAV_ITEMS = [
     ],
   },
   {
-    title: "Customer service",
+    title: "Organization",
     url: "/Dashboard",
-    icon: Users,
+    icon: Building2,
     isActive: true,
     roles: ["EMPLOYEE", "HR", "MANAGER", "ADMIN"],
     items: [
@@ -40,7 +40,7 @@ const NAV_ITEMS = [
   {
     title: "Management",
     url: "/Dashboard",
-    icon: BookUser,
+    icon: Users,
     roles: ["HR", "MANAGER", "ADMIN"],
     items: [
       { title: "Create User", url: "/CreateUser" },

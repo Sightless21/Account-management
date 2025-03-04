@@ -7,18 +7,8 @@ import { cn } from "@/lib/utils"
 import { Clock, GripVertical, AlertCircle, CheckCircle2, Circle } from "lucide-react"
 import { TaskModal } from "@/components/Modal/modal-TaskV2"
 import { format } from "date-fns"
-import { StatusTasks } from "@/types/projects"
-
-interface Task {
-  id: string
-  title: string
-  taskName: string
-  description: string
-  dueDate?: Date
-  assignee: string
-  status: StatusTasks
-  priority: "HIGH" | "MEDIUM" | "LOW"
-}
+import { Task } from "@/types/projects"
+import { Large, Small, Muted } from "@/components/ui/typography"
 
 interface TaskCardProps {
   task: Task
@@ -76,7 +66,7 @@ export function TaskCard({ task, onDragStart }: TaskCardProps) {
     <TooltipProvider>
       <Card
         className={cn(
-          "group relative border shadow-sm transition-all",
+          "group relative border-0 shadow-sm transition-all w-full",
           "hover:shadow-md hover:border-primary/50",
           "focus-within:shadow-md focus-within:border-primary",
           "dark:hover:border-primary/30 dark:focus-within:border-primary/30",
@@ -90,9 +80,9 @@ export function TaskCard({ task, onDragStart }: TaskCardProps) {
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 space-y-1.5">
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className={cn("px-2 py-0.5 text-xs font-medium", priorityDetails.color)}>
-                  {priorityDetails.icon}
-                  <span className="ml-1">{task.priority}</span>
+                <Badge variant="outline" className={cn("px-2 py-0.5 text-xs font-medium", priorityDetails?.color)}>
+                  {priorityDetails?.icon}
+                  <Small className="ml-1">{task.priority}</Small>
                 </Badge>
                 {task.dueDate && (
                   <Tooltip>
@@ -106,7 +96,7 @@ export function TaskCard({ task, onDragStart }: TaskCardProps) {
                   </Tooltip>
                 )}
               </div>
-              <h3 className="font-medium leading-none">{task.taskName}</h3>
+              <Large>{task.taskName}</Large>
             </div>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -122,9 +112,9 @@ export function TaskCard({ task, onDragStart }: TaskCardProps) {
           </div>
         </CardHeader>
         <CardContent className="p-3 pt-1.5">
-          <p className="text-sm text-muted-foreground line-clamp-2">{task.description}</p>
+          <Muted className="text-sm text-muted-foreground line-clamp-2">{task.description}</Muted>
         </CardContent>
-        <CardFooter className="p-3 pt-0 flex justify-between items-center">
+        <CardFooter className="p-3 gap-3 pt-0 flex justify-between items-center">
           <div className="flex items-center gap-2">
             {task.assignee && (
               <Tooltip>
@@ -133,7 +123,7 @@ export function TaskCard({ task, onDragStart }: TaskCardProps) {
                     <span className="text-xs font-medium">{task.assignee.charAt(0).toUpperCase()}</span>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent>Assigned to: {task.assignee}</TooltipContent>
+                <TooltipContent side={"right"}>Assigned to: {task.assignee}</TooltipContent>
               </Tooltip>
             )}
             <div className="flex items-center gap-1.5">
@@ -141,7 +131,11 @@ export function TaskCard({ task, onDragStart }: TaskCardProps) {
               <span className="text-xs text-muted-foreground">{statusDetails.label}</span>
             </div>
           </div>
-          <TaskModal mode="view" defaultValues={task} />
+          <TaskModal
+            mode="view-edit"
+            defaultValues={task} 
+            projectId={task.id}
+          />
         </CardFooter>
       </Card>
     </TooltipProvider>

@@ -5,7 +5,7 @@ export async function GET(
   request: Request,
   { params }: { params: { id: string } },
 ) {
-  const { id } = await params; // ไม่ต้องใช้ await
+  const { id } = await params; 
 
   try {
     const project = await prisma.project.findUnique({

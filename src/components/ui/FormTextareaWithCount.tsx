@@ -10,7 +10,7 @@ type FormTextareaWithCountProp = {
   maxChars? : number
   disabled?: boolean
 }
-const FormTextareaWithCount = ({ form, name = "description", maxChars = 300, disabled = false } : FormTextareaWithCountProp  ) => {
+export const FormTextareaWithCount = ({ form, name = "description", maxChars = 300, disabled = false } : FormTextareaWithCountProp  ) => {
   const [charCount, setCharCount] = React.useState(0);
 
   const getCharColor = () => {
@@ -50,5 +50,3 @@ const FormTextareaWithCount = ({ form, name = "description", maxChars = 300, dis
     />
   );
 };
-
-export default FormTextareaWithCount;

@@ -69,6 +69,8 @@ model Task {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
   taskName    String
   description String
+  dueDate     DateTime?
+  assignee    String?
   status      TaskStatus @default(TODO)
   priority    Priority   @default(LOW)
   Project     Project?   @relation(fields: [projectId], references: [id], onDelete: Cascade)

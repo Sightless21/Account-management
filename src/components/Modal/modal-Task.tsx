@@ -27,8 +27,10 @@ const formSchema = z.object({
     id: z.string().optional(),
     taskName: z.string().min(2, { message: "Task name must be at least 2 characters." }),
     description: z.string(),
+    dueDate: z.date(),
     priority: z.string(),
     status: z.enum(["TODO", "DOING", "DONE"]).optional(),
+    assignee: z.string(),
 });
 
 export function TaskModal({ defaultValues, mode, projectId, setLoading }: TaskModalProps) {
@@ -46,8 +48,10 @@ export function TaskModal({ defaultValues, mode, projectId, setLoading }: TaskMo
             id: "",
             taskName: "",
             description: "",
+            dueDate: new Date(),
             priority: "LOW",
             status: "TODO",
+            assignee: "",
         },
     });
 
@@ -69,7 +73,9 @@ export function TaskModal({ defaultValues, mode, projectId, setLoading }: TaskMo
             id: values.id || "",
             taskName: values.taskName.trim(),
             description: values.description.trim(),
+            dueDate: values.dueDate,
             priority: values.priority,
+            assignee: values.assignee,
             status: (values.status as StatusTasks) || "TODO",
         };
 
@@ -105,8 +111,10 @@ export function TaskModal({ defaultValues, mode, projectId, setLoading }: TaskMo
                     projectId: card.projectId,
                     taskName: card.taskName,
                     description: card.description,
+                    dueDate: card.dueDate,
                     priority: card.priority,
                     status: card.status as StatusTasks,
+                    assignee: card.assignee
                 }),
                 {
                     loading: "Updating task...",

@@ -6,7 +6,7 @@ export const uploadFileToCloud = async (file: File, options?: UploadApiOptions):
   try {
     if (!file) throw new Error("No file provided");
 
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "application/pdf","image/jpg"];
     if (!allowedTypes.includes(file.type)) {
       throw new Error("Unsupported file type");
     }

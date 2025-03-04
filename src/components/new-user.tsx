@@ -59,18 +59,14 @@ export const NewUser = () => {
       toast.loading("Creating user...", {
         duration: 2000
       });
-      const result = await createUser(values);
+      const result = await toast.promise(createUser(values),{
+        loading: "Creating user...",
+        success: "User created successfully",
+        error: "Error creating user"
+      });
       console.log("Server Response:", result);
-
-      if (result.success) {
-        toast.success("User created successfully!");
-        form.reset(); // ✅ Reset form after successful submission
-      } else {
-        toast.error(result.message || "Failed to create user.");
-      }
     } catch (error) {
       console.error("Registration failed:", error);
-      toast.error("An unexpected error occurred.");
     }
   };
 

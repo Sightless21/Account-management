@@ -12,7 +12,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
         lastName: true,
         email: true,
         role: true,
-        isVerify: true
+        isVerify: true,
+        profileImage: true,
+        profilePublicImageId: true
       }
     });
     return NextResponse.json(user, { status: 200 });

@@ -38,7 +38,9 @@ export async function POST(req: NextRequest) {
 
     let uploadResult: UploadApiResponse | undefined;
     if (expenseData.attachment instanceof File) {
-      uploadResult = await uploadFileToCloud(expenseData.attachment);
+      uploadResult = await uploadFileToCloud(expenseData.attachment, {
+        folder: "expenses"
+      });
     }
 
     const newExpense = await prisma.expenseClaim.create({

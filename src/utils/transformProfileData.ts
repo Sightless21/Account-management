@@ -13,7 +13,7 @@ export const transformProfileData = (profile: any): SettingsForm => {
         phone: profile.employee?.person?.phone || profile.user.phone || "",
         email: profile.employee?.person?.email || profile.user.email || "",
         position: profile.employee?.person?.position || "",
-        salary: profile.employee?.person?.expectSalary || "",
+        salary: profile.employee?.person?.expectSalary?.toString() || "", 
       },
     },
     user: {

@@ -1,7 +1,7 @@
 // src/app/api/auth/user/profile/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import cloudinary from "@/utils/cloudinary";
+import { uploadFileToCloud , deleteFileOnCloud} from "@/lib/cloudinaryUtils"; // Helper function (see below)
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   const { id } = await params;
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 
     const employeeId = user.employeeId;
     if (!employeeId) {
-      return NextResponse.json({ error: "Employee ID not found" }, { status: 404 });
+      return NextResponse.json({ user },{ status: 200 });
     }
 
     const [documents, employee] = await Promise.all([
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       prisma.employee.findUnique({ where: { id: employeeId } }),
     ]);
 
-    return NextResponse.json({ user, documents, employee });
+    return NextResponse.json({ user, documents, employee } ,{ status: 200 });
   } catch (error: unknown) {
     console.error("Error fetching profile:", error || "Unknown error occurred");
     return NextResponse.json({ error: "Failed to fetch user data" }, { status: 500 });
@@ -54,16 +54,16 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     if (data.avatar && data.avatar.startsWith("data:image")) {
       console.log("Uploading new avatar to Cloudinary...");
       if (currentUser.profilePublicImageId) {
-        await cloudinary.uploader.destroy(currentUser.profilePublicImageId);
+        await deleteFileOnCloud(currentUser.profilePublicImageId);
       }
-      const uploadResult = await cloudinary.uploader.upload(data.avatar, {
+      const uploadResult = await uploadFileToCloud(data.avatar, {
         folder: "user_avatars",
       });
-      profileImage = uploadResult.secure_url;
-      profilePublicImageId = uploadResult.public_id;
+      profileImage = uploadResult?.secure_url;
+      profilePublicImageId = uploadResult?.public_id;
     } else if (data.avatar === "" && currentUser.profilePublicImageId) {
       console.log("Removing existing avatar from Cloudinary...");
-      await cloudinary.uploader.destroy(currentUser.profilePublicImageId);
+      await deleteFileOnCloud(currentUser.profilePublicImageId);
       profileImage = null;
       profilePublicImageId = null;
     }

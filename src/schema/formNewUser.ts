@@ -17,8 +17,8 @@ export const formSchema = z.object({
 })
 
 export const DEFAULT_FORM_VALUES = {
-  firstname: "",
-  lastname: "",
+  firstName: "",
+  lastName: "",
   email: "",
   phone: "",
   password: "",

@@ -15,8 +15,9 @@ export async function middleware(req: NextRequest) {
     // 🟢 ใช้ getToken() เพื่อถอดรหัส JWT
     const decoded = await getToken({ req, secret: secretKey });
     // console.log(decoded); // ✅ Debug
-    const { id } = decoded as {id: string}
-    console.log("🔹 Form Middleware User ID:", id);
+    
+    // const { id } = decoded as {id: string}
+    // console.log("🔹 Form Middleware User ID:", id);
 
     if (!decoded) {
       throw new Error("Invalid token");

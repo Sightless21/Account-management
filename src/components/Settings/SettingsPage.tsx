@@ -21,6 +21,7 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { signOut } from "next-auth/react";
 import { AxiosError } from "axios";
+
 type PasswordData = { currentPassword: string; newPassword: string; confirmPassword: string };
 
 // ฟังก์ชันช่วยตรวจสอบการเปลี่ยนแปลง
@@ -35,7 +36,7 @@ const hasProfileChanges = (data: SettingsForm, profile?: SettingsForm) => {
     JSON.stringify(data.profile) !== JSON.stringify(profile.profile) ||
     JSON.stringify(data.info) !== JSON.stringify(profile.info) ||
     hasChanges(data.user, profile.user, ["firstName", "lastName", "email"]) ||
-    data.birthdate?.toISOString() !== profile.birthdate?.toISOString() ||
+    (data.birthdate?.toISOString() !== profile.birthdate?.toISOString()) ||
     data.military !== profile.military ||
     data.marital !== profile.marital ||
     data.dwelling !== profile.dwelling ||
@@ -45,9 +46,11 @@ const hasProfileChanges = (data: SettingsForm, profile?: SettingsForm) => {
 
 const requiresLogout = (data: SettingsForm, profile?: SettingsForm) => {
   if (!profile) return false;
-  return hasChanges(data.user, profile.user, ["firstName", "lastName", "email"]) ||
+  return (
+    hasChanges(data.user, profile.user, ["firstName", "lastName", "email"]) ||
     data.avatar !== profile.avatar ||
-    data.avatarPublicId !== profile.avatarPublicId;
+    data.avatarPublicId !== profile.avatarPublicId
+  );
 };
 
 export default function SettingsPage() {
@@ -59,6 +62,22 @@ export default function SettingsPage() {
     resolver: zodResolver(settingsSchema),
     defaultValues: profile ? { ...defaultValuesSettings, ...profile } : defaultValuesSettings,
   });
+
+  // ย้ายการสมัครสมาชิก form.watch ออกมา
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      const hasFormChanges = hasProfileChanges(value as SettingsForm, profile);
+      setIsDirty(hasFormChanges);
+    });
+    return () => subscription.unsubscribe();
+  }, [form, profile]);
+
+  // ใช้ useEffect เฉพาะสำหรับการรีเซ็ตฟอร์ม
+  useEffect(() => {
+    if (profile && !isDirty) {
+      form.reset(profile);
+    }
+  }, [form, profile, isDirty]);
 
   const updatePasswordMutation = useMutation({
     mutationFn: async (passwordData: PasswordData) => {
@@ -133,17 +152,6 @@ export default function SettingsPage() {
     [handleUpdateProfile, handleUpdatePassword, profile]
   );
 
-  useEffect(() => {
-    if (profile && !isDirty) {
-      form.reset(profile);
-    }
-  }, [profile, form, isDirty]);
-
-  useEffect(() => {
-    const subscription = form.watch(() => setIsDirty(form.formState.isDirty));
-    return () => subscription.unsubscribe();
-  }, [form]);
-
   const resetForm = () => {
     form.reset(profile);
     setIsDirty(false);
@@ -189,6 +197,7 @@ export default function SettingsPage() {
   );
 }
 
+// คงฟังก์ชัน LoadingView และ ErrorView ไว้เหมือนเดิม
 const LoadingView = () => (
   <div className="p-4">
     <H1 className="mb-2">Settings</H1>

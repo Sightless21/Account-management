@@ -1,36 +1,7 @@
 // src/app/api/auth/user/profile/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { uploadFileToCloud , deleteFileOnCloud} from "@/lib/cloudinaryUtils"; // Helper function (see below)
-
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = await params;
-
-  try {
-    const user = await prisma.user.findUnique({
-      where: { id },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    const employeeId = user.employeeId;
-    if (!employeeId) {
-      return NextResponse.json({ user },{ status: 200 });
-    }
-
-    const [documents, employee] = await Promise.all([
-      prisma.document.findMany({ where: { employeeId } }),
-      prisma.employee.findUnique({ where: { id: employeeId } }),
-    ]);
-
-    return NextResponse.json({ user, documents, employee } ,{ status: 200 });
-  } catch (error: unknown) {
-    console.error("Error fetching profile:", error || "Unknown error occurred");
-    return NextResponse.json({ error: "Failed to fetch user data" }, { status: 500 });
-  }
-}
+import { uploadFileToCloud, deleteFileOnCloud } from "@/lib/cloudinaryUtils";
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   const { id } = await params;
@@ -51,7 +22,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     let profilePublicImageId = data.avatarPublicId || currentUser.profilePublicImageId;
 
     // จัดการ Cloudinary
-    if (data.avatar && data.avatar.startsWith("data:image")) {
+    if (data.avatar && typeof data.avatar === "string" && data.avatar.startsWith("data:image")) {
       console.log("Uploading new avatar to Cloudinary...");
       if (currentUser.profilePublicImageId) {
         await deleteFileOnCloud(currentUser.profilePublicImageId);
@@ -83,13 +54,15 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
           ? {
               upsert: {
                 update: {
-                  person: data.profile?.person ? {
-                    name: data.profile.person.fullName,
-                    phone: data.profile.person.phone,
-                    email: data.profile.person.email,
-                    position: data.profile.person.position,
-                    expectSalary: data.profile.person.salary,
-                  } : undefined,
+                  person: data.profile?.person
+                    ? {
+                        name: data.profile.person.fullName,
+                        phone: data.profile.person.phone,
+                        email: data.profile.person.email,
+                        position: data.profile.person.position,
+                        expectSalary: data.profile.person.salary,
+                      }
+                    : undefined,
                   birthdate: data.birthdate ? new Date(data.birthdate) : undefined,
                   info: data.info,
                   military: data.military,
@@ -97,13 +70,15 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
                   dwelling: data.dwelling,
                 },
                 create: {
-                  person: data.profile?.person ? {
-                    name: data.profile.person.fullName,
-                    phone: data.profile.person.phone,
-                    email: data.profile.person.email,
-                    position: data.profile.person.position,
-                    expectSalary: data.profile.person.salary,
-                  } : {},
+                  person: data.profile?.person
+                    ? {
+                        name: data.profile.person.fullName,
+                        phone: data.profile.person.phone,
+                        email: data.profile.person.email,
+                        position: data.profile.person.position,
+                        expectSalary: data.profile.person.salary,
+                      }
+                    : {},
                   birthdate: data.birthdate ? new Date(data.birthdate) : new Date(),
                   info: data.info || {},
                   military: data.military || "pass",
@@ -137,5 +112,30 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   } catch (error: unknown) {
     console.error("Error updating profile:", error instanceof Error ? error.message : "Unknown error occurred", error);
     return NextResponse.json({ error: "Failed to update profile" }, { status: 500 });
+  }
+}
+
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  // คง GET request ตามเดิม
+  const { id } = await params;
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id },
+    });
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+    const employeeId = user.employeeId;
+    if (!employeeId) {
+      return NextResponse.json({ user }, { status: 200 });
+    }
+    const [documents, employee] = await Promise.all([
+      prisma.document.findMany({ where: { employeeId } }),
+      prisma.employee.findUnique({ where: { id: employeeId } }),
+    ]);
+    return NextResponse.json({ user, documents, employee }, { status: 200 });
+  } catch (error: unknown) {
+    console.error("Error fetching profile:", error || "Unknown error occurred");
+    return NextResponse.json({ error: "Failed to fetch user data" }, { status: 500 });
   }
 }

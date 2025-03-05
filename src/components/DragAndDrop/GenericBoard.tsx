@@ -33,9 +33,9 @@ export const GenericBoard = <T,>({
     <div className="w-full p-4">
       <div className="flex flex-col gap-4">
         {/* คอลัมน์ทั้งหมดในแนวนอน */}
-        <div className="flex flex-row flex-wrap gap-4 overflow-x-auto">
+        <div className="flex justify-between flex-row flex-wrap gap-4 overflow-x-auto">
           {columns.map((col) => (
-            <div key={col.columnKey} className="flex-1 min-w-[250px] max-w-[350px] h-full">
+            <div key={col.columnKey} className="flex-1 min-w-[250px] max-w-[500px] h-full">
               <GenericColumn
                 title={col.title}
                 columnKey={col.columnKey}

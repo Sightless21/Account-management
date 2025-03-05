@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import React, { useCallback, useMemo } from "react";
 import { NumberCard } from "@/components/DashboardCard";
 import { Briefcase, Calendar, Car, DollarSign, FileText, GripVertical, LucideIcon, ClipboardList } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DndContext, closestCenter, useSensor, useSensors, PointerSensor, DragOverlay } from '@dnd-kit/core';
 import { arrayMove, SortableContext, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -83,12 +83,61 @@ const PlaceholderCard = () => (
 
 export default function DashboardItem() {
   const [items, setItems] = React.useState<DashboardItem[]>([
-    { id: 'meeting', type: 'number', title: "Meeting Rooms", description: "Bookings today", icon: Calendar, value: 14, badgeText: "4 active now", badgeVariant: "outline", badgeColorClass: "bg-primary/10 text-primary" },
-    { id: 'leave', type: 'number', title: "Leave Requests", description: "Pending approvals", icon: FileText, value: 8, valueColorClass: "text-amber-500", badgeText: "3 urgent", badgeVariant: "outline", badgeColorClass: "bg-amber-500/10 text-amber-500" },
-    { id: 'vehicle', type: 'number', title: "Vehicle Bookings", description: "Pending requests", icon: Car, value: 5, badgeText: "2 for today", badgeVariant: "outline" },
-    { id: 'expense', type: 'number', title: "Expense Requests", description: "Awaiting approval", icon: DollarSign, value: 12, valueColorClass: "text-red-500", badgeText: "5 urgent", badgeVariant: "outline", badgeColorClass: "bg-red-500/10 text-red-500" },
-    { id: 'job', type: 'number', title: "Job Applications", description: "New applications", icon: Briefcase, value: 18, valueColorClass: "text-green-500", badgeText: "7 new today", badgeVariant: "outline", badgeColorClass: "bg-green-500/10 text-green-500" },
-    { id: 'tasks', type: "number", title: "Tasks", description: "Pending tasks", icon: ClipboardList, value: 3, badgeText: "2 due today", badgeVariant: "outline" },
+    {
+      id: 'meeting', type: 'number',
+      title: "Meeting Rooms",
+      description: "Bookings today",
+      icon: Calendar, value: 14,
+      badgeText: "4 active now",
+      badgeVariant: "outline",
+      badgeColorClass: "bg-primary/10 text-primary"
+    },
+    {
+      id: 'leave', type: 'number',
+      title: "Leave Requests",
+      description: "Pending approvals",
+      icon: FileText, value: 8,
+      valueColorClass: "text-amber-500",
+      badgeText: "3 urgent",
+      badgeVariant: "outline",
+      badgeColorClass: "bg-amber-500/10 text-amber-500"
+    },
+    {
+      id: 'vehicle', type: 'number',
+      title: "Vehicle Bookings",
+      description: "Pending requests",
+      icon: Car, value: 5,
+      badgeText: "2 for today",
+      badgeVariant: "outline"
+    },
+    {
+      id: 'expense', type: 'number',
+      title: "Expense Requests",
+      description: "Awaiting approval",
+      icon: DollarSign, value: 12,
+      valueColorClass: "text-red-500",
+      badgeText: "5 urgent",
+      badgeVariant: "outline",
+      badgeColorClass: "bg-red-500/10 text-red-500"
+    },
+    {
+      id: 'job', type: 'number',
+      title: "Job Applications",
+      description: "New applications",
+      icon: Briefcase, value: 18,
+      valueColorClass: "text-green-500",
+      badgeText: "7 new today",
+      badgeVariant: "outline",
+      badgeColorClass: "bg-green-500/10 text-green-500"
+    },
+    {
+      id: 'tasks', type: "number",
+      title: "Tasks",
+      description: "Pending tasks",
+      icon: ClipboardList, value: 3,
+      badgeText: "2 due today",
+      badgeVariant: "outline"
+    },
   ]);
   const [activeId, setActiveId] = React.useState<string | null>(null);
   const [overId, setOverId] = React.useState<string | null>(null);
@@ -146,45 +195,37 @@ export default function DashboardItem() {
   );
 
   return (
-    <Card className="h-full">
-      <CardHeader>
-        <CardTitle>Dashboard</CardTitle>
-        <CardDescription>Overview of your website</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragStart={handleDragStart}
-          onDragOver={handleDragOver}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext items={items.map(item => item.id)}>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
-              {items.map((item) => (
-                <SortableItem
-                  key={item.id}
-                  id={item.id}
-                  isOver={activeId !== null && overId === item.id}
-                >
-                  {item.id === activeId ? (
-                    <PlaceholderCard />
-                  ) : (
-                    renderItemContent(item)
-                  )}
-                </SortableItem>
-              ))}
-            </div>
-          </SortableContext>
-          <DragOverlay>
-            {activeItem && (
-              <DragOverlayItem>
-                {renderItemContent(activeItem)}
-              </DragOverlayItem>
-            )}
-          </DragOverlay>
-        </DndContext>
-      </CardContent>
-    </Card>
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
+      onDragEnd={handleDragEnd}
+    >
+      <SortableContext items={items.map(item => item.id)}>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
+          {items.map((item) => (
+            <SortableItem
+              key={item.id}
+              id={item.id}
+              isOver={activeId !== null && overId === item.id}
+            >
+              {item.id === activeId ? (
+                <PlaceholderCard />
+              ) : (
+                renderItemContent(item)
+              )}
+            </SortableItem>
+          ))}
+        </div>
+      </SortableContext>
+      <DragOverlay>
+        {activeItem && (
+          <DragOverlayItem>
+            {renderItemContent(activeItem)}
+          </DragOverlayItem>
+        )}
+      </DragOverlay>
+    </DndContext>
   );
 }

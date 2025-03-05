@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, DragEvent } from "react";
-import { Trash2, Flame, X } from "lucide-react"
+import { Trash2, Flame, X } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -41,7 +41,6 @@ export const BurnBarrel = ({ onDrop }: BurnBarrelProps) => {
       return;
     }
 
-    // แสดง dialog ยืนยัน ถ้ายังไม่ใช่โหมดลบต่อเนื่อง
     setPendingCardId(cardId);
     setShowConfirmDialog(true);
   };
@@ -50,7 +49,6 @@ export const BurnBarrel = ({ onDrop }: BurnBarrelProps) => {
     if (pendingCardId) {
       onDrop?.(pendingCardId);
 
-      // ถ้าเลือกโหมดลบต่อเนื่อง ตั้งเวลา 5 นาที
       if (allowContinuousDelete) {
         const timeout = new Date(new Date().getTime() + 5 * 60 * 1000); // 5 นาที
         setContinuousDeleteTimeout(timeout);
@@ -71,10 +69,11 @@ export const BurnBarrel = ({ onDrop }: BurnBarrelProps) => {
         onDrop={handleDragEnd}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        className={`grid w-36 shrink-0 place-content-center rounded border text-3xl ${active
-          ? "border-red-800 bg-red-800/20 text-red-500"
-          : "border-neutral-500 bg-neutral-500/20 text-neutral-500"
-          }`}
+        className={`flex h-[550px] w-full items-center justify-center rounded border text-3xl ${
+          active
+            ? "border-red-800 bg-red-800/20 text-red-500"
+            : "border-neutral-500 bg-neutral-500/20 text-neutral-500"
+        }`}
       >
         {active ? <Flame className="animate-bounce" /> : <Trash2 />}
       </div>
@@ -84,7 +83,7 @@ export const BurnBarrel = ({ onDrop }: BurnBarrelProps) => {
           <DialogHeader>
             <DialogTitle>Confirm to delete applicant?</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete applicant? this action will delete the applicant and their documents and infomation.
+              Are you sure you want to delete applicant? This action will delete the applicant and their documents and information.
             </DialogDescription>
           </DialogHeader>
           <div className="flex items-center space-x-2 py-4">

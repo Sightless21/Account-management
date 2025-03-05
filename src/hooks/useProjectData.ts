@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient , QueryClient} from "@tanstack/react-query";
 import axios from "axios";
 import { Project, Task } from "@/types/projects";
+import { toast } from "sonner";
 
 
 const fetchProjects = async () => {
@@ -77,8 +78,20 @@ const fetchTasks = async (projectID: string) => {
     const res = await axios.get<Project>(`/api/project/${projectID}`);
     console.log("Full Project Response:", res.data);
     const tasks = res.data.task;
-    console.log("Filtered Tasks:", tasks);
-    return tasks;
+    const formatdate = tasks.map((task: Task) => {
+      if (task.dueDate) {
+        const date = new Date(task.dueDate);
+        const formattedDate = date.toLocaleDateString("en-US", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        });
+        task.dueDate = formattedDate;
+      }
+      return task;
+    })
+    console.log("Filtered Tasks:", formatdate);
+    return formatdate;
   } catch (error) {
     console.error("API call failed:", error);
     throw error;
@@ -94,13 +107,15 @@ const createTask = async ({ id, newTask }: { id: string; newTask: Task }) => {
     throw error;
   }
 }
-const updateTask = async ({ id, taskName, status, priority, description }: Task) => {
+const updateTask = async ({ newTask }: { newTask: Task }) => {
   try {
-    const res = await axios.patch(`/api/project/${id}`, {
-      taskName,
-      status,
-      priority,
-      description
+    const res = await axios.patch(`/api/project/${newTask.id}`, {
+      taskName: newTask.taskName,
+      description: newTask.description,
+      priority: newTask.priority,
+      status: newTask.status,
+      dueDate: newTask.dueDate ? newTask.dueDate : undefined,
+      assignee: newTask.assignee,
     });
     console.log("API response:", res.status);
     return res.data;
@@ -108,7 +123,7 @@ const updateTask = async ({ id, taskName, status, priority, description }: Task)
     console.error("API call failed:", error);
     throw error;
   }
-}
+};
 const deleteTask = async (id: string) => {
   try {
     const res = await axios.delete(`/api/project/${id}`);
@@ -142,19 +157,28 @@ export const useUpdateTask = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateTask,
-    onMutate: async (updateTask) => {
-      await queryClient.cancelQueries({ queryKey: ['tasks'] });
-      const previousTasks = queryClient.getQueryData<Task[]>(["tasks"]);
-      queryClient.setQueryData(["tasks"], (oldTasks: Task[] = []) => {
-        return oldTasks.map((task) =>
-          task.id === updateTask.id ? updateTask : task
-        );
-      })
+    onMutate: async ({ newTask }) => {
+      // ยกเลิก query เดิมเพื่อป้องกัน race condition
+      await queryClient.cancelQueries({ queryKey: ["tasks", newTask.projectId] });
+
+      // ดึงข้อมูลเก่าก่อนอัปเดต
+      const previousTasks = queryClient.getQueryData<Task[]>(["tasks", newTask.projectId]);
+
+      // อัปเดต UI ทันที (optimistic update)
+      queryClient.setQueryData(["tasks", newTask.projectId], (oldTasks: Task[] = []) =>
+        oldTasks.map((task) => (task.id === newTask.id ? newTask : task))
+      );
+
       return { previousTasks };
     },
-    onSettled: () => invalidateTasks(queryClient),
-    onError: (error, _variables, context) => {
-      queryClient.setQueryData(["tasks"], context?.previousTasks);
+    onSuccess: () => {
+      // รีเฟรชข้อมูลหลังอัปเดตสำเร็จ
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+    onError: (error, { newTask }, context) => {
+      // Rollback หากเกิดข้อผิดพลาด
+      queryClient.setQueryData(["tasks", newTask.projectId], context?.previousTasks);
+      toast.error("Failed to update task: " + error.message);
     },
   });
 };

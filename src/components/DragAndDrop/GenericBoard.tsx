@@ -1,6 +1,5 @@
-// GenericBoard.tsx
 "use client";
-import React ,{ JSX} from "react";
+import React, { JSX } from "react";
 import { GenericColumn } from "./GenericColumn";
 import { BurnBarrel } from "./BurnBarrel";
 
@@ -33,22 +32,29 @@ export const GenericBoard = <T,>({
   showBurnBarrel = true,
 }: GenericBoardProps<T>) => {
   return (
-    <div className="flex gap-1 p-2">
-      {columns.map((col) => (
-        <GenericColumn
-          key={col.columnKey}
-          title={col.title}
-          columnKey={col.columnKey}
-          statusKey={statusKey}
-          idKey={idKey}
-          items={items}
-          headingBgColor={col.headingBgColor}
-          headingColor={col.headingColor}
-          onCardDrop={onCardDrop}
-          renderItem={renderItem}
-        />
-      ))}
-      {showBurnBarrel && <BurnBarrel onDrop={onCardDelete} />}
+    <div className="w-full p-4">
+      <div className="flex flex-row flex-wrap gap-4 overflow-x-auto">
+        {columns.map((col) => (
+          <div key={col.columnKey} className="flex-1 min-w-[250px] max-w-[350px]">
+            <GenericColumn
+              title={col.title}
+              columnKey={col.columnKey}
+              statusKey={statusKey}
+              idKey={idKey}
+              items={items}
+              headingBgColor={col.headingBgColor}
+              headingColor={col.headingColor}
+              onCardDrop={onCardDrop}
+              renderItem={renderItem}
+            />
+          </div>
+        ))}
+        {showBurnBarrel && (
+          <div className="flex-shrink-0 min-w-[100px] max-w-[150px]">
+            <BurnBarrel onDrop={onCardDelete} />
+          </div>
+        )}
+      </div>
     </div>
   );
 };

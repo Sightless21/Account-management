@@ -29,7 +29,7 @@ export const GenericColumn = <T,>({
 
   const handleDragStart = (e: DragEvent, item: T) => {
     const cardId = String(item[idKey]);
-    const fromColumn = String(item[statusKey] ?? "unknown"); // Default เป็น "unknown" ถ้าไม่มีค่า
+    const fromColumn = String(item[statusKey] ?? "unknown");
     e.dataTransfer.setData("cardId", cardId);
     e.dataTransfer.setData("fromColumn", fromColumn);
 
@@ -38,7 +38,6 @@ export const GenericColumn = <T,>({
     console.log(" - fromColumn:", fromColumn);
     console.log(" - raw status:", item[statusKey]);
     console.log(" - full item:", item);
-    
   };
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
@@ -61,7 +60,7 @@ export const GenericColumn = <T,>({
     console.log(" - cardId:", cardId);
     console.log(" - fromColumn:", fromColumn);
     console.log(" - toColumn:", columnKey);
-    
+
     if (!cardId || fromColumn === "" || fromColumn === columnKey) {
       console.log("Drag aborted: Invalid data or same column");
       return;
@@ -75,7 +74,9 @@ export const GenericColumn = <T,>({
   );
 
   return (
-    <div className={`h-[550px] w-[300px] shrink-0 rounded-md border ${headingBgColor}`}>
+    <div
+      className={`flex h-[550px] w-full max-w-xs flex-col rounded-md border ${headingBgColor} sm:max-w-sm md:max-w-md`}
+    >
       <div className={`flex items-center justify-between rounded-t-md p-2`}>
         <h3 className={`font-medium decoration-4 ${headingColor}`}>{title}</h3>
         <span className="text-sm text-muted-foreground">
@@ -86,7 +87,7 @@ export const GenericColumn = <T,>({
         onDrop={handleDragEnd}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        className={`h-[500px] w-full overflow-auto border-t-2 border-dotted p-4 transition-colors ${active ? "bg-neutral-800/20" : "bg-neutral-800/0"}`}
+        className={`h-full w-full overflow-auto border-t-2 border-dotted p-4 transition-colors ${active ? "bg-neutral-800/20" : "bg-neutral-800/0"}`}
       >
         {filteredItems.map((item) => (
           <React.Fragment key={String(item[idKey])}>

@@ -37,16 +37,22 @@ export async function POST(
   try {
     const data = await request.json();
 
-    console.log("Backend Data",data);
-
-    if (!data.taskName || !data.status || !data.priority || !data.description) {
+    if (!data || typeof data !== "object") {
       return NextResponse.json(
-        { error: "All fields are required" },
-        { status: 400 },
+        { error: "Invalid request body" },
+        { status: 400 }
       );
     }
 
-    // ตรวจสอบว่า Project มีอยู่หรือไม่
+    // Validate required fields
+    if (!data.taskName || !data.status || !data.priority || !data.description) {
+      return NextResponse.json(
+        { error: "All fields are required" },
+        { status: 400 }
+      );
+    }
+
+    // Check if project exists
     const project = await prisma.project.findUnique({
       where: { id },
     });
@@ -55,14 +61,17 @@ export async function POST(
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
 
-    // สร้าง Task ใหม่ที่เชื่อมโยงกับ Project
+    // Create new task linked to the project
     const createTask = await prisma.task.create({
       data: {
+        id: data.id || undefined, // Ensure id is not an empty string
+        assignee: data.assignee || undefined,
+        dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
         taskName: data.taskName,
         status: data.status,
         priority: data.priority,
         description: data.description,
-        projectId: id, //ForeignKey
+        projectId: id, // ForeignKey
       },
     });
 
@@ -71,37 +80,27 @@ export async function POST(
     console.error("❌ Error creating task:", error);
     return NextResponse.json(
       { error: "An error occurred while creating the task" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 // อัปเดต Task (TaskID)
-export async function PATCH(
-  request: Request,
-  { params }: { params: { id: string } },
-) {
+export async function PATCH(request: Request, { params }: { params: { id: string } }) {
   const { id } = await params;
 
   try {
     const data = await request.json();
-    console.log(data);
 
-    // ✅ เช็คว่า field สำคัญถูกส่งมาครบหรือไม่
     if (!data.taskName || !data.status || !data.priority || !data.description) {
-      return NextResponse.json(
-        { error: "All fields are required" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "All fields are required" }, { status: 400 });
     }
 
-    // ✅ เช็คว่า task มีจริงไหม
     const task = await prisma.task.findUnique({ where: { id } });
     if (!task) {
       return NextResponse.json({ error: "Task not found" }, { status: 404 });
     }
 
-    // ✅ อัปเดต Task
     const updateTask = await prisma.task.update({
       where: { id },
       data: {
@@ -109,16 +108,15 @@ export async function PATCH(
         status: data.status,
         priority: data.priority,
         description: data.description,
+        assignee: data.assignee || null,
+        dueDate: data.dueDate ? new Date(data.dueDate) : null,
       },
     });
 
     return NextResponse.json(updateTask, { status: 200 });
   } catch (error) {
     console.error("❌ Error updating task:", error);
-    return NextResponse.json(
-      { error: "An error occurred while updating the task" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "An error occurred while updating the task" }, { status: 500 });
   }
 }
 

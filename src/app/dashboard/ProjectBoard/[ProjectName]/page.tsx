@@ -1,16 +1,17 @@
 "use client";
 import { KanbanBoard } from "@/components/KanBanBoard"
-import { TaskModal } from "@/components/Modal/modal-TaskV2"; // อัปเดต path ให้ตรงกับโครงสร้างของคุณ
+import { TaskModal } from "@/components/Modal/modal-TaskV2";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useDeleteTask, useProjects, useTask, useUpdateTask } from "@/hooks/useProjectData";
+import { useDeleteTask, useProjects, useTask, useUpdateTask , useCreateTask } from "@/hooks/useProjectData";
 import { useTasksUIStore } from "@/store/useTasksUIStore";
 import { ChevronLeft } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import React, { useMemo } from "react";
-import { Task } from "@/types/projects"; // ตรวจสอบ path ให้ถูกต้อง
+import { Task } from "@/types/projects"; 
+import { toast } from "sonner";
 
 export default function Page() {
   const router = useRouter();
@@ -20,6 +21,7 @@ export default function Page() {
   const projectId = projectsData?.find((project) => project.projectName === projectName)?.id ?? null;
   const { data: tasks = [] } = useTask(projectId);
   const { mutate: updateTaskStatus } = useUpdateTask();
+  const { mutate: createTask } = useCreateTask();
   const { mutate: deleteTask } = useDeleteTask();
   const { searchQuery, setSearchQuery, selectedPriority, setSelectedPriority, loading, setLoading } = useTasksUIStore();
 
@@ -28,19 +30,31 @@ export default function Page() {
     router.push("/Dashboard/ProjectBoard");
   }
 
-  // ฟังก์ชันสำหรับบันทึก task (ทั้ง create และ update)
   const handleTaskSave = (task: Task) => {
     setLoading(true);
-    // ตัวอย่างการจำลองการบันทึก task (ควรแทนที่ด้วย API call จริง)
-    console.log("Task saved:", task);
-    if (task.id.startsWith("task-")) {
-      // กรณีสร้าง task ใหม่ (id ถูกสร้างจาก `task-${Date.now()}`)
-      // ตัวอย่าง: เรียก API สร้าง task
+    if (task.id) {
+      updateTaskStatus({ newTask: task }, {
+        onSuccess: () => {
+          setLoading(false);
+          toast.success("Task updated successfully"); // Toast เดียวที่นี่
+        },
+        onError: (error) => {
+          setLoading(false);
+          toast.error("Failed to update task: " + error.message);
+        },
+      });
     } else {
-      // กรณีอัปเดต task ที่มีอยู่
-      updateTaskStatus(task);
+      createTask({ id: projectId || "", newTask: task }, {
+        onSuccess: () => {
+          setLoading(false);
+          toast.success("Task created successfully");
+        },
+        onError: (error) => {
+          setLoading(false);
+          toast.error("Failed to create task: " + error.message);
+        },
+      });
     }
-    setTimeout(() => setLoading(false), 500); // จำลองการโหลด
   };
 
   // ฟิลเตอร์ tasks

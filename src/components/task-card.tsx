@@ -1,21 +1,25 @@
-"use client"
-import { Badge } from "@/components/ui/badge"
-import type React from "react"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { cn } from "@/lib/utils"
-import { Clock, GripVertical, AlertCircle, CheckCircle2, Circle } from "lucide-react"
-import { TaskModal } from "@/components/Modal/modal-TaskV2"
-import { format } from "date-fns"
-import { Task } from "@/types/projects"
-import { Large, Small, Muted } from "@/components/ui/typography"
+"use client";
+
+import { useUpdateTask } from "@/hooks/useProjectData"; // Import the hook
+import { Badge } from "@/components/ui/badge";
+import type React from "react";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { Clock, GripVertical, AlertCircle, CheckCircle2, Circle } from "lucide-react";
+import { TaskModal } from "@/components/Modal/modal-TaskV2";
+import { format } from "date-fns";
+import { Task } from "@/types/projects";
+import { Large, Small, Muted } from "@/components/ui/typography";
 
 interface TaskCardProps {
-  task: Task
-  onDragStart: (e: React.DragEvent, task: Task) => void
+  task: Task;
+  onDragStart: (e: React.DragEvent, task: Task) => void;
 }
 
 export function TaskCard({ task, onDragStart }: TaskCardProps) {
+  const { mutate: updateTask } = useUpdateTask(); // Hook for updating tasks
+
   const getPriorityDetails = (priority: Task["priority"]) => {
     switch (priority) {
       case "HIGH":
@@ -23,21 +27,21 @@ export function TaskCard({ task, onDragStart }: TaskCardProps) {
           color: "text-red-700 bg-red-50 border-red-200",
           icon: <AlertCircle className="h-3 w-3" />,
           label: "High Priority",
-        }
+        };
       case "MEDIUM":
         return {
           color: "text-yellow-700 bg-yellow-50 border-yellow-200",
           icon: <AlertCircle className="h-3 w-3" />,
           label: "Medium Priority",
-        }
+        };
       case "LOW":
         return {
           color: "text-green-700 bg-green-50 border-green-200",
           icon: <CheckCircle2 className="h-3 w-3" />,
           label: "Low Priority",
-        }
+        };
     }
-  }
+  };
 
   const getStatusDetails = (status: Task["status"]) => {
     switch (status) {
@@ -45,22 +49,27 @@ export function TaskCard({ task, onDragStart }: TaskCardProps) {
         return {
           color: "bg-green-500",
           label: "Completed",
-        }
+        };
       case "DOING":
         return {
           color: "bg-blue-500",
           label: "In Progress",
-        }
+        };
       case "TODO":
         return {
           color: "bg-gray-500",
           label: "To Do",
-        }
+        };
     }
-  }
+  };
 
-  const priorityDetails = getPriorityDetails(task.priority)
-  const statusDetails = getStatusDetails(task.status)
+  const priorityDetails = getPriorityDetails(task.priority);
+  const statusDetails = getStatusDetails(task.status);
+
+  // Handle saving the updated task
+  const handleSaveTask = (updatedTask: Task) => {
+    updateTask({ newTask: updatedTask }) 
+  };
 
   return (
     <TooltipProvider>
@@ -133,12 +142,12 @@ export function TaskCard({ task, onDragStart }: TaskCardProps) {
           </div>
           <TaskModal
             mode="view-edit"
-            defaultValues={task} 
-            projectId={task.id}
+            defaultValues={task}
+            onSave={handleSaveTask} // Pass the save handler
+            projectId={task.projectId} // Use projectId from task
           />
         </CardFooter>
       </Card>
     </TooltipProvider>
-  )
+  );
 }
-

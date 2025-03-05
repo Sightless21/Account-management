@@ -78,7 +78,6 @@ export const KanbanBoard = ({ data, onUpdateStatus, onDelete }: KanbanBoardProps
       onCardDrop={handleCardDrop}
       onCardDelete={handleCardDelete}
       renderItem={renderKanBanCard}
-      showBurnBarrel={true}
     />
   );
 };

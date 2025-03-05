@@ -34,6 +34,12 @@ export const ApplicantBoard = ({ data, onUpdateStatus, onDelete }: ApplicantBoar
       headingBgColor: "bg-emerald-200/25 border border-emerald-600",
       headingColor: "text-emerald-600 uppercase"
     },
+    {
+      title : "Employee",
+      columnKey : "SUCCESS",
+      headingBgColor : "bg-green-200/25 border border-green-600",
+      headingColor : "text-green-600 uppercase"
+    }
   ];
 
   const renderApplicantCard = (applicant: FormApplicant) => {
@@ -91,7 +97,6 @@ export const ApplicantBoard = ({ data, onUpdateStatus, onDelete }: ApplicantBoar
       onCardDrop={handleCardDrop}
       onCardDelete={onDelete}
       renderItem={renderApplicantCard}
-      showBurnBarrel={true}
     />
   );
 };

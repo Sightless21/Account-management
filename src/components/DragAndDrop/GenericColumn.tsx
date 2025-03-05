@@ -1,4 +1,3 @@
-// GenericColumn.tsx
 "use client";
 import React, { useState, DragEvent, JSX } from "react";
 

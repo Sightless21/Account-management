@@ -18,7 +18,6 @@ interface GenericBoardProps<T> {
   onCardDrop?: (itemId: string, fromColumn: string, toColumn: string) => void;
   onCardDelete?: (itemId: string) => void;
   renderItem: (item: T) => JSX.Element;
-  showBurnBarrel?: boolean;
 }
 
 export const GenericBoard = <T,>({
@@ -29,31 +28,33 @@ export const GenericBoard = <T,>({
   onCardDrop,
   onCardDelete,
   renderItem,
-  showBurnBarrel = true,
 }: GenericBoardProps<T>) => {
   return (
     <div className="w-full p-4">
-      <div className="flex flex-row flex-wrap gap-4 overflow-x-auto">
-        {columns.map((col) => (
-          <div key={col.columnKey} className="flex-1 min-w-[250px] max-w-[350px]">
-            <GenericColumn
-              title={col.title}
-              columnKey={col.columnKey}
-              statusKey={statusKey}
-              idKey={idKey}
-              items={items}
-              headingBgColor={col.headingBgColor}
-              headingColor={col.headingColor}
-              onCardDrop={onCardDrop}
-              renderItem={renderItem}
-            />
+      <div className="flex flex-col gap-4">
+        {/* คอลัมน์ทั้งหมดในแนวนอน */}
+        <div className="flex flex-row flex-wrap gap-4 overflow-x-auto">
+          {columns.map((col) => (
+            <div key={col.columnKey} className="flex-1 min-w-[250px] max-w-[350px] h-full">
+              <GenericColumn
+                title={col.title}
+                columnKey={col.columnKey}
+                statusKey={statusKey}
+                idKey={idKey}
+                items={items}
+                headingBgColor={col.headingBgColor}
+                headingColor={col.headingColor}
+                onCardDrop={onCardDrop}
+                renderItem={(item) => renderItem(item)}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="mt-2 flex justify-center">
+          <div className="w-full">
+            <BurnBarrel onDrop={onCardDelete} isHorizontal={true} />
           </div>
-        ))}
-        {showBurnBarrel && (
-          <div className="flex-shrink-0 min-w-[100px] max-w-[150px]">
-            <BurnBarrel onDrop={onCardDelete} />
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );

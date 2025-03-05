@@ -1,17 +1,16 @@
 "use client";
 import { KanbanBoard } from "@/components/KanBanBoard"
-import { TaskModal } from "@/components/Modal/modal-TaskV2";
+import { TaskModal } from "@/components/Modal/modal-Task";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useDeleteTask, useProjects, useTask, useUpdateTask , useCreateTask } from "@/hooks/useProjectData";
+import { useDeleteTask, useProjects, useTask, useUpdateTask, useCreateTask } from "@/hooks/useProjectData";
 import { useTasksUIStore } from "@/store/useTasksUIStore";
 import { ChevronLeft } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import React, { useMemo } from "react";
-import { Task } from "@/types/projects"; 
+import React, { useState } from "react";
+import { Task } from "@/types/projects";
 import { toast } from "sonner";
+import { FilterComponent } from "@/components/DragAndDrop/FilterDnD";
 
 export default function Page() {
   const router = useRouter();
@@ -23,8 +22,12 @@ export default function Page() {
   const { mutate: updateTaskStatus } = useUpdateTask();
   const { mutate: createTask } = useCreateTask();
   const { mutate: deleteTask } = useDeleteTask();
-  const { searchQuery, setSearchQuery, selectedPriority, setSelectedPriority, loading, setLoading } = useTasksUIStore();
+  const { loading, setLoading } = useTasksUIStore();
+  const [filteredTasks, setFilteredTasks] = useState<Task[]>(tasks);
 
+  const handleFilterChange = (filteredData: Task[]) => {
+    setFilteredTasks(filteredData);
+  };
   // ฟังก์ชันสำหรับกลับไปหน้า ProjectBoard
   async function handleProjectPage(): Promise<void> {
     router.push("/Dashboard/ProjectBoard");
@@ -57,19 +60,6 @@ export default function Page() {
     }
   };
 
-  // ฟิลเตอร์ tasks
-  const filteredTasks = useMemo(() => {
-    return tasks.filter((task) => {
-      const matchesSearch = task.taskName
-        ?.toLowerCase()
-        .includes(searchQuery.toLowerCase()) || false;
-      const matchesPriority = selectedPriority === " " || !selectedPriority
-        ? true
-        : task.priority === selectedPriority;
-      return matchesSearch && matchesPriority;
-    });
-  }, [tasks, searchQuery, selectedPriority]);
-
   return (
     <div className="ml-3 mr-3 flex flex-col gap-4">
       <div className="flex h-full w-full flex-col">
@@ -85,27 +75,15 @@ export default function Page() {
                 <ChevronLeft />
                 Project Page
               </Button>
-              <Input
-                type="text"
-                placeholder="Search Task name..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-64 rounded-lg border border-gray-300 px-3 py-2 h-8"
+              <FilterComponent
+                data={tasks}
+                searchKey="taskName"
+                searchPlaceholder="Search Task name..."
+                filterKey="priority"
+                filterOptions={["HIGH", "MEDIUM", "LOW"]}
+                onFilterChange={handleFilterChange}
+                filterLabel="Priority"
               />
-              <Select
-                value={selectedPriority}
-                onValueChange={setSelectedPriority}
-              >
-                <SelectTrigger className="w-40 h-8">
-                  <SelectValue placeholder="Filter Priority" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value=" ">All</SelectItem>
-                  <SelectItem value="HIGH">High</SelectItem>
-                  <SelectItem value="MEDIUM">Medium</SelectItem>
-                  <SelectItem value="LOW">Low</SelectItem>
-                </SelectContent>
-              </Select>
               {/* TaskModal สำหรับสร้าง task ใหม่ */}
               <TaskModal
                 mode="create"

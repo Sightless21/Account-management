@@ -8,9 +8,10 @@ import { Label } from "@/components/ui/label";
 
 interface BurnBarrelProps {
   onDrop?: (cardId: string) => void;
+  isHorizontal?: boolean; // เพิ่ม props เพื่อระบุว่า BurnBarrel อยู่ในแนวนอนหรือแนวตั้ง
 }
 
-export const BurnBarrel = ({ onDrop }: BurnBarrelProps) => {
+export const BurnBarrel = ({ onDrop, isHorizontal = false }: BurnBarrelProps) => {
   const [active, setActive] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingCardId, setPendingCardId] = useState<string | null>(null);
@@ -69,11 +70,11 @@ export const BurnBarrel = ({ onDrop }: BurnBarrelProps) => {
         onDrop={handleDragEnd}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        className={`flex h-[550px] w-full items-center justify-center rounded border text-3xl ${
+        className={`rounded border text-3xl transition-colors ${
           active
             ? "border-red-800 bg-red-800/20 text-red-500"
             : "border-neutral-500 bg-neutral-500/20 text-neutral-500"
-        }`}
+        } ${isHorizontal ? "flex h-[60px] w-full items-center justify-center" : "flex h-[550px] w-full items-center justify-center"}`}
       >
         {active ? <Flame className="animate-bounce" /> : <Trash2 />}
       </div>

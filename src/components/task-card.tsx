@@ -7,7 +7,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { Clock, GripVertical, AlertCircle, CheckCircle2, Circle } from "lucide-react";
-import { TaskModal } from "@/components/Modal/modal-TaskV2";
+import { TaskModal } from "@/components/Modal/modal-Task";
 import { format } from "date-fns";
 import { Task } from "@/types/projects";
 import { Large, Small, Muted } from "@/components/ui/typography";

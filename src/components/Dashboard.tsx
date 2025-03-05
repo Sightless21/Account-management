@@ -7,7 +7,12 @@ import { Briefcase, Calendar, Car, DollarSign, FileText, GripVertical, LucideIco
 import { DndContext, closestCenter, useSensor, useSensors, PointerSensor, DragOverlay } from '@dnd-kit/core';
 import { arrayMove, SortableContext, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-
+import { useTask } from "@/hooks/useTaskData";
+import { useExpenses } from "@/hooks/useExpenseData";
+import { useApplicantData } from "@/hooks/useApplicantData";
+import { useRoomBookings } from "@/hooks/useRoomBookingData";
+import { useDayOff } from "@/hooks/useDayOffData"
+import { useCarReservation } from "@/hooks/useCarReservationData"
 // Type definitions
 interface DashboardItem {
   id: string;
@@ -82,59 +87,71 @@ const PlaceholderCard = () => (
 );
 
 export default function DashboardItem() {
+  const { data: tasks } = useTask()
+  const { data: expenses } = useExpenses()
+  const { data: applicants } = useApplicantData()
+  const { data: roomBookings } = useRoomBookings()
+  const { data: dayOffs } = useDayOff()
+  const { data: carReservations } = useCarReservation()
+  const taskCount = tasks?.filter((task) => task.status === "TODO").length ?? 0;
+  const expensesCount = expenses?.filter((booking) => booking.status === "Pending").length ?? 0;
+  const applicantsCount = applicants?.length ?? 0;
+  const roomBookingsCount = roomBookings?.length ?? 0;
+  const dayOffsCount = dayOffs?.filter((dayOff) => dayOff.status === "Pending").length ?? 0;
+  const carReservationsCount = carReservations?.length ?? 0;
   const [items, setItems] = React.useState<DashboardItem[]>([
-    {
-      id: 'meeting', type: 'number',
-      title: "Meeting Rooms",
-      description: "Bookings today",
-      icon: Calendar, value: 14,
-      badgeText: "4 active now",
-      badgeVariant: "outline",
-      badgeColorClass: "bg-primary/10 text-primary"
-    },
-    {
-      id: 'leave', type: 'number',
-      title: "Leave Requests",
-      description: "Pending approvals",
-      icon: FileText, value: 8,
-      valueColorClass: "text-amber-500",
-      badgeText: "3 urgent",
-      badgeVariant: "outline",
-      badgeColorClass: "bg-amber-500/10 text-amber-500"
-    },
-    {
-      id: 'vehicle', type: 'number',
-      title: "Vehicle Bookings",
-      description: "Pending requests",
-      icon: Car, value: 5,
-      badgeText: "2 for today",
-      badgeVariant: "outline"
-    },
-    {
-      id: 'expense', type: 'number',
-      title: "Expense Requests",
-      description: "Awaiting approval",
-      icon: DollarSign, value: 12,
-      valueColorClass: "text-red-500",
-      badgeText: "5 urgent",
-      badgeVariant: "outline",
-      badgeColorClass: "bg-red-500/10 text-red-500"
-    },
     {
       id: 'job', type: 'number',
       title: "Job Applications",
       description: "New applications",
-      icon: Briefcase, value: 18,
+      icon: Briefcase, value: applicantsCount,
       valueColorClass: "text-green-500",
       badgeText: "7 new today",
       badgeVariant: "outline",
       badgeColorClass: "bg-green-500/10 text-green-500"
     },
     {
+      id: 'leave', type: 'number',
+      title: "Leave Requests",
+      description: "Pending approvals",
+      icon: FileText, value: dayOffsCount,
+      valueColorClass: "text-amber-500",
+      badgeText: "3 urgent",
+      badgeVariant: "outline",
+      badgeColorClass: "bg-amber-500/10 text-amber-500"
+    },
+    {
+      id: 'expense', type: 'number',
+      title: "Expense Requests",
+      description: "Awaiting approval",
+      icon: DollarSign, value: expensesCount,
+      valueColorClass: "text-red-500",
+      badgeText: "5 urgent",
+      badgeVariant: "outline",
+      badgeColorClass: "bg-red-500/10 text-red-500"
+    },
+    {
+      id: 'meeting', type: 'number',
+      title: "Meeting Rooms",
+      description: "Bookings today",
+      icon: Calendar, value: roomBookingsCount,
+      badgeText: "4 active now",
+      badgeVariant: "outline",
+      badgeColorClass: "bg-primary/10 text-primary"
+    },
+    {
+      id: 'vehicle', type: 'number',
+      title: "Vehicle Bookings",
+      description: "Pending requests",
+      icon: Car, value: carReservationsCount,
+      badgeText: "2 for today",
+      badgeVariant: "outline"
+    },
+    {
       id: 'tasks', type: "number",
       title: "Tasks",
       description: "Pending tasks",
-      icon: ClipboardList, value: 3,
+      icon: ClipboardList, value: taskCount,
       badgeText: "2 due today",
       badgeVariant: "outline"
     },

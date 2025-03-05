@@ -2,9 +2,8 @@
 import { KanbanBoard } from "@/components/KanBanBoard"
 import { TaskModal } from "@/components/Modal/modal-Task";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useDeleteTask, useProjects, useTask, useUpdateTask, useCreateTask } from "@/hooks/useProjectData";
-import { useTasksUIStore } from "@/store/useTasksUIStore";
 import { ChevronLeft } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -22,7 +21,6 @@ export default function Page() {
   const { mutate: updateTaskStatus } = useUpdateTask();
   const { mutate: createTask } = useCreateTask();
   const { mutate: deleteTask } = useDeleteTask();
-  const { loading, setLoading } = useTasksUIStore();
   const [filteredTasks, setFilteredTasks] = useState<Task[]>(tasks);
 
   const handleFilterChange = (filteredData: Task[]) => {
@@ -34,26 +32,21 @@ export default function Page() {
   }
 
   const handleTaskSave = (task: Task) => {
-    setLoading(true);
     if (task.id) {
       updateTaskStatus({ newTask: task }, {
         onSuccess: () => {
-          setLoading(false);
-          toast.success("Task updated successfully"); // Toast เดียวที่นี่
+          toast.success("Task updated successfully");
         },
         onError: (error) => {
-          setLoading(false);
           toast.error("Failed to update task: " + error.message);
         },
       });
     } else {
       createTask({ id: projectId || "", newTask: task }, {
         onSuccess: () => {
-          setLoading(false);
           toast.success("Task created successfully");
         },
         onError: (error) => {
-          setLoading(false);
           toast.error("Failed to create task: " + error.message);
         },
       });
@@ -108,11 +101,6 @@ export default function Page() {
               onDelete={deleteTask}
             />
           </CardContent>
-          <CardFooter>
-            <p className={loading ? "text-yellow-500" : "text-green-500"}>
-              {loading ? "Loading..." : "Loaded Success"}
-            </p>
-          </CardFooter>
         </Card>
       </div>
     </div>

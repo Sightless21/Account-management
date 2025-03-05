@@ -44,7 +44,7 @@ const NAV_ITEMS = [
     roles: ["HR", "MANAGER", "ADMIN"],
     items: [
       { title: "Create User", url: "/CreateUser" },
-      { title: "Employee List", url: "#" }
+      { title: "Employee List", url: "/EmployeeList" }
     ],
   },
 ];

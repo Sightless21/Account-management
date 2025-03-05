@@ -108,22 +108,22 @@ export const FilterComponent = <T,>({
         placeholder={searchPlaceholder}
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className="w-64 rounded-lg border border-gray-300 px-3 py-2 h-8 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+        className="w-64 rounded-lg border border-gray-300 px-3 py-2 h-8 dark:bg-black dark:text-white"
       />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant="outline"
-            className="h-8 w-32 bg-white text-black border-dashed border border-gray-300 rounded flex items-center justify-center gap-2 hover:bg-gray-100 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700"
+            className="h-8 w-32 bg-white text-black border-dashed border border-gray-300 rounded flex items-center justify-center gap-2 hover:bg-gray-100 dark:bg-black dark:text-white dark:border-white dark:hover:bg-zinc-800"
           >
             <CircleFadingPlus className="h-4 w-4"/> {filterLabel}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-48 bg-white text-black border border-gray-300 rounded-md shadow-lg dark:bg-gray-800 dark:text-white dark:border-gray-600">
+        <DropdownMenuContent className="w-48 bg-white text-black border border-gray-300 rounded-md shadow-lg dark:bg-black dark:text-white dark:border-white">
           <DropdownMenuCheckboxItem
             checked={selectedFilters.includes(" ")}
             onCheckedChange={(checked) => handleCheckboxChange(" ", checked)}
-            className={selectedFilters.includes(" ") ? "bg-gray-200 text-black dark:bg-gray-600 dark:text-white" : ""}
+            className={selectedFilters.includes(" ") ? "bg-gray-200 text-black dark:bg-black dark:text-white" : ""}
           >
             All
           </DropdownMenuCheckboxItem>
@@ -134,7 +134,7 @@ export const FilterComponent = <T,>({
                 key={option}
                 checked={selectedFilters.includes(option)}
                 onCheckedChange={(checked) => handleCheckboxChange(option, checked)}
-                className={selectedFilters.includes(option) ? "bg-gray-200/20 text-black dark:bg-gray-600/20 dark:text-white" : ""}
+                className={selectedFilters.includes(option) ? "bg-gray-200/20 text-black dark:bg-black dark:text-white" : ""}
               >
                 <div className="flex items-center justify-between w-full">
                   <div className="flex items-center gap-2">

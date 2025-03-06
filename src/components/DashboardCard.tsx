@@ -17,6 +17,7 @@ interface NumberCardProps {
   badgeVariant?: "default" | "outline" | "secondary" | "destructive"
   badgeColorClass?: string
   iconClassName?: string
+  className?: string
 }
 
 export function NumberCard({
@@ -29,11 +30,12 @@ export function NumberCard({
   badgeVariant = "outline",
   badgeColorClass = "",
   iconClassName = "h-5 w-5 text-muted-foreground",
+  className
 }: NumberCardProps) {
   const ref = React.useRef(null)
 
   return (
-    <Card className="w-full" ref={ref}>
+    <Card className={cn(className, "w-full")} ref={ref}>
       <CardHeader className="flex flex-row items-center justify-between pb-2 gap-2">
         <div className="space-y-1">
           <CardTitle className="text-lg">{title}</CardTitle>
@@ -44,7 +46,7 @@ export function NumberCard({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col items-center justify-center py-6">
+        <div className="flex flex-row items-start justify-between py-2">
           <motion.div
             className={`${cn(valueColorClass)} text-4xl font-bold`}
             initial={{ opacity: 0 }}
@@ -54,7 +56,7 @@ export function NumberCard({
             {value}
           </motion.div>
           {badgeText && (
-            <div className="mt-1 flex items-center">
+            <div className="mt-3 flex items-end">
               <Badge
                 variant={badgeVariant}
                 className={cn(

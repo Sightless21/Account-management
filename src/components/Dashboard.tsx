@@ -66,8 +66,8 @@ const SortableItem: React.FC<{ id: string; children: React.ReactNode; isOver: bo
 const DragOverlayItem: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const style = {
     opacity: 0.9,
-    transform: 'scale(0.98)',
-    boxShadow: "0 6px 12px rgba(0,0,0,0.15)",
+    transform: 'scale(1)',
+    boxShadow: "0 6px 12px rgba(0,0,0,0.30)",
     cursor: "grabbing",
     width: '100%',
   };
@@ -87,6 +87,7 @@ const PlaceholderCard = () => (
 );
 
 export default function DashboardItem() {
+
   const { data: tasks } = useTask()
   const { data: expenses } = useExpenses()
   const { data: applicants } = useApplicantData()
@@ -99,6 +100,7 @@ export default function DashboardItem() {
   const roomBookingsCount = roomBookings?.length ?? 0;
   const dayOffsCount = dayOffs?.filter((dayOff) => dayOff.status === "Pending").length ?? 0;
   const carReservationsCount = carReservations?.length ?? 0;
+
   const [items, setItems] = React.useState<DashboardItem[]>([
     {
       id: 'job', type: 'number',
@@ -156,6 +158,7 @@ export default function DashboardItem() {
       badgeVariant: "outline"
     },
   ]);
+  
   const [activeId, setActiveId] = React.useState<string | null>(null);
   const [overId, setOverId] = React.useState<string | null>(null);
 
@@ -207,6 +210,7 @@ export default function DashboardItem() {
         badgeText={item.badgeText}
         badgeVariant={item.badgeVariant}
         badgeColorClass={item.badgeColorClass}
+        className="hover:shadow-lg duration-300 transition-all"
       />
     </div>
   );

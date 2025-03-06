@@ -76,7 +76,9 @@ export default function SettingsPage() {
 
   useEffect(() => {
     if (profile) {
+      console.log("Profile data:", profile)
       form.reset(profile);
+      console.log("Form avatar after reset:", form.getValues("avatar")); // ตรวจสอบค่า avatar ในฟอร์ม
     }
   }, [form, profile]);
 

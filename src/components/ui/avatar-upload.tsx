@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 
 import { CameraIcon } from "lucide-react"
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -18,6 +19,11 @@ export function AvatarUpload({ value, onChange, defaultValue }: AvatarUploadProp
   const [preview, setPreview] = useState<string | null>(defaultValue || null)
   const [cropModalOpen, setCropModalOpen] = useState(false)
   const [selectedImage, setSelectedImage] = useState<string>("")
+
+  // Sync preview กับ defaultValue เมื่อมันเปลี่ยน
+  useEffect(() => {
+    setPreview(defaultValue || null);
+  }, [defaultValue]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0]

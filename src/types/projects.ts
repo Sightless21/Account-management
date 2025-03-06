@@ -1,5 +1,6 @@
 export type StatusTasks = "TODO" | "DOING" | "DONE";
 export type PriorityTasks = "HIGH" | "MEDIUM" | "LOW";
+export type StageStatus = "COMPLETED" | "IN_PROGRESS" | "NOT_STARTED"
 
 export type Task = {
   id: string;
@@ -10,12 +11,17 @@ export type Task = {
   priority: PriorityTasks;
   projectId: string;
   assignee: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export type Project = {
   id: string;
   projectName: string;
+  description: string;
   task: Task[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export type ChartData = {
@@ -33,4 +39,15 @@ export type ChartData = {
   doneAngle: number;
   totalTasks: number;
   doneTasks: number;
+}
+
+export type ProjectStage =  {
+  id: string;
+  title: string;
+  description: string;
+  status: StageStatus;
+  startDate: Date;
+  endDate: Date;
+  progress: number;
+  projectId: string;
 }

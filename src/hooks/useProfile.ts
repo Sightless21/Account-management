@@ -7,7 +7,7 @@ import { SettingsForm } from "@/schema/formSettings";
 
 export const useProfile = (): {
   profileQuery: UseQueryResult<SettingsForm, unknown>;
-  updateProfileMutation: UseMutationResult<any, unknown, SettingsForm, unknown>;
+  updateProfileMutation: UseMutationResult<SettingsForm, unknown, SettingsForm, unknown>;
   userId: string | undefined;
 } => {
   const { data: session } = useSession();
@@ -19,7 +19,7 @@ export const useProfile = (): {
     return transformProfileData(data);
   };
 
-  const updateProfile = async (data: SettingsForm): Promise<any> => {
+  const updateProfile = async (data: SettingsForm) => {
     if (!userId) throw new Error("User ID is not available");
     const { data: response } = await axios.patch(`/api/auth/user/profile/${userId}`, data);
     return transformProfileData(response); // แปลงข้อมูลที่ได้กลับมา

@@ -1,10 +1,12 @@
 'use client'
-import React from 'react';
+import React  from 'react';
 import DashboardItem from "@/components/Dashboard"
 import ProjectStagesDashboard from "@/components/Project-Stages-Dashboard"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+
 export default function Page() {
+
   return (
     <Card className="m-3 flex flex-col p-2">
       <CardContent className='p-0 flex-col'>

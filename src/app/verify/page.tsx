@@ -11,7 +11,7 @@ export default async function Page() {
     }
 
     return (
-        <div className="flex h-screen items-center justify-center bg-slate-100">
+        <div className="flex h-screen items-center justify-center bg-slate-100 dark:bg-black">
             <VerifyForm userId={session.user.id} />
         </div>
     );

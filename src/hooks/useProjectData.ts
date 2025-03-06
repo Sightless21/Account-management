@@ -8,6 +8,7 @@ const fetchProjects = async () => {
   const { data } = await axios.get<Project[]>("/api/project");
   return data;
 };
+
 const createProject = async (newProject: Project) => {
   try {
     const res = await axios.post("/api/project", newProject);

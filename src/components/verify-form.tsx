@@ -57,7 +57,7 @@ export default function VerifyForm({ userId }: VerifyFormProps) {
     const handleLoading = form.handleSubmit((values) => {
         toast.promise(
             onSubmit(values).then(() => {
-                router.push("/Dashboard");
+                router.push("/");
             }),
             {
                 loading: "Verifying...",
@@ -68,7 +68,7 @@ export default function VerifyForm({ userId }: VerifyFormProps) {
     });
 
     return (
-        <Card className="w-96">
+        <Card className="w-96 dark:bg-black dark:text-white">
             <CardHeader>
                 <CardTitle>Verify</CardTitle>
                 <CardDescription>You need to verify with create a new password for verification.</CardDescription>

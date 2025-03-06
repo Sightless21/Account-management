@@ -81,7 +81,7 @@ const DragOverlayItem: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
 // Placeholder Component
 const PlaceholderCard = () => (
-  <div className="w-full h-full p-4 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50">
+  <div className="w-full h-full p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center bg-gray-50 dark:bg-gray-800">
     <span className="text-gray-400">Drop here</span>
   </div>
 );

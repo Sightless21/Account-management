@@ -2,10 +2,10 @@
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
-import { CalendarDays, AlertCircle, CheckCircle, Clock, HelpCircle } from "lucide-react"
+import { CalendarDays, CheckCircle, Clock, HelpCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-export type StageStatus = "completed" | "in-progress" | "blocked" | "not-started"
+export type StageStatus = "COMPLETED" | "IN_PROGRESS" | "NOT_STARTED"
 
 export interface ProjectStageProps {
   title: string
@@ -27,25 +27,19 @@ export function ProjectStageCard({
   className,
 }: ProjectStageProps) {
   const statusConfig = {
-    completed: {
+    COMPLETED: {
       label: "Completed",
       variant: "default" as const,
       icon: CheckCircle,
       progressColor: "bg-green-500",
     },
-    "in-progress": {
+    IN_PROGRESS: {
       label: "In Progress",
       variant: "default" as const,
       icon: Clock,
       progressColor: "bg-blue-500",
     },
-    blocked: {
-      label: "Blocked",
-      variant: "destructive" as const,
-      icon: AlertCircle,
-      progressColor: "bg-red-500",
-    },
-    "not-started": {
+    NOT_STARTED: {
       label: "Not Started",
       variant: "outline" as const,
       icon: HelpCircle,

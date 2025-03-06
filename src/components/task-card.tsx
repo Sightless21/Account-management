@@ -101,7 +101,7 @@ export function TaskCard({ task, onDragStart }: TaskCardProps) {
                         {format(new Date(task.dueDate), "MMM d")}
                       </Badge>
                     </TooltipTrigger>
-                    <TooltipContent>Due: {format(new Date(task.dueDate), "PPP")}</TooltipContent>
+                    <TooltipContent side={"bottom"}>Due: {format(new Date(task.dueDate), "PPP")}</TooltipContent>
                   </Tooltip>
                 )}
               </div>
@@ -116,7 +116,7 @@ export function TaskCard({ task, onDragStart }: TaskCardProps) {
                   <GripVertical className="h-4 w-4 text-muted-foreground" />
                 </button>
               </TooltipTrigger>
-              <TooltipContent>Drag to reorder</TooltipContent>
+              <TooltipContent side={"left"}>Drag to reorder</TooltipContent>
             </Tooltip>
           </div>
         </CardHeader>

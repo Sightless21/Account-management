@@ -27,6 +27,7 @@ export default function Page() {
     return [...(new Set(applicants?.map((a) => a.person.position) || []) as Set<string>).values()];
   }, [applicants]);
 
+
   function handleProbationPage() {
     router.push("/Dashboard/Applicant/Probation");
   }

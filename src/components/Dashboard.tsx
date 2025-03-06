@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { NumberCard } from "@/components/DashboardCard";
 import { Briefcase, Calendar, Car, DollarSign, FileText, GripVertical, LucideIcon, ClipboardList } from "lucide-react";
 import { DndContext, closestCenter, useSensor, useSensors, PointerSensor, DragOverlay } from '@dnd-kit/core';
@@ -88,12 +88,15 @@ const PlaceholderCard = () => (
 
 export default function DashboardItem() {
 
-  const { data: tasks } = useTask()
-  const { data: expenses } = useExpenses()
-  const { data: applicants } = useApplicantData()
-  const { data: roomBookings } = useRoomBookings()
-  const { data: dayOffs } = useDayOff()
-  const { data: carReservations } = useCarReservation()
+  const { data: tasks, isLoading: tasksLoading } = useTask()
+  const { data: expenses, isLoading: expensesLoading } = useExpenses()
+  const { data: applicants, isLoading: applicantsLoading } = useApplicantData()
+  const { data: roomBookings, isLoading: roomBookingsLoading } = useRoomBookings()
+  const { data: dayOffs, isLoading: dayOffsLoading } = useDayOff()
+  const { data: carReservations, isLoading: carReservationsLoading } = useCarReservation()
+
+  const isLoading = tasksLoading || expensesLoading || applicantsLoading || roomBookingsLoading || dayOffsLoading || carReservationsLoading;
+
   const taskCount = tasks?.filter((task) => task.status === "TODO").length ?? 0;
   const expensesCount = expenses?.filter((booking) => booking.status === "Pending").length ?? 0;
   const applicantsCount = applicants?.length ?? 0;
@@ -101,12 +104,12 @@ export default function DashboardItem() {
   const dayOffsCount = dayOffs?.filter((dayOff) => dayOff.status === "Pending").length ?? 0;
   const carReservationsCount = carReservations?.length ?? 0;
 
-  const [items, setItems] = React.useState<DashboardItem[]>([
+  const [items, setItems] = useState<DashboardItem[]>([
     {
       id: 'job', type: 'number',
       title: "Job Applications",
       description: "New applications",
-      icon: Briefcase, value: applicantsCount,
+      icon: Briefcase, value: isLoading ? 0 : applicantsCount,
       valueColorClass: "text-green-500",
       badgeText: "7 new today",
       badgeVariant: "outline",
@@ -116,7 +119,7 @@ export default function DashboardItem() {
       id: 'leave', type: 'number',
       title: "Leave Requests",
       description: "Pending approvals",
-      icon: FileText, value: dayOffsCount,
+      icon: FileText, value: isLoading ? 0 : dayOffsCount,
       valueColorClass: "text-amber-500",
       badgeText: "3 urgent",
       badgeVariant: "outline",
@@ -126,7 +129,7 @@ export default function DashboardItem() {
       id: 'expense', type: 'number',
       title: "Expense Requests",
       description: "Awaiting approval",
-      icon: DollarSign, value: expensesCount,
+      icon: DollarSign, value: isLoading ? 0 :expensesCount,
       valueColorClass: "text-red-500",
       badgeText: "5 urgent",
       badgeVariant: "outline",
@@ -136,7 +139,7 @@ export default function DashboardItem() {
       id: 'meeting', type: 'number',
       title: "Meeting Rooms",
       description: "Bookings today",
-      icon: Calendar, value: roomBookingsCount,
+      icon: Calendar, value: isLoading ? 0 : roomBookingsCount,
       badgeText: "4 active now",
       badgeVariant: "outline",
       badgeColorClass: "bg-primary/10 text-primary"
@@ -145,7 +148,7 @@ export default function DashboardItem() {
       id: 'vehicle', type: 'number',
       title: "Vehicle Bookings",
       description: "Pending requests",
-      icon: Car, value: carReservationsCount,
+      icon: Car, value: isLoading ? 0 : carReservationsCount,
       badgeText: "2 for today",
       badgeVariant: "outline"
     },
@@ -153,12 +156,30 @@ export default function DashboardItem() {
       id: 'tasks', type: "number",
       title: "Tasks",
       description: "Pending tasks",
-      icon: ClipboardList, value: taskCount,
+      icon: ClipboardList, value: isLoading ? 0 : taskCount,
       badgeText: "2 due today",
       badgeVariant: "outline"
     },
   ]);
+
+  useEffect(() => {
+    setItems((prevItems) =>
+      prevItems.map((item) => {
+        switch (item.id) {
+          case 'job': return { ...item, value: applicantsCount };
+          case 'leave': return { ...item, value: dayOffsCount };
+          case 'expense': return { ...item, value: expensesCount };
+          case 'meeting': return { ...item, value: roomBookingsCount };
+          case 'vehicle': return { ...item, value: carReservationsCount };
+          case 'tasks': return { ...item, value: taskCount };
+          default: return item;
+        }
+      })
+    );
+  }, [taskCount, expensesCount, applicantsCount, roomBookingsCount, dayOffsCount, carReservationsCount]);
+
   
+
   const [activeId, setActiveId] = React.useState<string | null>(null);
   const [overId, setOverId] = React.useState<string | null>(null);
 

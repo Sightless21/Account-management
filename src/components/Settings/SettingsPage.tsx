@@ -24,10 +24,10 @@ import { AxiosError } from "axios";
 
 type PasswordData = { currentPassword: string; newPassword: string; confirmPassword: string };
 
-// ฟังก์ชันช่วยตรวจสอบการเปลี่ยนแปลง
 const hasChanges = (newData: any, originalData: any, fields: string[]) =>
   fields.some((field) => newData[field] !== originalData?.[field]);
 
+// ตรวจสอบการเปลี่ยนแปลงของ profile (ไม่รวมรหัสผ่าน)
 const hasProfileChanges = (data: SettingsForm, profile?: SettingsForm) => {
   if (!profile) return true;
   return (
@@ -44,6 +44,16 @@ const hasProfileChanges = (data: SettingsForm, profile?: SettingsForm) => {
   );
 };
 
+// ตรวจสอบการเปลี่ยนแปลงของรหัสผ่าน
+const hasPasswordChanges = (data: SettingsForm, profile?: SettingsForm) => {
+  if (!profile) return true;
+  return (
+    data.user.currentPassword !== profile.user.currentPassword ||
+    data.user.newPassword !== profile.user.newPassword ||
+    data.user.confirmPassword !== profile.user.confirmPassword
+  );
+};
+
 const requiresLogout = (data: SettingsForm, profile?: SettingsForm) => {
   if (!profile) return false;
   return (
@@ -54,30 +64,32 @@ const requiresLogout = (data: SettingsForm, profile?: SettingsForm) => {
 };
 
 export default function SettingsPage() {
-  const [isDirty, setIsDirty] = useState(false);
   const { profileQuery, updateProfileMutation, userId } = useProfile();
   const { data: profile, isLoading, error } = profileQuery;
 
   const form = useForm<SettingsForm>({
     resolver: zodResolver(settingsSchema),
-    defaultValues: profile ? { ...defaultValuesSettings, ...profile } : defaultValuesSettings,
+    defaultValues: defaultValuesSettings,
   });
 
-  // ย้ายการสมัครสมาชิก form.watch ออกมา
+  const [isDirty, setIsDirty] = useState(false);
+
   useEffect(() => {
-    const subscription = form.watch((value) => {
-      const hasFormChanges = hasProfileChanges(value as SettingsForm, profile);
-      setIsDirty(hasFormChanges);
+    if (profile) {
+      form.reset(profile);
+    }
+  }, [form, profile]);
+
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name) {
+        const hasFormProfileChanges = hasProfileChanges(value as SettingsForm, profile);
+        const hasFormPasswordChanges = hasPasswordChanges(value as SettingsForm, profile);
+        setIsDirty(hasFormProfileChanges || hasFormPasswordChanges); // ปุ่ม enable ถ้ามีการเปลี่ยนแปลงอย่างใดอย่างหนึ่ง
+      }
     });
     return () => subscription.unsubscribe();
   }, [form, profile]);
-
-  // ใช้ useEffect เฉพาะสำหรับการรีเซ็ตฟอร์ม
-  useEffect(() => {
-    if (profile && !isDirty) {
-      form.reset(profile);
-    }
-  }, [form, profile, isDirty]);
 
   const updatePasswordMutation = useMutation({
     mutationFn: async (passwordData: PasswordData) => {
@@ -107,6 +119,7 @@ export default function SettingsPage() {
       if (requiresLogout(data, profile)) {
         signOut({ callbackUrl: "/" });
       }
+      setIsDirty(false);
     },
     [updateProfileMutation, profile]
   );
@@ -126,8 +139,10 @@ export default function SettingsPage() {
     async (data: SettingsForm) => {
       try {
         const hasPassword = data.user.currentPassword && data.user.newPassword && data.user.confirmPassword;
-        const hasProfile = hasProfileChanges(data, profile);
+        const hasProfile = hasProfileChanges(data, profile); // ใช้เฉพาะการเปลี่ยนแปลงของ profile
+        const hasPasswordChange = hasPasswordChanges(data, profile); // ใช้ตรวจสอบการเปลี่ยนแปลงรหัสผ่าน
 
+        // ถ้ามีการกรอกรหัสผ่านและมีการเปลี่ยนแปลง profile ให้แจ้งเตือน
         if (hasPassword && hasProfile) {
           toast.error("Please update either your password or profile information one at a time.", {
             position: "top-center",
@@ -136,7 +151,7 @@ export default function SettingsPage() {
           return;
         }
 
-        if (hasPassword) {
+        if (hasPassword && hasPasswordChange) {
           await handleUpdatePassword(data);
         } else if (hasProfile) {
           await handleUpdateProfile(data);
@@ -153,7 +168,7 @@ export default function SettingsPage() {
   );
 
   const resetForm = () => {
-    form.reset(profile);
+    form.reset(profile || defaultValuesSettings);
     setIsDirty(false);
     toast.success("Changes discarded", { position: "top-center" });
   };
@@ -184,10 +199,7 @@ export default function SettingsPage() {
             <Button type="button" variant="outline" onClick={resetForm}>
               Reset
             </Button>
-            <Button
-              type="submit"
-              disabled={isLoading || updateProfileMutation.isPending || updatePasswordMutation.isPending || !isDirty}
-            >
+            <Button type="submit" disabled={!isDirty}>
               Save Changes
             </Button>
           </div>
@@ -197,7 +209,6 @@ export default function SettingsPage() {
   );
 }
 
-// คงฟังก์ชัน LoadingView และ ErrorView ไว้เหมือนเดิม
 const LoadingView = () => (
   <div className="p-4">
     <H1 className="mb-2">Settings</H1>

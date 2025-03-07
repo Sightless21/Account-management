@@ -83,6 +83,7 @@ export const getColumns = (
       id: "Title",
       accessorKey: "title",
       header: ({ column }) => <DataTableColumnHeader column={column} title="Title" />,
+      meta: { title: "Title" },
     },
     {
       id: "employeeName",
@@ -124,6 +125,7 @@ export const getColumns = (
         return `${convertedTotal.toLocaleString()} THB`;
       },
       enableSorting: true,
+      meta: { title: "Total" },
     },
     {
       id: "transactionDate",
@@ -159,6 +161,7 @@ export const getColumns = (
       const { status } = row.original;
       return <Badge className={statusColor[status as ExpenseStatus] || "bg-gray-500"}>{status}</Badge>;
     },
+    meta: { title: "Status" },
   };
 
   const approvalColumn: ColumnDef<Expense> = {
@@ -171,6 +174,7 @@ export const getColumns = (
         onReset={handlers.onReset}
       />
     ),
+    meta: { title: "Approval" },
   };
 
   const menuActionColumn: ColumnDef<Expense> = {

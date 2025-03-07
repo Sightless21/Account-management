@@ -25,6 +25,7 @@ export default function Page() {
     const donePercentage = totalTasks > 0 ? (doneTasks / totalTasks) * 100 : 0
     const doneAngle = (donePercentage * 360) / 100
     const projectId = project.id
+    const description = project.description
 
     // Choose color based on completion percentage
     let fillColor = "hsl(173 58% 39%)"
@@ -48,23 +49,27 @@ export default function Page() {
       totalTasks,
       doneTasks,
       projectId,
+      description
     }
   }, [])
 
-  async function handleAddProject(projectName: string) {
+  async function handleAddProject(projectName: string, description?: string) { // เพิ่มพารามิเตอร์ description
     try {
       const newProject = {
         id: "",
         projectName: projectName,
+        description: description || "", // เพิ่ม description
         task: [],
-      }
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
       toast.promise(createProject(newProject), {
         loading: "Adding project...",
         success: "Successfully added project",
         error: "Error adding project",
-      })
+      });
     } catch (error) {
-      console.error("Error adding project:", error)
+      console.error("Error adding project:", error);
     }
   }
 
@@ -164,8 +169,8 @@ export default function Page() {
                     title={project.projectName}
                     value={project.doneAngle}
                     projectID={project.projectId}
-                    description={`Tasks completed: ${project.doneTasks} / ${project.totalTasks}`}
-                    footerText="View project details"
+                    description={project.description || ""}
+                    footerText={`Tasks completed: ${project.doneTasks} / ${project.totalTasks}`}
                   />
                 ))
               )}

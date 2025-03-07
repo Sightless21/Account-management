@@ -32,6 +32,7 @@ export async function POST(request: Request) {
     const createProject = await prisma.project.create({
       data: {
         projectName: data.projectName,
+        description: data.description || "",
       },
     });
     return NextResponse.json(createProject, { status: 200 });
@@ -46,7 +47,7 @@ export async function POST(request: Request) {
 // อัปเดต Project //Update project (name)
 export async function PATCH(request: Request) {
   const body = await request.json();
-  const { id, projectName } = body; // รับ id และ projectName จาก body
+  const { id, projectName , description} = body; // รับ id และ projectName จาก body
 
   // ตรวจสอบว่า `id` และ `projectName` มีค่าหรือไม่
   if (!id || !projectName) {
@@ -59,7 +60,9 @@ export async function PATCH(request: Request) {
   try {
     const updatedProject = await prisma.project.update({
       where: { id },
-      data: { projectName }, // อัปเดตเฉพาะ projectName
+      data: { projectName,
+        description : description || ""
+       }, // อัปเดตเฉพาะ projectName
     });
     return NextResponse.json(updatedProject, { status: 200 });
   } catch (error) {

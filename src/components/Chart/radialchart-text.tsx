@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation"
 import { Label, PolarGrid, PolarRadiusAxis, RadialBar, RadialBarChart } from "recharts"
 import { toast } from "sonner"
 import { Button } from "../ui/button"
+import { Textarea } from "../ui/textarea"
 
 interface RadialChartProps {
   data: { name: string; value: number; fill: string }[]
@@ -33,34 +34,62 @@ export function RadialChart({
   footerText,
   color,
 }: RadialChartProps) {
-  const [isEditing, setIsEditing] = useState(false)
+  const [isEditingTitle, setIsEditingTitle] = useState(false)
+  const [isEditingDescription, setIsEditingDescription] = useState(false)
   const [newTitle, setNewTitle] = useState(title)
+  const [newDescription, setNewDescription] = useState(description || "")
   const [isDeleting, setIsDeleting] = useState(false)
   const { mutateAsync: deleteProject, isPending } = useDeleteProject()
   const { mutateAsync: updateProject, isPending: isUpdating } = useUpdateProject()
   const router = useRouter()
 
-  const handleSave = () => {
-    setIsEditing(false)
+  // แยกการบันทึก title และ description
+  const handleSaveTitle = () => {
+    setIsEditingTitle(false)
     if (newTitle.trim() !== "" && newTitle !== title) {
-      toast.promise(updateProject({ id: projectID, NewNameProject: newTitle }), {
-        loading: "Updating project...",
-        success: "Project updated successfully",
-        error: "Failed to update project",
-      })
+      toast.promise(
+        updateProject({
+          id: projectID,
+          NewNameProject: newTitle,
+          newDescriptionProject: description || ""
+        }),
+        {
+          loading: "Updating project title...",
+          success: "Project title updated successfully",
+          error: "Failed to update project title",
+        }
+      )
+    }
+  }
+
+  const handleSaveDescription = () => {
+    setIsEditingDescription(false)
+    if (newDescription !== description) { // อัปเดตเมื่อ description เปลี่ยนแปลง
+      toast.promise(
+        updateProject({
+          id: projectID,
+          NewNameProject: newTitle,
+          newDescriptionProject: newDescription || ""
+        }),
+        {
+          loading: "Updating project description...",
+          success: "Project description updated successfully",
+          error: "Failed to update project description",
+        }
+      )
     }
   }
 
   return (
     <Card className="flex flex-col w-[250px] transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-2xl">
       <CardHeader className="static items-center pb-0">
-        {isEditing ? (
+        {isEditingTitle ? (
           <Input
             type="text"
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
-            onBlur={handleSave}
-            onKeyDown={(e) => e.key === "Enter" && handleSave()}
+            onBlur={handleSaveTitle}
+            onKeyDown={(e) => e.key === "Enter" && handleSaveTitle()}
             className="w-full"
             autoFocus
             disabled={isUpdating}
@@ -68,13 +97,13 @@ export function RadialChart({
         ) : (
           <div
             className="group flex cursor-pointer items-center gap-2 hover:underline"
-            onClick={() => setIsEditing(true)}
+            onClick={() => setIsEditingTitle(true)}
           >
             <CardTitle>{title}</CardTitle>
             <Pencil size={20} className="text-muted-foreground transition-colors group-hover:text-foreground" />
           </div>
         )}
-        <CardDescription>{description}</CardDescription>
+        <CardDescription className="flex text-center text-muted-foreground text-ellipsis">{footerText}</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer config={config} className="mx-auto aspect-square max-h-[250px]">
@@ -113,8 +142,26 @@ export function RadialChart({
           </RadialBarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col gap-8 text-sm">
-        <div className="leading-none text-muted-foreground">{footerText}</div>
+      <CardFooter className="flex-col gap-8 text-sm w-full">
+        {isEditingDescription ? (
+          <Textarea
+            value={newDescription}
+            onChange={(e) => setNewDescription(e.target.value)}
+            onBlur={handleSaveDescription}
+            onKeyDown={(e) => e.key === "Enter" && handleSaveDescription()}
+            className="w-full"
+            autoFocus
+            disabled={isUpdating}
+          />
+        ) : (
+          <div
+            className="group flex cursor-pointer items-center gap-2 hover:underline"
+            onClick={() => setIsEditingDescription(true)}
+          >
+            <CardDescription className="flex text-center text-muted-foreground text-ellipsis">{description}</CardDescription>
+            <Pencil size={20} className="text-muted-foreground transition-colors group-hover:text-foreground" />
+          </div>
+        )}
         <Button
           onClick={() => {
             if (title) {

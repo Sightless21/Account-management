@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient , QueryClient} from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, QueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { Project, Task } from "@/types/projects";
 import { toast } from "sonner";
@@ -19,9 +19,12 @@ const createProject = async (newProject: Project) => {
     throw error;
   }
 }
-const updateProject = async ({ id, NewNameProject }: { id: string; NewNameProject: string }) => {
+const updateProject = async ({ id, NewNameProject, newDescriptionProject }: { id: string; NewNameProject: string, newDescriptionProject: string }) => {
   try {
-    const res = await axios.patch("/api/project", { id, projectName: NewNameProject });
+    const res = await axios.patch("/api/project", { 
+      id, 
+      projectName: NewNameProject, 
+      description: newDescriptionProject });
     console.log("API response:", res.status);
     return res.data;
   } catch (error) {

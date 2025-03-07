@@ -27,6 +27,7 @@ export type Project = {
 export type ChartData = {
   projectId: string;
   projectName: string;
+  description: string;
   chartData: {
     name: string;
     value: number;

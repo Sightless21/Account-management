@@ -1,6 +1,6 @@
 'use client'
 import React  from 'react';
-import DashboardItem from "@/components/Dashboard"
+import DashboardItem from "@/components/DashboardItem"
 import ProjectStagesDashboard from "@/components/Project-Stages-Dashboard"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';

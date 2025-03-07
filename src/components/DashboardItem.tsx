@@ -13,6 +13,7 @@ import { useApplicantData } from "@/hooks/useApplicantData";
 import { useRoomBookings } from "@/hooks/useRoomBookingData";
 import { useDayOff } from "@/hooks/useDayOffData"
 import { useCarReservation } from "@/hooks/useCarReservationData"
+import { format } from "date-fns/format";
 // Type definitions
 interface DashboardItem {
   id: string;
@@ -97,12 +98,23 @@ export default function DashboardItem() {
 
   const isLoading = tasksLoading || expensesLoading || applicantsLoading || roomBookingsLoading || dayOffsLoading || carReservationsLoading;
 
-  const taskCount = tasks?.filter((task) => task.status === "TODO").length ?? 0;
-  const expensesCount = expenses?.filter((booking) => booking.status === "Pending").length ?? 0;
-  const applicantsCount = applicants?.length ?? 0;
-  const roomBookingsCount = roomBookings?.length ?? 0;
+  const applicantsCount = applicants?.filter((applicant) => applicant.status === "NEW" || applicant.status === "PENDING_INTERVIEW" || applicant.status === "INTERVIEW_PASSED").length ?? 0;
+  const applicantsTodayCount = applicants?.filter((applicant) => format(applicant.createdAt || new Date(), "yyyy-MM-dd") === format(new Date().toLocaleDateString(), "yyyy-MM-dd")).length ?? 0;
+
   const dayOffsCount = dayOffs?.filter((dayOff) => dayOff.status === "Pending").length ?? 0;
-  const carReservationsCount = carReservations?.length ?? 0;
+  const dayOffsTodayCount = dayOffs?.filter((dayOff) => format(dayOff.createdAt || new Date(), "yyyy-MM-dd") === format(new Date().toLocaleDateString(), "yyyy-MM-dd")).length ?? 0;
+
+  const expensesCount = expenses?.filter((booking) => booking.status === "Pending").length ?? 0;
+  const expensesTodayCount = expenses?.filter((booking) => format(booking.createdAt || new Date(), "yyyy-MM-dd") === format(new Date().toLocaleDateString(), "yyyy-MM-dd")).length ?? 0;
+  const roomBookingsCount = roomBookings?.filter((roomBooking) => 
+    format(roomBooking.date, "yyyy-MM-dd") === format(new Date().toLocaleDateString(), "yyyy-MM-dd") 
+  && new Date(`1970-01-01T${roomBooking.endTime}`).getTime() < new Date().getTime()).length ?? 0;
+
+  const carReservationsCount = carReservations?.filter((carReservation) => carReservation.tripStatus === "ONGOING").length ?? 0;
+  const carReservationsTodayCount = carReservations?.filter((carReservation) => format(carReservation.createdAt || new Date(), "yyyy-MM-dd") === format(new Date().toLocaleDateString(), "yyyy-MM-dd")).length ?? 0;
+
+  const taskCount = tasks?.filter((task) => task.status === "TODO").length ?? 0;
+  const taskTodayCount = tasks?.filter((task) => format(task.createdAt || new Date(), "yyyy-MM-dd") === format(new Date().toLocaleDateString(), "yyyy-MM-dd")).length ?? 0;
 
   const [items, setItems] = useState<DashboardItem[]>([
     {
@@ -111,7 +123,7 @@ export default function DashboardItem() {
       description: "New applications",
       icon: Briefcase, value: isLoading ? 0 : applicantsCount,
       valueColorClass: "text-green-500",
-      badgeText: "7 new today",
+      badgeText: `${applicantsTodayCount} new today`,
       badgeVariant: "outline",
       badgeColorClass: "bg-green-500/10 text-green-500"
     },
@@ -121,7 +133,7 @@ export default function DashboardItem() {
       description: "Pending approvals",
       icon: FileText, value: isLoading ? 0 : dayOffsCount,
       valueColorClass: "text-amber-500",
-      badgeText: "3 urgent",
+      badgeText: `${dayOffsTodayCount} new today`,
       badgeVariant: "outline",
       badgeColorClass: "bg-amber-500/10 text-amber-500"
     },
@@ -129,9 +141,9 @@ export default function DashboardItem() {
       id: 'expense', type: 'number',
       title: "Expense Requests",
       description: "Awaiting approval",
-      icon: DollarSign, value: isLoading ? 0 :expensesCount,
+      icon: DollarSign, value: isLoading ? 0 : expensesCount,
       valueColorClass: "text-red-500",
-      badgeText: "5 urgent",
+      badgeText: `${expensesTodayCount} new today`,
       badgeVariant: "outline",
       badgeColorClass: "bg-red-500/10 text-red-500"
     },
@@ -140,7 +152,7 @@ export default function DashboardItem() {
       title: "Meeting Rooms",
       description: "Bookings today",
       icon: Calendar, value: isLoading ? 0 : roomBookingsCount,
-      badgeText: "4 active now",
+      badgeText: roomBookingsCount === 0 ? "No bookings today" : "Active Now",
       badgeVariant: "outline",
       badgeColorClass: "bg-primary/10 text-primary"
     },
@@ -149,7 +161,7 @@ export default function DashboardItem() {
       title: "Vehicle Bookings",
       description: "Pending requests",
       icon: Car, value: isLoading ? 0 : carReservationsCount,
-      badgeText: "2 for today",
+      badgeText: `${carReservationsTodayCount} new today`,
       badgeVariant: "outline"
     },
     {
@@ -157,8 +169,8 @@ export default function DashboardItem() {
       title: "Tasks",
       description: "Pending tasks",
       icon: ClipboardList, value: isLoading ? 0 : taskCount,
-      badgeText: "2 due today",
-      badgeVariant: "outline"
+      badgeText: `${taskTodayCount} new today`,
+      badgeVariant: "outline" 
     },
   ]);
 
@@ -166,19 +178,19 @@ export default function DashboardItem() {
     setItems((prevItems) =>
       prevItems.map((item) => {
         switch (item.id) {
-          case 'job': return { ...item, value: applicantsCount };
-          case 'leave': return { ...item, value: dayOffsCount };
-          case 'expense': return { ...item, value: expensesCount };
-          case 'meeting': return { ...item, value: roomBookingsCount };
-          case 'vehicle': return { ...item, value: carReservationsCount };
-          case 'tasks': return { ...item, value: taskCount };
+          case 'job': return { ...item, value: applicantsCount , badgeText: `${applicantsTodayCount} new today`};
+          case 'leave': return { ...item, value: dayOffsCount , badgeText: `${dayOffsTodayCount} new today` };
+          case 'expense': return { ...item, value: expensesCount  , badgeText: `${expensesTodayCount} new today`};
+          case 'meeting': return { ...item, value: roomBookingsCount , badgeText: roomBookingsCount === 0 ? "No bookings today" : "Active Now" };
+          case 'vehicle': return { ...item, value: carReservationsCount , badgeText: `${carReservationsTodayCount} new today`};
+          case 'tasks': return { ...item, value: taskCount , badgeText: `${taskTodayCount} new today`};
           default: return item;
         }
       })
     );
-  }, [taskCount, expensesCount, applicantsCount, roomBookingsCount, dayOffsCount, carReservationsCount]);
+  }, [taskCount, expensesCount, applicantsCount, roomBookingsCount, dayOffsCount, carReservationsCount, applicantsTodayCount, dayOffsTodayCount, expensesTodayCount, carReservationsTodayCount, taskTodayCount]);
 
-  
+
 
   const [activeId, setActiveId] = React.useState<string | null>(null);
   const [overId, setOverId] = React.useState<string | null>(null);

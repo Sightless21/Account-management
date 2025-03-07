@@ -26,4 +26,6 @@ export interface CarReservationType {
   tripStatus:   TripStatus;
   carId:        string;
   car:          Car;
+  createdAt:    Date;
+  updatedAt:    Date;
 }

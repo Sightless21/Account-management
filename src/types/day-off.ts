@@ -12,4 +12,6 @@ export interface DayoffType {
     from: Date;
     to: Date;
   };
+  createdAt: Date;
+  updatedAt: Date;
 }

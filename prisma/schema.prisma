@@ -200,6 +200,8 @@ model CarReservation {
   tripStatus   TripStatus // สถานะของการเดินทาง
   carId        String             @db.ObjectId
   car          Car                @relation(fields: [carId], references: [id])
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 }
 
 type DateCarReservation {

@@ -10,7 +10,9 @@ export async function GET() {
         employeeName: true,
         leaveType: true,
         date: true,
-        status: true
+        status: true,
+        createdAt: true,
+        updatedAt: true
       }
     });
     return NextResponse.json(allDayoff ?? [], { status: 200 }); // ✅ ถ้า null ให้คืน []

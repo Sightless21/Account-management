@@ -118,7 +118,8 @@ export function FormInput({
             {Icon && <Icon className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />}
             <CurrencyInput
               currencySymbol="THB"
-              {...field}
+              value={typeof field.value === "string" ? parseFloat(field.value) || 0 : field.value ?? 0} // แปลงเป็น number
+              onValueChange={(value: number) => field.onChange(value)} // ส่ง number กลับไป
               className={`pl-9 ${className || ""}`}
               placeholder={placeholder}
             />

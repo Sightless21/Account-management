@@ -61,6 +61,9 @@ export const POST = async (req: NextRequest) => {
           person: null,
           info: null,
           documents: { create: [] },
+          military: "",
+          marital: "",
+          dwelling: "",
         },
       });
 

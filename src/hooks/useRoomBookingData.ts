@@ -16,7 +16,7 @@ export const useRoomBookings = () => {
   return useQuery({
     queryKey: ["roombookings"],
     queryFn: fetchRoombookings,
-    staleTime: 1000 * 60 * 5,
+    refetchInterval: 5 * 60 * 1000,
   });
 }
 export const useCreateRoomBooking = () => {

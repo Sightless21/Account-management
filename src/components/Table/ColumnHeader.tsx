@@ -1,31 +1,49 @@
 import { Column } from "@tanstack/react-table"
 import { ArrowDown, ArrowUp, ChevronsUpDown, EyeOff, X } from "lucide-react"
-
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuPortal,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuPortal, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 interface DataTableColumnHeaderProps<TData, TValue>
   extends React.HTMLAttributes<HTMLDivElement> {
   column: Column<TData, TValue>
   title: string
+  isNumeric?: boolean
+  isDate?: boolean
 }
 
 export function DataTableColumnHeader<TData, TValue>({
   column,
   title,
   className,
+  isNumeric = false,
+  isDate = false,
 }: DataTableColumnHeaderProps<TData, TValue>) {
   if (!column.getCanSort()) {
     return <div className={cn(className)}>{title}</div>
   }
+
+  // ฟังก์ชันกำหนดข้อความในเมนูและทิศทางการเรียง
+  const getSortOptions = () => {
+    if (isDate) {
+      return [
+        { label: "Oldest to Newest", direction: true, icon: ArrowUp }, // Ascending
+        { label: "Newest to Oldest", direction: false, icon: ArrowDown }, // Descending
+      ]
+    }
+    if (isNumeric) {
+      return [
+        { label: "Low to High", direction: true, icon: ArrowUp }, // Ascending
+        { label: "High to Low", direction: false, icon: ArrowDown }, // Descending
+      ]
+    }
+    return [
+      { label: "A-Z", direction: true, icon: ArrowUp },
+      { label: "Z-A", direction: false, icon: ArrowDown },
+    ]
+  }
+
+  const sortOptions = getSortOptions()
 
   return (
     <div className={cn("flex items-center space-x-2", className)}>
@@ -47,23 +65,30 @@ export function DataTableColumnHeader<TData, TValue>({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          <DropdownMenuPortal> Toggle Columns </DropdownMenuPortal>
-          <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
-            <ArrowUp className="h-3.5 w-3.5 text-muted-foreground/70" />
-            Asc
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
-            <ArrowDown className="h-3.5 w-3.5 text-muted-foreground/70" />
-            Desc
-          </DropdownMenuItem>
+          <DropdownMenuPortal>Toggle Columns</DropdownMenuPortal>
+          {sortOptions.map((option) => (
+            <DropdownMenuItem
+              key={option.label}
+              onClick={() => column.toggleSorting(option.direction)}
+            >
+              <option.icon className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
+              {option.label}
+            </DropdownMenuItem>
+          ))}
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => column.clearSorting()} className="text-destructive bg-red-100">
-            <X className="h-3.5 w-3.5 text-muted-foreground/70 text-red-600" />
+          <DropdownMenuItem
+            onClick={() => column.clearSorting()}
+            className="text-destructive bg-red-100"
+          >
+            <X className="mr-2 h-3.5 w-3.5 text-muted-foreground/70 text-red-600" />
             Clear Sort
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => column.toggleVisibility(false)} className=" bg-gray-100">
-            <EyeOff className="h-3.5 w-3.5 text-muted-foreground/70 text-slate-600" />
+          <DropdownMenuItem
+            onClick={() => column.toggleVisibility(false)}
+            className="bg-gray-100"
+          >
+            <EyeOff className="mr-2 h-3.5 w-3.5 text-muted-foreground/70 text-slate-600" />
             Hide
           </DropdownMenuItem>
         </DropdownMenuContent>

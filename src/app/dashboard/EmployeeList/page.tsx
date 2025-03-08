@@ -1,7 +1,8 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import React from "react";
+import EmployeesTable from "@/components/Table/Employee-Table/EmployeeTable"
 
 export default function Page() {
   return (
@@ -12,8 +13,13 @@ export default function Page() {
           <CardDescription>Employee list List System</CardDescription>
         </CardHeader>
         <CardContent>
-          
+          <EmployeesTable userRole={"HR"} />
         </CardContent>
+        <CardFooter>
+          {/* <pre>
+            {JSON.stringify(employees, null, 2)}
+          </pre> */}
+        </CardFooter>
       </Card>
     </div>
   );

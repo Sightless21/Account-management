@@ -8,7 +8,7 @@ export const formApplicantSchema = z.object({
     phone: z.string().min(3, "Phone must be at least 3 characters"),
     email: z.string().email("Invalid email"),
     position: z.string().min(2, "Position must be at least 2 characters"),
-    expectSalary: z.string().min(2, "Expected salary must be at least 2 characters"),
+    expectSalary: z.number().min(10000, "Salary must be at least 10000 THB"),
   }),
   birthdate: z.preprocess(
     (arg) => (typeof arg === "string" || arg instanceof Date ? new Date(arg) : arg),
@@ -54,7 +54,7 @@ export const APPLICANT_FORM_DEFAULT_VALUES: FormApplicant = {
     phone: "",
     email: "",
     position: "",
-    expectSalary: "",
+    expectSalary: 0,
   },
   birthdate: new Date(new Date().setFullYear(new Date().getFullYear() - 18)),
   info: {

@@ -6,34 +6,31 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 
 interface CurrencyInputProps extends Omit<React.ComponentProps<"input">, "onChange"> {
-  value?: string | number;
-  onValueChange?: (value: string) => void;
+  value?: number;
+  onValueChange?: (value: number) => void;
   placeholder?: string;
   className?: string;
   currencySymbol?: string;
 }
 
 export const CurrencyInput = React.forwardRef<HTMLInputElement, CurrencyInputProps>(
-  ({ value, onValueChange, placeholder, className, currencySymbol ,...props }, ref) => {
+  ({ value = 0, onValueChange, placeholder, className, currencySymbol = "", ...props }, ref) => {
     const [displayValue, setDisplayValue] = React.useState<string>("");
 
-    // แปลงค่าเริ่มต้นให้มีลูกน้ำเมื่อ component โหลด
     React.useEffect(() => {
-      if (value !== undefined) {
-        const numericValue = typeof value === "string" ? parseFloat(value.replace(/,/g, "")) : value;
-        if (!isNaN(numericValue)) {
-          setDisplayValue(numericValue.toLocaleString("en-US"));
-        } else {
-          setDisplayValue("");
-        }
+      if (value !== undefined && !isNaN(value)) {
+        setDisplayValue(`${currencySymbol} ${value.toLocaleString("th-TH")}`);
+      } else {
+        setDisplayValue("");
       }
-    }, [value]);
+    }, [value, currencySymbol]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const inputValue = e.target.value.replace(/[^0-9]/g, "");
-      const numericValue = inputValue ? parseInt(inputValue, 10) : 0;
-      setDisplayValue(currencySymbol + numericValue.toLocaleString("th-TH"));
-      if (onValueChange) onValueChange(inputValue);
+      const inputValue = e.target.value.replace(/[^0-9]/g, ""); // ลบทุกอย่างที่ไม่ใช่ตัวเลข
+      const numericValue = inputValue ? parseFloat(inputValue) : 0; // แปลงเป็น number
+
+      setDisplayValue(`${currencySymbol} ${numericValue.toLocaleString("th-TH")}`);
+      if (onValueChange) onValueChange(numericValue); // ส่ง number
     };
 
     return (

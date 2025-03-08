@@ -30,14 +30,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
   }, [status, router]);
 
-  useEffect(()=> {
-    if(user?.isVerify === false){
+  useEffect(() => {
+    if (!user || isLoading) return; // รอให้ user โหลดเสร็จ
+    if (user?.isVerify === false) {
       router.push('/verify');
       toast.info("Please verify your account. with a change password", {
         position: "top-center",
       })
     }
-  },[router, user?.isVerify])
+  }, [isLoading, router, user, user?.isVerify])
 
   // Loading state for pathname change
   useEffect(() => {

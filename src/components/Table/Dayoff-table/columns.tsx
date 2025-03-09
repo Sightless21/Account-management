@@ -178,6 +178,7 @@ export const getColumns = (
           </div>
         )
       },
+      meta: { title: "Date Range" },
     },
   ]
 
@@ -194,6 +195,7 @@ export const getColumns = (
       const { status } = row.original;
       return <Badge className={statusColor[status] || "bg-gray-500"}>{status}</Badge>;
     },
+    meta: { title: "Status" },
   }
 
   const actionColumn: ColumnDef<DayoffType> = {
@@ -206,11 +208,12 @@ export const getColumns = (
         onDelete={handlers.onDelete}
       />
     ),
+    meta: { title: "Action" },
   }
 
   const approvalColumn: ColumnDef<DayoffType> = {
     id: "approval",
-    header: "Accepted/Declined",
+    header: "Approval",
     cell: ({ row }) => (
       <ApprovalButtons
         row={row}
@@ -219,6 +222,7 @@ export const getColumns = (
         onReset={handlers.onReset}
       />
     ),
+    meta: { title: "Approval" },
   }
 
   switch (role) {
@@ -227,7 +231,7 @@ export const getColumns = (
     case "HR":
       return [...baseColumns, approvalColumn, statusColumn, actionColumn,]
     case "MANAGER":
-      return [...baseColumns, approvalColumn, statusColumn]
+      return [...baseColumns, approvalColumn, statusColumn, actionColumn]
     case "ADMIN":
       return [...baseColumns, approvalColumn, statusColumn, actionColumn]
     default:

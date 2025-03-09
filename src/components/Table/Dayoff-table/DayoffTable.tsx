@@ -23,7 +23,7 @@ export default function DayOffTable({ userRole }: DayOffTableProps) {
 
   const handleEdit = (dayOff: DayoffType) => {
     console.log("Edit day off:", dayOff)
-    toast.promise(updateDayOff({ id: dayOff.id, newData: dayOff }),{
+    toast.promise(updateDayOff({ id: dayOff.id, newData: dayOff }), {
       loading: "Saving...",
       success: "Day off updated successfully",
       error: "Error updating day off",
@@ -32,7 +32,7 @@ export default function DayOffTable({ userRole }: DayOffTableProps) {
 
   const handleDelete = (dayOff: DayoffType) => {
     console.log("Delete day off:", dayOff)
-    toast.promise(deleteDayOff(dayOff.id),{
+    toast.promise(deleteDayOff(dayOff.id), {
       loading: "Deleting...",
       success: "Day off deleted successfully",
       error: "Error deleting day off",
@@ -41,7 +41,7 @@ export default function DayOffTable({ userRole }: DayOffTableProps) {
 
   const handleAccepted = (dayOff: DayoffType) => {
     console.log("✅ Approve day off (before update):", dayOff);
-    toast.promise(updateStatusDayOff({ id: dayOff.id, status: "Accepted" }),{
+    toast.promise(updateStatusDayOff({ id: dayOff.id, status: "Accepted" }), {
       loading: "Approving...",
       success: "Day off approved successfully",
       error: "Error approving day off",
@@ -50,7 +50,7 @@ export default function DayOffTable({ userRole }: DayOffTableProps) {
 
   const handleDeclined = (dayOff: DayoffType) => {
     console.log("❌ Reject day off:", dayOff);
-    toast.promise(updateStatusDayOff({ id: dayOff.id, status: "Declined" }),{
+    toast.promise(updateStatusDayOff({ id: dayOff.id, status: "Declined" }), {
       loading: "Rejecting...",
       success: "Day off rejected successfully",
       error: "Error rejecting day off",
@@ -59,7 +59,7 @@ export default function DayOffTable({ userRole }: DayOffTableProps) {
 
   const handleReset = (dayOff: DayoffType) => {
     console.log("Reset day off:", dayOff);
-    toast.promise(updateStatusDayOff({ id: dayOff.id, status: "Pending" }),{
+    toast.promise(updateStatusDayOff({ id: dayOff.id, status: "Pending" }), {
       loading: "Resetting...",
       success: "Day off reset successfully",
       error: "Error resetting"
@@ -76,20 +76,20 @@ export default function DayOffTable({ userRole }: DayOffTableProps) {
 
   return (
     <div className="space-y-4">
-      <DataTable 
-      columns={columns} 
-      data={dayOffData ?? []} 
-      searchColumn="employeeName"
-      searchPlaceholder="Search by employee name"
-      dateColumn="date"
-      statusColumn="status"
-      defaultVisibleColumns={["employeeName", "leaveType" ,"date", "status", "actions"]}
-      statusOptions={[
-        { label: "Pending", value: "Pending" },
-        { label: "Accepted", value: "Accepted" },
-        { label: "Declined", value: "Declined" },
-      ]}
-      toolbarAdditionalControls={<DayoffModal />}/>
+      <DataTable
+        columns={columns}
+        data={dayOffData ?? []}
+        searchColumn="employeeName"
+        searchPlaceholder="Search by employee name"
+        dateColumn="date"
+        statusColumn="status"
+        defaultVisibleColumns={["employeeName", "leaveType", "date", "approval", "status", "actions"]}
+        statusOptions={[
+          { label: "Pending", value: "Pending" },
+          { label: "Accepted", value: "Accepted" },
+          { label: "Declined", value: "Declined" },
+        ]}
+        toolbarAdditionalControls={<DayoffModal />} />
     </div>
   )
 }

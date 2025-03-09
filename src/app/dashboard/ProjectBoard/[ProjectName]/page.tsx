@@ -89,6 +89,8 @@ export default function Page() {
                   priority: "LOW",
                   status: "TODO",
                   assignee: "",
+                  createdAt: new Date(),
+                  updatedAt: new Date(),
                 }}
                 onSave={handleTaskSave}
                 projectId={projectId}

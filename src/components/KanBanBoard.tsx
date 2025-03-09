@@ -18,7 +18,7 @@ export const KanbanBoard = ({ data, onUpdateStatus, onDelete }: KanbanBoardProps
     {
       title: "TODO",
       columnKey: "TODO",
-      headingBgColor: "bg-gray-200/25 border border-gray-600",
+      headingBgColor: "bg-gray-200/25 border border-gray-600 dark:border-gray-400 dark:bg-gray-800",
       headingColor: "text-gray-600 uppercase",
     },
     {

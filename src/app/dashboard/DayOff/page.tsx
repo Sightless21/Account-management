@@ -5,9 +5,11 @@ import DayOffTable from "@/components/Table/Dayoff-table/DayoffTable";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DayOffTabsConfig } from "@/configs/tabsConfig";
 import React, { useState } from "react";
+import { useUserRole } from "@/utils/UserRole"
 
 export default function Page() {
   const [activeTab, setActiveTab] = useState("Leave History");
+  const { role } = useUserRole();
 
   return (
     <div className="mr-3 flex flex-col gap-4 p-4 h-full">
@@ -17,7 +19,7 @@ export default function Page() {
           <CardDescription>Employee Day off of Absence Tracking System</CardDescription>
           <div className="flex w-full justify-between">
             <Menutabs
-              userRole="ADMIN"
+              userRole={role}
               tabsConfig={DayOffTabsConfig}
               onTabChange={setActiveTab}
               defaultTab="Leave History"
@@ -25,7 +27,7 @@ export default function Page() {
           </div>
         </CardHeader>
         <CardContent>
-          {activeTab === "Leave History" && <DayOffTable userRole="ADMIN" />}
+          {activeTab === "Leave History" && <DayOffTable userRole={role} />}
           {activeTab === "Reports" && <p>แสดงข้อมูล Reports</p>}
         </CardContent>
       </Card>

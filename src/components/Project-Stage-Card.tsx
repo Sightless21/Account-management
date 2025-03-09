@@ -50,19 +50,19 @@ export function ProjectStageCard({
   const currentStatus = statusConfig[status]
   const StatusIcon = currentStatus.icon
 
-  const formatDate = (date?: Date) => {
-    if (!date) return "N/A"
+  const formatDate = (date?: Date | null) => {
+    if (!date) return "TBD";
     return date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
-    })
-  }
+    });
+  };
 
   return (
     <Card className={cn(
       "overflow-hidden",
-      "w-[450px] h-[200px]", 
+      "w-[450px] h-[200px]",
       "flex flex-col",
       className
     )}>
@@ -101,8 +101,10 @@ export function ProjectStageCard({
         )}
       </CardContent>
       <CardFooter className="pt-2 text-xs text-muted-foreground shrink-0">
-        {startDate && endDate && (
+        {startDate && endDate ? (
           <div>Duration: {Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))} days</div>
+        ) : (
+          <div>Duration: TBD</div>
         )}
       </CardFooter>
     </Card>

@@ -33,16 +33,68 @@ export function mapBackendToProjectStages(project: Project): ProjectStage[] {
   // กำหนด status ของโปรเจกต์จาก task statuses
   const projectStatus = determineProjectStatus(project.task);
 
-  // หา startDate และ endDate จาก task (ใช้ task แรกสุดและสุดท้าย)
+  // หา startDate
   const startDate = project.createdAt ? new Date(project.createdAt) : new Date();
-  const endDate = project.task.length > 0
-    ? new Date(Math.max(...project.task.map((task) => new Date(task.dueDate || task.updatedAt || Date.now()).getTime())))
-    : new Date(); // Fallback เป็นวันที่ปัจจุบันถ้าไม่มี task
 
-  // คืนค่า ProjectStage เดียวสำหรับโปรเจกต์นี้
+  // ฟังก์ชันช่วยแปลง dueDate
+  const parseDate = (dateInput: Date | string | undefined): Date | null => {
+    if (!dateInput) return null;
+    const date = typeof dateInput === "string" ? new Date(dateInput) : dateInput;
+    return isNaN(date.getTime()) ? null : date;
+  };
+
+  // หา endDate ตามสถานะของโปรเจกต์
+  let endDate: Date | null = null;
+
+  if (project.task.length > 0) {
+    if (projectStatus === "COMPLETED") {
+      // สำหรับโปรเจกต์ที่จบแล้ว ใช้ updatedAt ของ task ล่าสุดที่ DONE
+      const completedTasks = project.task.filter((task) => task.status === "DONE");
+      if (completedTasks.length > 0) {
+        const latestCompletedDate = Math.max(
+          ...completedTasks
+            .map((task) => parseDate(task.updatedAt))
+            .filter((date): date is Date => date !== null)
+            .map((date) => date.getTime())
+        );
+        endDate = new Date(latestCompletedDate);
+      } else {
+        // ถ้าไม่มี task ที่ DONE (กรณี edge case) ใช้ project.updatedAt
+        endDate = parseDate(project.updatedAt) || new Date();
+      }
+    } else {
+      // สำหรับ IN_PROGRESS หรือ NOT_STARTED ใช้ dueDate ล่าสุด
+      const validDueDates = project.task
+        .map((task) => parseDate(task.dueDate))
+        .filter((date): date is Date => date !== null)
+        .map((date) => date.getTime());
+
+      if (validDueDates.length > 0) {
+        endDate = new Date(Math.max(...validDueDates));
+        // ถ้า dueDate ล่าสุดอยู่ในอดีต แต่โปรเจกต์ยังไม่จบ ให้ขยาย endDate
+        if (projectStatus === "IN_PROGRESS" && endDate < new Date()) {
+          endDate = new Date();
+          endDate.setDate(endDate.getDate() + 7); // เพิ่ม 7 วันจากวันปัจจุบัน
+        }
+      }
+    }
+  }
+
+  // ถ้ายังไม่มี endDate (เช่น ไม่มี task หรือไม่มี dueDate)
+  if (!endDate) {
+    if (projectStatus === "COMPLETED") {
+      endDate = parseDate(project.updatedAt) || new Date();
+    } else {
+      // สำหรับ NOT_STARTED หรือ IN_PROGRESS ถ้าไม่มี dueDate ให้คำนวณจาก startDate
+      endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + 30); // เพิ่ม 30 วันจาก startDate
+    }
+  }
+
+  // คืนค่า ProjectStage
   return [
     {
-      id: project.id, // ใช้ project id แทน task id
+      id: project.id,
       title: project.projectName,
       description: project.description,
       status: projectStatus,

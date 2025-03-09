@@ -106,6 +106,8 @@ export function DayoffModal({ defaultValue, mode }: DayoffModalProps) {
         from: values.date.from,
         to: values.date.to,
       },
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
     if (mode === "edit") {

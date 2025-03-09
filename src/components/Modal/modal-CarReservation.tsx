@@ -191,6 +191,8 @@ export function CarReservationDialog() {
         type: selectedCarValue.type,
       },
       tripStatus: values.tripStatus || "ONGOING",
+      createdAt: new Date(),
+      updatedAt: new Date()
     };
     if (mode === "edit" && reservation.id) {
       toast.promise(updateCarReservation(reservation),{

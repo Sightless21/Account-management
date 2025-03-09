@@ -99,7 +99,7 @@ export const defaultValuesSettings = {
       phone: "",
       email: "",
       position: "",
-      salary: "",
+      salary: 0,
     },
   },
   birthdate: new Date(new Date().setFullYear(new Date().getFullYear() - 18)),

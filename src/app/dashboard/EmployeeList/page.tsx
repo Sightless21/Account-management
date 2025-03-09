@@ -12,11 +12,12 @@ export default function Page() {
     <div className="mr-3 flex flex-col gap-4 p-4 h-full">
       <Card>
         <CardHeader>
-          <CardTitle>Employee list List</CardTitle>
-          <CardDescription>Employee list List System</CardDescription>
+          <CardTitle>Employee List</CardTitle>
+          <CardDescription>Employee List System</CardDescription>
         </CardHeader>
         <CardContent>
-          <EmployeesTable userRole={role} />
+          <EmployeesTable userRole={role} 
+          />
         </CardContent>
         <CardFooter>
         </CardFooter>

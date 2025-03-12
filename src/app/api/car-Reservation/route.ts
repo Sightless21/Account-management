@@ -1,5 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse, NextRequest } from "next/server";
+import { sendLineMessage } from '@/utils/line';
+import { format } from 'date-fns';
+
+
 
 export async function GET() {
   try {
@@ -20,13 +24,23 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  console.log("📌 Received Body:", body);
+  const startDate = format(body.date.from, 'yyyy-MM-dd');
+  const endDate = format(body.date.to, 'yyyy-MM-dd');
+  if (startDate === endDate) {
+    sendLineMessage(`${body.car.plate} ถูกจองโดย 
+      คุณ ${body.employeeName} 
+    วันที่ ${startDate} ไปที่ ${body.destination}`);
+    return;
+  }
+  await sendLineMessage(`${body.car.plate} ถูกจองโดย 
+  คุณ ${body.employeeName} 
+  จากวันที่ ${startDate} ถึงวันที่ ${endDate} ไปที่ ${body.destination}`,);
 
   try {
 
     const car = await prisma.car.findFirst({
       where: {
-        plate: body.car.plate.trim(),  
+        plate: body.car.plate.trim(),
       },
     });
 

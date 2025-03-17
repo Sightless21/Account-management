@@ -36,23 +36,22 @@ export default function ProjectStagesDashboard() {
   }
 
 
-    return (
-      <div className="space-y-6">
-        <div className="flex flex-row gap-6 overflow-x-auto whitespace-nowrap w-full pb-4">
-          {projectStages.map((stage) => (
-            <ProjectStageCard
-              key={stage.id}
-              title={stage.title}
-              description={stage.description}
-              status={stage.status}
-              startDate={stage.startDate}
-              endDate={stage.endDate}
-              progress={stage.progress}
-              className="hover:shadow-md transition-all duration-300 flex-shrink-0"
-            />
-          ))}
-        </div>
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-row gap-6 overflow-x-auto whitespace-nowrap w-full pb-4">
+        {projectStages.map((stage) => (
+          <ProjectStageCard
+            key={stage.id}
+            title={stage.title}
+            description={stage.description}
+            status={stage.status}
+            startDate={stage.startDate}
+            endDate={stage.endDate}
+            progress={stage.progress}
+            className="hover:shadow-md transition-all duration-300 flex-shrink-0"
+          />
+        ))}
       </div>
-    )
-  }
-
+    </div>
+  )
+}

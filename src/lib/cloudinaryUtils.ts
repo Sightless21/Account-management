@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // src/lib/cloudinaryUtils.ts
 import { UploadApiOptions, UploadApiResponse } from "cloudinary";
 import streamifier from "streamifier";

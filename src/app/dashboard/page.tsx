@@ -16,7 +16,7 @@ export default function Page() {
             <CardDescription className="text-sm md:text-base">Recents Project Progressing</CardDescription>
           </CardHeader>
           <CardContent className="flex p-2 flex-row justify-center items-center rounded-lg border bg-card text-card-foreground shadow-sm">
-            <ScrollArea className="w-[1080px] max-h-[400px] sm:max-h-[500px] whitespace-nowrap">
+            <ScrollArea className="w-[1350px] max-h-[400px] sm:max-h-[500px] whitespace-nowrap">
               <div className="flex space-x-4 pb-4">
                 <div className="min-w-[250px] sm:min-w-[300px] flex-1">
                   <ProjectStagesDashboard />

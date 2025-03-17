@@ -111,6 +111,7 @@ export const getColumns = (role: Role,
           );
         }
       },
+      meta: { title: "Date" },
     },
     {
       id: "time",
@@ -126,11 +127,13 @@ export const getColumns = (role: Role,
           </div>
         );
       },
+      meta: { title: "Time" },
     },
     {
       id: "destination",
       accessorKey: "destination",
       header: ({ column }) => <DataTableColumnHeader column={column} title="Destination" />,
+      meta: { title: "Destination" },
     },
     {
       id: "plateNumber",
@@ -144,6 +147,7 @@ export const getColumns = (role: Role,
           </div>
         );
       },
+      meta: { title: "Plate Number" },
     },
     {
       id: "tripStatus",
@@ -166,6 +170,7 @@ export const getColumns = (role: Role,
     id: "actions",
     header: "Actions",
     cell: ({ row }) => <ActionsCell row={row} />,
+    meta: { title: "Actions" },
   }
 
   const approvalColumn: ColumnDef<CarReservationType> = {
@@ -179,6 +184,7 @@ export const getColumns = (role: Role,
         onReset={handlers.onReset}
       />
     ),
+    meta: { title: "Approval" },
   }
 
   switch (role) {

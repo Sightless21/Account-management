@@ -59,6 +59,7 @@ export function TaskModal({ mode, defaultValues, onSave, trigger, projectId }: T
       assignee: values.assignee || "",
       createdAt: new Date(),
       updatedAt: new Date(),
+      order: 0
     };
 
     if (onSave) onSave(task); // Trigger the onSave callback

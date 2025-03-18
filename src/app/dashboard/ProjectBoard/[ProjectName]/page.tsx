@@ -91,6 +91,7 @@ export default function Page() {
                   assignee: "",
                   createdAt: new Date(),
                   updatedAt: new Date(),
+                  order: 0
                 }}
                 onSave={handleTaskSave}
                 projectId={projectId}

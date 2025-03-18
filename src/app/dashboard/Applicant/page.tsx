@@ -58,7 +58,7 @@ export default function Page() {
           </div>
           <ApplicantBoard
             data={filteredApplicants}
-            onUpdateStatus={updateApplicantStatus}
+            onUpdateStatus={(data) => updateApplicantStatus({ ...data, order: data.order ?? 0 })}
             onDelete={deleteApplicant}
           />
         </CardContent>

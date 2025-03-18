@@ -13,6 +13,7 @@ export type Task = {
   assignee: string;
   createdAt: Date;
   updatedAt: Date;
+  order: number;
 }
 
 export type Project = {

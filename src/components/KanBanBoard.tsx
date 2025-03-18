@@ -1,5 +1,4 @@
 "use client";
-
 import React from "react";
 import { GenericBoard } from "./DragAndDrop/GenericBoard";
 import { GenericCard } from "./DragAndDrop/GenericCard";
@@ -35,13 +34,33 @@ export const KanbanBoard = ({ data, onUpdateStatus, onDelete }: KanbanBoardProps
     },
   ];
 
-  const handleCardDrop = (itemId: string, fromColumn: string, toColumn: string) => {
+  const handleCardDrop = (itemId: string, fromColumn: string, toColumn: string, newOrder?: number) => {
     const taskToUpdate = data.find((task) => task.id === itemId);
-    if (taskToUpdate) {
-      const updatedTask = { ...taskToUpdate, status: toColumn as StatusTasks };
-      onUpdateStatus({ newTask: updatedTask });
-      console.log(`Moved task ${itemId} from ${fromColumn} to ${toColumn}`);
-    }
+    if (!taskToUpdate) return;
+
+    const targetItems = data
+      .filter((item) => item.status === toColumn)
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+    const finalOrder = newOrder !== undefined ? newOrder : targetItems.length;
+    const updatedTask = { ...taskToUpdate, status: toColumn as StatusTasks, order: finalOrder };
+
+    // อัปเดตการ์ดที่ย้าย
+    onUpdateStatus({ newTask: updatedTask });
+
+    // อัปเดตลำดับของการ์ดอื่นๆ ในคอลัมน์
+    const updatedItems = fromColumn === toColumn
+      ? [...targetItems.filter((item) => item.id !== itemId)] // ภายในคอลัมน์
+      : [...targetItems]; // ระหว่างคอลัมน์
+    updatedItems.splice(finalOrder, 0, updatedTask);
+
+    updatedItems.forEach((item, index) => {
+      if (item.order !== index) {
+        onUpdateStatus({ newTask: { ...item, order: index } });
+      }
+    });
+
+    console.log(`Moved task ${itemId} from ${fromColumn} to ${toColumn} with order ${finalOrder}`);
   };
 
   const handleCardDelete = (itemId: string) => {

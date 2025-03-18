@@ -120,6 +120,7 @@ const updateTask = async ({ newTask }: { newTask: Task }) => {
       status: newTask.status,
       dueDate: newTask.dueDate ? newTask.dueDate : undefined,
       assignee: newTask.assignee,
+      order: newTask.order, // เพิ่ม order
     });
     console.log("API response:", res.status);
     return res.data;
@@ -162,25 +163,17 @@ export const useUpdateTask = () => {
   return useMutation({
     mutationFn: updateTask,
     onMutate: async ({ newTask }) => {
-      // ยกเลิก query เดิมเพื่อป้องกัน race condition
       await queryClient.cancelQueries({ queryKey: ["tasks", newTask.projectId] });
-
-      // ดึงข้อมูลเก่าก่อนอัปเดต
       const previousTasks = queryClient.getQueryData<Task[]>(["tasks", newTask.projectId]);
-
-      // อัปเดต UI ทันที (optimistic update)
       queryClient.setQueryData(["tasks", newTask.projectId], (oldTasks: Task[] = []) =>
         oldTasks.map((task) => (task.id === newTask.id ? newTask : task))
       );
-
       return { previousTasks };
     },
     onSuccess: () => {
-      // รีเฟรชข้อมูลหลังอัปเดตสำเร็จ
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
     },
     onError: (error, { newTask }, context) => {
-      // Rollback หากเกิดข้อผิดพลาด
       queryClient.setQueryData(["tasks", newTask.projectId], context?.previousTasks);
       toast.error("Failed to update task: " + error.message);
     },

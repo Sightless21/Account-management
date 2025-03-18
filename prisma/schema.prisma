@@ -36,6 +36,7 @@ model Applicant {
   dwelling              String
   documents             Document[]
   status                ApplicantStatus
+  order                 Int             @default(0) // เพิ่มฟิลด์นี้สำหรับลำดับ
   convertedToEmployeeAt DateTime? // ✅ เช็คว่าเคยถูกโอนเป็น Employee แล้วหรือไม่
   createdAt             DateTime        @default(now())
   updatedAt             DateTime        @updatedAt

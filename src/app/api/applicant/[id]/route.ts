@@ -18,7 +18,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
   try {
     const body = await req.json();
-    const { documents: documentNames, ...otherData } = body;
+    const { documents: documentNames, order, ...otherData } = body; // เพิ่ม order ใน destructuring
 
     const existingApplicant = await prisma.applicant.findUnique({
       where: { id },
@@ -43,7 +43,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       .filter((doc) => documentNames.includes(doc.name))
       .map((doc) => ({
         id: doc.id,
-        name: doc.name ?? "", // หาก name เป็น null ให้ใช้ค่าว่างแทน
+        name: doc.name ?? "",
       }));
 
     await Promise.all([
@@ -52,12 +52,16 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       createDocuments(newDocuments, id),
     ]);
 
-    await prisma.applicant.update({
+    // อัปเดต Applicant รวมถึง order
+    const updatedApplicant = await prisma.applicant.update({
       where: { id },
-      data: transformApplicantData(otherData),
+      data: {
+        ...transformApplicantData(otherData),
+        order: order !== undefined ? Number(order) : existingApplicant.order, // อัปเดต order ถ้ามีค่าใหม่
+      },
     });
 
-    return NextResponse.json({ message: "Applicant updated successfully" }, { status: 200 });
+    return NextResponse.json({ message: "Applicant updated successfully", data: updatedApplicant }, { status: 200 });
   } catch (error) {
     console.error("❌ Error updating applicant:", error);
     return NextResponse.json({ error: "An error occurred while updating the applicant" }, { status: 500 });

@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, DragEvent, JSX } from "react";
 
-interface GenericColumnProps<T> {
+interface GenericColumnProps<T extends { order?: number }> {
   title: string;
   columnKey: string;
   statusKey: keyof T;
@@ -9,11 +9,11 @@ interface GenericColumnProps<T> {
   items: T[];
   headingBgColor: string;
   headingColor: string;
-  onCardDrop?: (itemId: string, fromColumn: string, toColumn: string) => void;
+  onCardDrop?: (itemId: string, fromColumn: string, toColumn: string, newOrder?: number) => void;
   renderItem: (item: T & { handleDragStart: (e: DragEvent, item: T) => void }) => JSX.Element;
 }
 
-export const GenericColumn = <T,>({
+export const GenericColumn = <T extends { order?: number }>({
   title,
   columnKey,
   statusKey,
@@ -31,12 +31,7 @@ export const GenericColumn = <T,>({
     const fromColumn = String(item[statusKey] ?? "unknown");
     e.dataTransfer.setData("cardId", cardId);
     e.dataTransfer.setData("fromColumn", fromColumn);
-
-    console.log("DragStart Debug:");
-    console.log(" - cardId:", cardId);
-    console.log(" - fromColumn:", fromColumn);
-    console.log(" - raw status:", item[statusKey]);
-    console.log(" - full item:", item);
+    console.log("DragStart Debug:", { cardId, fromColumn, rawStatus: item[statusKey], fullItem: item });
   };
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
@@ -55,32 +50,51 @@ export const GenericColumn = <T,>({
     const cardId = e.dataTransfer.getData("cardId");
     const fromColumn = e.dataTransfer.getData("fromColumn");
 
-    console.log("DragEnd Debug:");
-    console.log(" - cardId:", cardId);
-    console.log(" - fromColumn:", fromColumn);
-    console.log(" - toColumn:", columnKey);
+    console.log("DragEnd Debug:", { cardId, fromColumn, toColumn: columnKey });
 
-    if (!cardId || fromColumn === "" || fromColumn === columnKey) {
-      console.log("Drag aborted: Invalid data or same column");
+    if (!cardId || fromColumn === "") {
+      console.log("Drag aborted: Invalid data");
       return;
     }
 
-    onCardDrop?.(cardId, fromColumn, columnKey);
+    const targetItems = items
+      .filter((item) => String(item[statusKey] ?? "unknown") === columnKey)
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+    // คำนวณตำแหน่งใหม่จากตำแหน่งเมาส์
+    const dropY = e.clientY;
+    let newOrder = targetItems.length;
+
+    for (let i = 0; i < targetItems.length; i++) {
+      const element = document.getElementById(`card-${String(targetItems[i][idKey])}`);
+      if (element) {
+        const rect = element.getBoundingClientRect();
+        if (dropY < rect.top + rect.height / 2) {
+          newOrder = i;
+          break;
+        }
+      }
+    }
+
+    // ถ้าเป็นคอลัมน์เดียวกันและวางในตำแหน่งเดิม ไม่ต้องทำอะไร
+    const draggedItem = items.find((item) => String(item[idKey]) === cardId);
+    if (fromColumn === columnKey && draggedItem && (draggedItem.order ?? 0) === newOrder) {
+      console.log("Drag aborted: Same position in same column");
+      return;
+    }
+
+    onCardDrop?.(cardId, fromColumn, columnKey, newOrder);
   };
 
-  const filteredItems = items.filter(
-    (item) => String(item[statusKey] ?? "unknown") === columnKey
-  );
+  const filteredItems = items
+    .filter((item) => String(item[statusKey] ?? "unknown") === columnKey)
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   return (
-    <div
-      className={`flex h-[550px] w-full max-w-xs flex-col rounded-md border ${headingBgColor} sm:max-w-sm md:max-w-md`}
-    >
+    <div className={`flex h-[550px] w-full max-w-xs flex-col rounded-md border ${headingBgColor} sm:max-w-sm md:max-w-md`}>
       <div className={`flex items-center justify-between rounded-t-md p-2`}>
         <h3 className={`font-medium decoration-4 ${headingColor}`}>{title}</h3>
-        <span className="text-sm text-muted-foreground">
-          Total: {filteredItems.length}
-        </span>
+        <span className="text-sm text-muted-foreground">Total: {filteredItems.length}</span>
       </div>
       <div
         onDrop={handleDragEnd}
@@ -89,9 +103,9 @@ export const GenericColumn = <T,>({
         className={`h-full w-full overflow-auto border-t-2 border-dotted p-4 transition-colors ${active ? "bg-neutral-800/20" : "bg-neutral-800/0"}`}
       >
         {filteredItems.map((item) => (
-          <React.Fragment key={String(item[idKey])}>
+          <div id={`card-${String(item[idKey])}`} key={String(item[idKey])}>
             {renderItem({ ...item, handleDragStart })}
-          </React.Fragment>
+          </div>
         ))}
       </div>
     </div>

@@ -32,11 +32,13 @@ const updateApplicant = async (updateApplicant: FormApplicant) => {
   }
 
 };
-const updateApplicantStatus = async ({ id, status }: { id: string; status: ApplicantStatusType }) => {
+const updateApplicantStatus = async ({ id, status, order }: { id: string; status: ApplicantStatusType; order: number }) => {
   try {
-    const res = await axios.patch("/api/applicant", { id, status }, {
-      headers: { "Content-Type": "application/json" },
-    });
+    const res = await axios.patch(
+      "/api/applicant", // ใช้ endpoint จากไฟล์ที่สอง
+      { id, status, order },
+      { headers: { "Content-Type": "application/json" } }
+    );
     console.log("API response:", res.status);
     return res.data;
   } catch (error) {
@@ -93,19 +95,20 @@ export const useUpdateApplicant = () => {
   });
 }
 
+// hooks/useApplicantData.ts
 export const useUpdateApplicantStatus = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: updateApplicantStatus, 
-    onMutate: async (updateApplicant: { id: string; status: ApplicantStatusType }) => {
+    mutationFn: updateApplicantStatus,
+    onMutate: async (updateApplicant: { id: string; status: ApplicantStatusType; order: number }) => {
       await queryClient.cancelQueries({ queryKey: ["applicants"] });
       const previousApplicants = queryClient.getQueryData<FormApplicant[]>(["applicants"]) || [];
       queryClient.setQueryData<FormApplicant[]>(["applicants"], (oldApplicants) => {
         if (!oldApplicants) return [];
         return oldApplicants.map((applicant) =>
           applicant.id === updateApplicant.id
-            ? { ...applicant, status: updateApplicant.status }
+            ? { ...applicant, status: updateApplicant.status, order: updateApplicant.order }
             : applicant
         );
       });
@@ -127,7 +130,7 @@ export const useDeleteApplicant = () => {
     onMutate: async (id: string) => {
       await queryClient.cancelQueries({ queryKey: ["applicants"] });
       const previousApplicants = queryClient.getQueryData<FormApplicant[]>(["applicants"]) || [];
-      queryClient.setQueryData(["applicants"],(oldApplicants: FormApplicant[] | undefined) => oldApplicants?.filter((applicant) => applicant.id !== id))
+      queryClient.setQueryData(["applicants"], (oldApplicants: FormApplicant[] | undefined) => oldApplicants?.filter((applicant) => applicant.id !== id))
       return { previousApplicants };
     },
     onSuccess: () => invalidateApplicants(queryClient),

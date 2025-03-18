@@ -10,17 +10,17 @@ interface ColumnConfig {
   headingColor: string;
 }
 
-interface GenericBoardProps<T> {
+interface GenericBoardProps<T extends { order?: number }> {
   columns: ColumnConfig[];
   items: T[];
   statusKey: keyof T;
   idKey: keyof T;
-  onCardDrop?: (itemId: string, fromColumn: string, toColumn: string) => void;
+  onCardDrop?: (itemId: string, fromColumn: string, toColumn: string, newOrder?: number) => void;
   onCardDelete?: (itemId: string) => void;
   renderItem: (item: T) => JSX.Element;
 }
 
-export const GenericBoard = <T,>({
+export const GenericBoard = <T extends { order?: number }>({
   columns,
   items,
   statusKey,
@@ -32,7 +32,6 @@ export const GenericBoard = <T,>({
   return (
     <div className="w-full p-4">
       <div className="flex flex-col gap-4">
-        {/* คอลัมน์ทั้งหมดในแนวนอน */}
         <div className="flex justify-between flex-row flex-wrap gap-4 overflow-x-auto">
           {columns.map((col) => (
             <div key={col.columnKey} className="flex-1 min-w-[250px] max-w-[500px] h-full">

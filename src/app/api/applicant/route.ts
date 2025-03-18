@@ -2,27 +2,20 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function POST(request: Request) { 
+export async function POST(request: Request) {
   try {
-    // ดึงข้อมูลจาก body
     const data = await request.json();
     console.log("📌 Received Body:", data);
 
-    // ตรวจสอบว่า data มีอยู่และถูกต้อง
     if (!data) {
       console.error("❌ No payload received.");
-      return NextResponse.json(
-        { error: "No payload received" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "No payload received" }, { status: 400 });
     }
 
-    // ตรวจสอบ documents array
     if (!data.documents || !Array.isArray(data.documents)) {
       throw new Error("Missing or invalid documents array");
     }
 
-    // สร้าง applicant ด้วย Prisma
     const createApplicant = await prisma.applicant.create({
       data: {
         person: {
@@ -49,12 +42,13 @@ export async function POST(request: Request) {
           race: data.info.race,
         },
         dwelling: data.dwelling,
-        marital: data.marital,  
-        military: data.military, 
+        marital: data.marital,
+        military: data.military,
         documents: data.documents.length > 0
           ? { create: data.documents.map((doc: any) => ({ name: doc })) }
           : undefined,
         status: data.status || "NEW",
+        order: data.order !== undefined ? Number(data.order) : 0, // เพิ่ม order ค่าเริ่มต้นเป็น 0
       },
     });
 
@@ -85,7 +79,7 @@ export async function POST(request: Request) {
 // PATCH และ GET คงไว้เหมือนเดิม
 export async function PATCH(request: Request) {
   try {
-    const { id, status } = await request.json();
+    const { id, status, order } = await request.json(); // เพิ่ม order
 
     if (!id || !status) {
       return NextResponse.json(
@@ -96,7 +90,10 @@ export async function PATCH(request: Request) {
 
     const updatedApplicant = await prisma.applicant.update({
       where: { id },
-      data: { status },
+      data: {
+        status,
+        order: order !== undefined ? Number(order) : undefined, // อัปเดต order ถ้ามี
+      },
     });
 
     return NextResponse.json(updatedApplicant, { status: 200 });
@@ -115,7 +112,10 @@ export async function GET() {
       include: {
         documents: true,
       },
-      orderBy: { id: "asc" },
+      orderBy: [
+        { status: "asc" }, // เรียงตาม status ก่อน
+        { order: "asc" }, // แล้วเรียงตาม order
+      ],
     });
 
     return NextResponse.json(applicants, { status: 200 });

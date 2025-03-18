@@ -1,13 +1,12 @@
 "use client";
-
 import React, { DragEvent, JSX } from "react";
 import { motion } from "framer-motion";
 
 interface GenericCardProps<T> {
   item: T;
-  idKey: keyof T; // คีย์ที่ใช้เป็น ID (เช่น "id")
+  idKey: keyof T;
   onDragStart: (e: DragEvent, item: T) => void;
-  renderContent: (item: T) => JSX.Element; // ฟังก์ชันสำหรับเรนเดอร์เนื้อหา
+  renderContent: (item: T) => JSX.Element;
   className?: string;
 }
 
@@ -22,6 +21,7 @@ export const GenericCard = <T,>({
     <motion.div
       layout
       layoutId={String(item[idKey])}
+      id={`card-${String(item[idKey])}`} // เพิ่ม id ที่นี่
       draggable
       onDragStart={(e) => onDragStart(e as unknown as DragEvent, item)}
       className={`mt-2 flex cursor-grab snap-center flex-col items-start justify-between rounded border dark:border-white border-neutral-700 bg-white hover:bg-neutral-300 active:cursor-grabbing ${className}`}

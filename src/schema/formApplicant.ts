@@ -4,10 +4,10 @@ import { z } from "zod";
 export const formApplicantSchema = z.object({
   id: z.string().optional(),
   person: z.object({
-    name: z.string().min(2, "Name must be at least 2 characters"),
-    phone: z.string().min(3, "Phone must be at least 3 characters"),
+    name: z.string().min(6, "Name must be at least 6 characters"),
+    phone: z.string().min(10, "Phone must be at least 10 characters"),
     email: z.string().email("Invalid email"),
-    position: z.string().min(2, "Position must be at least 2 characters"),
+    position: z.string().min(5, "Position must be at least 5 characters"),
     expectSalary: z.number().min(10000, "Salary must be at least 10000 THB"),
   }),
   birthdate: z.preprocess(

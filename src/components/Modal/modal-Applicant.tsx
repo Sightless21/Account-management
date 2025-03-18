@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
-import { formApplicantSchema, APPLICANT_FORM_DEFAULT_VALUES } from "@/schema/formApplicantV2";
+import { formApplicantSchema, APPLICANT_FORM_DEFAULT_VALUES } from "@/schema/formApplicant";
 import { FormApplicant } from "@/types/applicant";
 import { toast } from "sonner";
 import { useCreateApplicant, useUpdateApplicant } from "@/hooks/useApplicantData";

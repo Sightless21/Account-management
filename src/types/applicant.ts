@@ -1,4 +1,4 @@
-import {formApplicantSchema} from "@/schema/formApplicantV2"
+import {formApplicantSchema} from "@/schema/formApplicant"
 import z from "zod"
 
 export type FormApplicant = z.infer<typeof formApplicantSchema>;

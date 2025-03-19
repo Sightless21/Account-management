@@ -98,6 +98,13 @@ export default function DashboardItem() {
 
   const isLoading = tasksLoading || expensesLoading || applicantsLoading || roomBookingsLoading || dayOffsLoading || carReservationsLoading;
 
+  // Get current date and time
+  const now = new Date();
+  const currentTime = now.toTimeString().slice(0, 5); // Format as "HH:MM"
+  const today = format(now, "yyyy-MM-dd");
+
+  
+
   const applicantsCount = applicants?.filter((applicant) => applicant.status === "NEW" || applicant.status === "PENDING_INTERVIEW" || applicant.status === "INTERVIEW_PASSED").length ?? 0;
   const applicantsTodayCount = applicants?.filter((applicant) => format(applicant.createdAt || new Date(), "yyyy-MM-dd") === format(new Date().toLocaleDateString(), "yyyy-MM-dd")).length ?? 0;
 
@@ -106,9 +113,19 @@ export default function DashboardItem() {
 
   const expensesCount = expenses?.filter((booking) => booking.status === "Pending").length ?? 0;
   const expensesTodayCount = expenses?.filter((booking) => format(booking.createdAt || new Date(), "yyyy-MM-dd") === format(new Date().toLocaleDateString(), "yyyy-MM-dd")).length ?? 0;
-  const roomBookingsCount = roomBookings?.filter((roomBooking) => 
-    format(roomBooking.date, "yyyy-MM-dd") === format(new Date().toLocaleDateString(), "yyyy-MM-dd") 
-  && new Date(`1970-01-01T${roomBooking.endTime}`).getTime() < new Date().getTime()).length ?? 0;
+  const roomBookingsCount = useMemo(() => {
+    if (!roomBookings) return 0;
+    
+    return roomBookings.filter((roomBooking) => {
+      const bookingDate = format(roomBooking.date, "yyyy-MM-dd");
+      const isToday = bookingDate === today;
+      const isActive = isToday && 
+        currentTime >= roomBooking.startTime && 
+        currentTime <= roomBooking.endTime;
+      
+      return isActive;
+    }).length;
+  }, [currentTime, roomBookings, today]);
 
   const carReservationsCount = carReservations?.filter((carReservation) => carReservation.tripStatus === "ONGOING").length ?? 0;
   const carReservationsTodayCount = carReservations?.filter((carReservation) => format(carReservation.createdAt || new Date(), "yyyy-MM-dd") === format(new Date().toLocaleDateString(), "yyyy-MM-dd")).length ?? 0;
@@ -152,7 +169,7 @@ export default function DashboardItem() {
       title: "Meeting Rooms",
       description: "Bookings today",
       icon: Calendar, value: isLoading ? 0 : roomBookingsCount,
-      badgeText: roomBookingsCount === 0 ? "No bookings today" : "Active Now",
+      badgeText: roomBookingsCount > 0 ? "Active Now" : "No bookings active",
       badgeVariant: "outline",
       badgeColorClass: "bg-primary/10 text-primary"
     },
@@ -181,7 +198,7 @@ export default function DashboardItem() {
           case 'job': return { ...item, value: applicantsCount , badgeText: `${applicantsTodayCount} new today`};
           case 'leave': return { ...item, value: dayOffsCount , badgeText: `${dayOffsTodayCount} new today` };
           case 'expense': return { ...item, value: expensesCount  , badgeText: `${expensesTodayCount} new today`};
-          case 'meeting': return { ...item, value: roomBookingsCount , badgeText: roomBookingsCount === 0 ? "No bookings today" : "Active Now" };
+          case 'meeting': return { ...item, value: roomBookingsCount , badgeText: roomBookingsCount > 0 ? "Active Now" : "No bookings active" };
           case 'vehicle': return { ...item, value: carReservationsCount , badgeText: `${carReservationsTodayCount} new today`};
           case 'tasks': return { ...item, value: taskCount , badgeText: `${taskTodayCount} new today`};
           default: return item;

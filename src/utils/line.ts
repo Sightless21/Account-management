@@ -22,7 +22,7 @@ export async function sendLineMessage(text: string) {
     await client.pushMessage(userId,
       {
         type: 'template',
-        altText: 'this is a confirm template',
+        altText: 'คำขอการยืนยัน การจองยานพาหนะ',
         template: {
           type: 'confirm',
           text: text,

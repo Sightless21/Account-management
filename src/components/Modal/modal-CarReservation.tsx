@@ -178,8 +178,8 @@ export function CarReservationDialog() {
     }
   }, [selectedCarId, cars, form, isReadOnly, defaultCar]);
 
-  const onSubmit = (values: FormValues) => {
-    const selectedCarValue = values.car || defaultCar; // Use form's car value directly
+  const onSubmit = async (values: FormValues) => {
+    const selectedCarValue = values.car || defaultCar;
     const reservation: CarReservationType = {
       ...values,
       id: values.id || selectedReservation?.id || "",
@@ -192,22 +192,37 @@ export function CarReservationDialog() {
       },
       tripStatus: values.tripStatus || "ONGOING",
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
-    if (mode === "edit" && reservation.id) {
-      toast.promise(updateCarReservation(reservation),{
-        loading: "Updating car reservation...",
-        success: "Car reservation updated successfully",
-        error: "Failed to update car reservation",
-      });
-    } else if (mode === "create") {
-      toast.promise(createCarReservation(reservation),{
-        loading: "Creating car reservation...",
-        success: "Car reservation created successfully",
-        error: "Failed to create car reservation",
-      });
+
+    try {
+      if (mode === "edit" && reservation.id) {
+        await toast.promise(updateCarReservation(reservation), {
+          loading: "Updating car reservation...",
+          success: "Car reservation updated successfully",
+          error: (err) => {
+            const errorMessage = err.response?.data?.error;
+            return errorMessage === "This car is already reserved for the selected date and time."
+              ? "This car is already reserved for the selected date and time."
+              : "Failed to update car reservation";
+          },
+        });
+      } else if (mode === "create") {
+        await toast.promise(createCarReservation(reservation), {
+          loading: "Creating car reservation...",
+          success: "Car reservation created successfully",
+          error: (err) => {
+            const errorMessage = err.response?.data?.error;
+            return errorMessage === "This car is already reserved for the selected date and time."
+              ? "This car is already reserved for the selected date and time."
+              : "Failed to create car reservation";
+          },
+        });
+      }
+      closeModal();
+    } catch (error) {
+      console.error("Submission error:", error);
     }
-    closeModal();
   };
 
   return (

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { prisma } from "@/lib/prisma";
 import { NextResponse, NextRequest } from "next/server";
 import { sendLineMessage } from '@/utils/line';
@@ -23,27 +24,56 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const startDate = format(body.date.from, 'yyyy-MM-dd');
-    const endDate = format(body.date.to, 'yyyy-MM-dd');
-
-    // ส่งข้อความ LINE ตามเงื่อนไข
-    const message =
-      startDate === endDate
-        ? `${body.car.plate} ถูกจองโดย คุณ ${body.employeeName} วันที่ ${startDate} ไปที่ ${body.destination}`
-        : `${body.car.plate} ถูกจองโดย คุณ ${body.employeeName} จากวันที่ ${startDate} ถึงวันที่ ${endDate} ไปที่ ${body.destination}`;
-    
-    await sendLineMessage(message);
+    const startDate = new Date(body.date.from);
+    const endDate = new Date(body.date.to);
+    const startTime = body.startTime;
+    const endTime = body.endTime;
 
     // ค้นหารถ
     const car = await prisma.car.findFirst({
-      where: {
-        plate: body.car.plate.trim(),
-      },
+      where: { plate: body.car.plate.trim() },
     });
 
     if (!car) {
       return NextResponse.json({ error: "Car not found" }, { status: 404 });
     }
+
+    // ตรวจสอบการจองที่ทับซ้อนด้วย raw query
+    const overlappingReservationsRaw = await prisma.$runCommandRaw({
+      find: "CarReservation",
+      filter: {
+        carId: car.id,
+        tripStatus: { $ne: "CANCELLED" },
+        "date.from": { $lte: endDate.toISOString() },
+        "date.to": { $gte: startDate.toISOString() },
+      },
+    });
+
+    // แปลงผลลัพธ์จาก raw query เป็น array
+    const overlappingReservations = (overlappingReservationsRaw as any)?.cursor?.firstBatch || [];
+
+    // ตรวจสอบการทับซ้อนของเวลา
+    const hasOverlap = overlappingReservations.some((reservation: any) => {
+      const resStart = reservation.startTime;
+      const resEnd = reservation.endTime;
+      return startTime < resEnd && endTime > resStart;
+    });
+
+    if (hasOverlap) {
+      return NextResponse.json(
+        { error: "This car is already reserved for the selected date and time." },
+        { status: 409 }
+      );
+    }
+
+    // ส่งข้อความ LINE
+    const startDateFormatted = format(startDate, 'yyyy-MM-dd');
+    const endDateFormatted = format(endDate, 'yyyy-MM-dd');
+    const message =
+      startDateFormatted === endDateFormatted
+        ? `${car.plate} ถูกจองโดย คุณ ${body.employeeName} วันที่ ${startDateFormatted} ไปที่ ${body.destination}`
+        : `${car.plate} ถูกจองโดย คุณ ${body.employeeName} จากวันที่ ${startDateFormatted} ถึงวันที่ ${endDateFormatted} ไปที่ ${body.destination}`;
+    await sendLineMessage(message);
 
     // สร้าง Car Reservation
     const newCarReservation = await prisma.carReservation.create({
@@ -51,13 +81,13 @@ export async function POST(req: NextRequest) {
         userId: body.userId,
         employeeName: body.employeeName,
         date: {
-          from: new Date(body.date.from),
-          to: new Date(body.date.to),
+          from: startDate,
+          to: endDate,
         },
         destination: body.destination,
-        startTime: body.startTime,
-        endTime: body.endTime,
-        tripStatus: body.tripStatus,
+        startTime: startTime,
+        endTime: endTime,
+        tripStatus: body.tripStatus || "ONGOING",
         carId: car.id,
       },
     });

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react"
 import { BadgePlus, CalendarIcon, PencilIcon } from "lucide-react"
 import { format } from "date-fns"
@@ -50,34 +51,48 @@ export function BookingDialog({ defaultvalue, mode }: BookingDialogProps) {
     },
   })
 
-  const onSubmit = (value: BookingFormValues) => {
-    if (!value.date || !value.startTime || !value.endTime){
+  const onSubmit = async (value: BookingFormValues) => {
+    if (!value.date || !value.startTime || !value.endTime) {
       return;
     }
 
     const formatData = {
       id: defaultvalue?.id || "",
-      username : value?.username,
+      username: value?.username,
       date: value?.date || new Date(),
-      startTime : value?.startTime || "",
-      endTime : value?.endTime || "",
+      startTime: value?.startTime || "",
+      endTime: value?.endTime || "",
     }
 
-    if (mode === "edit") {
-      toast.promise(updateRoomBooking(formatData),{
-        loading: "Saving...",
-        success: "Room booking updated successfully",
-        error: "Error updating"
-      })
-    } else {
-      toast.promise(createRoomBooking(formatData),{
-        loading: "Creating...",
-        success: "Room booking created successfully",
-        error: "Error creating"
-      })
-      form.reset()
+    try {
+      if (mode === "edit") {
+        await toast.promise(updateRoomBooking(formatData), {
+          loading: "Saving...",
+          success: "Room booking updated successfully",
+          error: (error: any) => {
+            if (error.response?.status === 409) {
+              return "This time slot is already booked"
+            }
+            return "Error updating booking"
+          }
+        })
+      } else {
+        await toast.promise(createRoomBooking(formatData), {
+          loading: "Creating...",
+          success: "Room booking created successfully",
+          error: (error: any) => {
+            if (error.response?.status === 409) {
+              return "This time slot is already booked"
+            }
+            return "Error creating booking"
+          }
+        })
+        form.reset()
+      }
+      setOpen(false)
+    } catch (error) {
+      console.error("Submission error:", error)
     }
-    setOpen(false)
   }
 
   return (

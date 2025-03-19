@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Column } from "@tanstack/react-table"
 import { ArrowDown, ArrowUp, ChevronsUpDown, EyeOff, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuPortal, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import React from "react"
 
 interface DataTableColumnHeaderProps<TData, TValue>
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -24,7 +26,7 @@ export function DataTableColumnHeader<TData, TValue>({
   }
 
   // ฟังก์ชันกำหนดข้อความในเมนูและทิศทางการเรียง
-  const getSortOptions = () => {
+  const getSortOptions = (): { label: string; direction: boolean; icon: React.ComponentType }[] => {
     if (isDate) {
       return [
         { label: "Oldest to Newest", direction: true, icon: ArrowUp }, // Ascending
@@ -71,7 +73,7 @@ export function DataTableColumnHeader<TData, TValue>({
               key={option.label}
               onClick={() => column.toggleSorting(option.direction)}
             >
-              <option.icon className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
+              {React.createElement(option.icon, { className: "mr-2 h-3.5 w-3.5 text-muted-foreground/70" } as any)}
               {option.label}
             </DropdownMenuItem>
           ))}

@@ -26,7 +26,7 @@ export default function Page() {
             />
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="mx-auto space-y-4">
           {activeTab === "Leave History" && <DayOffTable userRole={role} />}
           {activeTab === "Reports" && <p>แสดงข้อมูล Reports</p>}
         </CardContent>

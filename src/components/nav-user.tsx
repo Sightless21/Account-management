@@ -86,16 +86,16 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuLabel className="flex">Setting</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => router.push("/Settings")}>
+              <DropdownMenuItem onClick={() => router.push("/Dashboard/Settings")}>
                 <UserRound className="mr-5" /> <span>My Profile</span>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push("/Dashboard/Settings")}>
                 <Settings className="mr-5" /> <span className="text-muted-foreground">Account Settings</span>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push("/Dashboard/Settings")}>
                 <Palette className="mr-5" /> <span className="text-muted-foreground">Preferences</span>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push("/Dashboard/Settings")}>
                 <Lock className="mr-5" /> <span className="text-muted-foreground">Security & Password</span>
               </DropdownMenuItem>
             </DropdownMenuGroup>

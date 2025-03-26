@@ -66,32 +66,44 @@ const requiresLogout = (data: SettingsForm, profile?: SettingsForm) => {
 export default function SettingsPage() {
   const { profileQuery, updateProfileMutation, userId } = useProfile();
   const { data: profile, isLoading, error } = profileQuery;
+  const [currentProfile, setCurrentProfile] = useState<SettingsForm | undefined>(undefined);
 
   const form = useForm<SettingsForm>({
     resolver: zodResolver(settingsSchema),
+    mode: "onChange",
     defaultValues: defaultValuesSettings,
   });
 
   const [isDirty, setIsDirty] = useState(false);
 
   useEffect(() => {
-    if (profile) {
-      console.log("Profile data:", profile)
-      form.reset(profile);
-      console.log("Form avatar after reset:", form.getValues("avatar")); // ตรวจสอบค่า avatar ในฟอร์ม
+    if (profile && !currentProfile) {
+      const normalizedProfile = {
+        ...profile,
+        profile: {
+          ...profile.profile,
+          person: {
+            ...profile.profile.person,
+            salary: Number(profile.profile.person.salary) || 0,
+          },
+        },
+      };
+      setCurrentProfile(normalizedProfile);
+      form.reset(normalizedProfile);
+      setIsDirty(false);
     }
-  }, [form, profile]);
+  }, [form, profile, currentProfile]);
 
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
       if (name) {
-        const hasFormProfileChanges = hasProfileChanges(value as SettingsForm, profile);
-        const hasFormPasswordChanges = hasPasswordChanges(value as SettingsForm, profile);
-        setIsDirty(hasFormProfileChanges || hasFormPasswordChanges); // ปุ่ม enable ถ้ามีการเปลี่ยนแปลงอย่างใดอย่างหนึ่ง
+        const hasFormProfileChanges = hasProfileChanges(value as SettingsForm, currentProfile);
+        const hasFormPasswordChanges = hasPasswordChanges(value as SettingsForm, currentProfile);
+        setIsDirty(hasFormProfileChanges || hasFormPasswordChanges);
       }
     });
     return () => subscription.unsubscribe();
-  }, [form, profile]);
+  }, [form, currentProfile]);
 
   const updatePasswordMutation = useMutation({
     mutationFn: async (passwordData: PasswordData) => {
@@ -117,6 +129,7 @@ export default function SettingsPage() {
   const handleUpdateProfile = useCallback(
     async (data: SettingsForm) => {
       await updateProfileMutation.mutateAsync(data);
+      setCurrentProfile(data);
       toast.success("Profile updated successfully!", { position: "top-center" });
       if (requiresLogout(data, profile)) {
         signOut({ callbackUrl: "/" });
@@ -141,21 +154,13 @@ export default function SettingsPage() {
     async (data: SettingsForm) => {
       try {
         const hasPassword = data.user.currentPassword && data.user.newPassword && data.user.confirmPassword;
-        const hasProfile = hasProfileChanges(data, profile); // ใช้เฉพาะการเปลี่ยนแปลงของ profile
-        const hasPasswordChange = hasPasswordChanges(data, profile); // ใช้ตรวจสอบการเปลี่ยนแปลงรหัสผ่าน
-
-        // ถ้ามีการกรอกรหัสผ่านและมีการเปลี่ยนแปลง profile ให้แจ้งเตือน
-        if (hasPassword && hasProfile) {
-          toast.error("Please update either your password or profile information one at a time.", {
-            position: "top-center",
-            duration: 3000,
-          });
-          return;
-        }
+        const hasProfile = hasProfileChanges(data, currentProfile);
+        const hasPasswordChange = hasPasswordChanges(data, currentProfile);
 
         if (hasPassword && hasPasswordChange) {
           await handleUpdatePassword(data);
-        } else if (hasProfile) {
+        }
+        if (hasProfile) {
           await handleUpdateProfile(data);
         }
       } catch (error) {
@@ -166,11 +171,11 @@ export default function SettingsPage() {
         }
       }
     },
-    [handleUpdateProfile, handleUpdatePassword, profile]
+    [handleUpdateProfile, handleUpdatePassword, currentProfile]
   );
 
   const resetForm = () => {
-    form.reset(profile || defaultValuesSettings);
+    form.reset(currentProfile || defaultValuesSettings);
     setIsDirty(false);
     toast.success("Changes discarded", { position: "top-center" });
   };

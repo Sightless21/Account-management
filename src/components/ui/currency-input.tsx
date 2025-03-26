@@ -18,11 +18,8 @@ export const CurrencyInput = React.forwardRef<HTMLInputElement, CurrencyInputPro
     const [displayValue, setDisplayValue] = React.useState<string>("");
 
     React.useEffect(() => {
-      if (value !== undefined && !isNaN(value)) {
-        setDisplayValue(`${currencySymbol} ${value.toLocaleString("th-TH")}`);
-      } else {
-        setDisplayValue("");
-      }
+      const numericValue = typeof value === "number" && !isNaN(value) ? value : 0;
+      setDisplayValue(`${currencySymbol} ${numericValue.toLocaleString("th-TH")}`);
     }, [value, currencySymbol]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

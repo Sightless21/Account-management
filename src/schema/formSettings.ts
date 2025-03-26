@@ -9,7 +9,10 @@ export const settingsSchema = z.object({
       phone: z.string().min(10, "Phone number must be at least 10 digits").optional(),
       email: z.string().email("Invalid email address").optional(),
       position: z.string().min(1, "Position is required").optional(),
-      salary: z.number()
+      salary: z.preprocess(
+        (val) => (typeof val === "string" ? Number(val) : val), // แปลง string เป็น number
+        z.number().min(0, "Salary must be a positive number")
+      ).optional(),
     }),
   }),
   user: z.object({

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState, useEffect } from "react";
 import { NumberCard } from "@/components/DashboardCard";
 import { Briefcase, Calendar, Car, DollarSign, FileText, GripVertical, LucideIcon, ClipboardList } from "lucide-react";
 import { DndContext, closestCenter, useSensor, useSensors, PointerSensor, DragOverlay } from '@dnd-kit/core';
@@ -133,75 +133,82 @@ export default function DashboardItem() {
   }), [applicants, dayOffs, expenses, roomBookings, carReservations, tasks, currentTime, today]);
 
   // Initial dashboard items
-  const [items, setItems] = useState<DashboardItem[]>([
-    {
-      id: 'job',
-      type: 'number',
-      title: "Job Applications",
-      description: "New applications",
-      icon: Briefcase,
-      value: counts.applicants.total,
-      valueColorClass: "text-green-500",
-      badgeText: `${counts.applicants.today} new today`,
-      badgeVariant: "outline",
-      badgeColorClass: "bg-green-500/10 text-green-500"
-    },
-    {
-      id: 'leave',
-      type: 'number',
-      title: "Leave Requests",
-      description: "Pending approvals",
-      icon: FileText,
-      value: counts.dayOffs.total,
-      valueColorClass: "text-amber-500",
-      badgeText: `${counts.dayOffs.today} new today`,
-      badgeVariant: "outline",
-      badgeColorClass: "bg-amber-500/10 text-amber-500"
-    },
-    {
-      id: 'expense',
-      type: 'number',
-      title: "Expense Requests",
-      description: "Awaiting approval",
-      icon: DollarSign,
-      value: counts.expenses.total,
-      valueColorClass: "text-red-500",
-      badgeText: `${counts.expenses.today} new today`,
-      badgeVariant: "outline",
-      badgeColorClass: "bg-red-500/10 text-red-500"
-    },
-    {
-      id: 'meeting',
-      type: 'number',
-      title: "Meeting Rooms",
-      description: "Bookings today",
-      icon: Calendar,
-      value: counts.roomBookings.total,
-      badgeText: counts.roomBookings.total > 0 ? "Active Now" : "No bookings active",
-      badgeVariant: "outline",
-      badgeColorClass: "bg-primary/10 text-primary"
-    },
-    {
-      id: 'vehicle',
-      type: 'number',
-      title: "Vehicle Bookings",
-      description: "Pending requests",
-      icon: Car,
-      value: counts.carReservations.total,
-      badgeText: `${counts.carReservations.today} new today`,
-      badgeVariant: "outline"
-    },
-    {
-      id: 'tasks',
-      type: "number",
-      title: "Tasks",
-      description: "Pending tasks",
-      icon: ClipboardList,
-      value: counts.tasks.total,
-      badgeText: `${counts.tasks.today} new today`,
-      badgeVariant: "outline"
-    },
-  ]);
+  const [items, setItems] = useState<DashboardItem[]>([]);
+
+  // Sync items with data from React Query
+  useEffect(() => {
+    if (!isLoading) {
+      setItems([
+        {
+          id: 'job',
+          type: 'number',
+          title: "Job Applications",
+          description: "New applications",
+          icon: Briefcase,
+          value: counts.applicants.total,
+          valueColorClass: "text-green-500",
+          badgeText: `${counts.applicants.today} new today`,
+          badgeVariant: "outline",
+          badgeColorClass: "bg-green-500/10 text-green-500"
+        },
+        {
+          id: 'leave',
+          type: 'number',
+          title: "Leave Requests",
+          description: "Pending approvals",
+          icon: FileText,
+          value: counts.dayOffs.total,
+          valueColorClass: "text-amber-500",
+          badgeText: `${counts.dayOffs.today} new today`,
+          badgeVariant: "outline",
+          badgeColorClass: "bg-amber-500/10 text-amber-500"
+        },
+        {
+          id: 'expense',
+          type: 'number',
+          title: "Expense Requests",
+          description: "Awaiting approval",
+          icon: DollarSign,
+          value: counts.expenses.total,
+          valueColorClass: "text-red-500",
+          badgeText: `${counts.expenses.today} new today`,
+          badgeVariant: "outline",
+          badgeColorClass: "bg-red-500/10 text-red-500"
+        },
+        {
+          id: 'meeting',
+          type: 'number',
+          title: "Meeting Rooms",
+          description: "Bookings today",
+          icon: Calendar,
+          value: counts.roomBookings.total,
+          badgeText: counts.roomBookings.total > 0 ? "Active Now" : "No bookings active",
+          badgeVariant: "outline",
+          badgeColorClass: "bg-primary/10 text-primary"
+        },
+        {
+          id: 'vehicle',
+          type: 'number',
+          title: "Vehicle Bookings",
+          description: "Pending requests",
+          icon: Car,
+          value: counts.carReservations.total,
+          badgeText: `${counts.carReservations.today} new today`,
+          badgeVariant: "outline"
+        },
+        {
+          id: 'tasks',
+          type: "number",
+          title: "Tasks",
+          description: "Pending tasks",
+          icon: ClipboardList,
+          value: counts.tasks.total,
+          badgeText: `${counts.tasks.today} new today`,
+          badgeVariant: "outline"
+        },
+      ]);
+    }
+  }, [isLoading, counts]);
 
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);

@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// src/utils/transformProfileData.ts
 import { SettingsForm, defaultValuesSettings } from "@/schema/formSettings";
 import { Document } from "@/types/applicant";
 
-
-//TODO
+// ฟังก์ชันแปลงข้อมูลโปรไฟล์จาก backend ให้อยู่ในรูปแบบของ formSettings
 export const transformProfileData = (profile: any): SettingsForm => {
   return {
     avatar: profile.user.profileImage || "",

@@ -1,4 +1,3 @@
-// src/app/api/auth/user/profile/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { uploadFileToCloud, deleteFileOnCloud } from "@/lib/cloudinaryUtils";

@@ -75,7 +75,7 @@ export const GenericColumn = <T extends { order?: number }>({
     const cardId = e.dataTransfer.getData("cardId");
     const fromColumn = e.dataTransfer.getData("fromColumn");
 
-    console.log("DragEnd Debug:", { cardId, fromColumn, toColumn: columnKey });
+    // console.log("DragEnd Debug:", { cardId, fromColumn, toColumn: columnKey });
 
     if (!cardId || fromColumn === "") {
       console.log("Drag aborted: Invalid data");

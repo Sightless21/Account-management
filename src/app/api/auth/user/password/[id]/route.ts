@@ -1,4 +1,3 @@
-// src/app/api/auth/user/password/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";

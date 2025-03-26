@@ -14,12 +14,12 @@ import { CircleChevronUp, CircleChevronRight, CircleChevronDown , CircleFadingPl
 
 interface FilterProps<T> {
   data: T[];
-  searchKey: string; // รองรับ path เช่น "taskName" หรือ "person.name"
+  searchKey: string; 
   searchPlaceholder: string;
-  filterKey: string; // รองรับ path เช่น "priority" หรือ "person.position"
-  filterOptions: string[]; // ตัวเลือกสำหรับกรอง (เช่น ["HIGH", "MEDIUM", "LOW"] หรือ ["Software Engineer", "UX Designer"])
+  filterKey: string;
+  filterOptions: string[]; 
   onFilterChange: (filteredData: T[]) => void;
-  filterLabel?: string; // ข้อความในปุ่ม (เช่น "Priority" หรือ "Position")
+  filterLabel?: string; 
 }
 
 export const FilterComponent = <T,>({
@@ -32,7 +32,7 @@ export const FilterComponent = <T,>({
   filterLabel = "Priority",
 }: FilterProps<T>) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([" "]); // เปลี่ยนค่าเริ่มต้นเป็น [" "] เพื่อเลือก "All"
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([" "]); 
 
   // Memoize getFilterCounts เพื่อป้องกันการสร้างฟังก์ชันใหม่ในทุก re-render
   const getFilterCounts = useCallback((items: T[], key: string): Record<string, number> => {

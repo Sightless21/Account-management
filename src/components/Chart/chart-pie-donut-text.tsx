@@ -6,7 +6,6 @@ import { Label, Pie, PieChart, } from "recharts"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 
-// Define types for the chart data and props
 export interface PieChartData {
   name: string
   value: number
@@ -27,7 +26,6 @@ export interface DonutChartProps {
   maxHeight?: string
 }
 
-// Reusable Donut Chart Component
 export function DonutChartWithText({
   data,
   config,

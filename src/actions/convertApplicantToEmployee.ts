@@ -1,4 +1,3 @@
-// src/actions/convertApplicantToEmployee.ts
 "use server";
 
 import { prisma } from "@/lib/prisma";

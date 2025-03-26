@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 
 interface BurnBarrelProps {
   onDrop?: (cardId: string) => void;
-  isHorizontal?: boolean; // เพิ่ม props เพื่อระบุว่า BurnBarrel อยู่ในแนวนอนหรือแนวตั้ง
+  isHorizontal?: boolean;
 }
 
 export const BurnBarrel = ({ onDrop, isHorizontal = false }: BurnBarrelProps) => {

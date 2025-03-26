@@ -21,7 +21,7 @@ export const GenericCard = <T,>({
     <motion.div
       layout
       layoutId={String(item[idKey])}
-      id={`card-${String(item[idKey])}`} // เพิ่ม id ที่นี่
+      id={`card-${String(item[idKey])}`}
       draggable
       onDragStart={(e) => onDragStart(e as unknown as DragEvent, item)}
       className={`mt-2 flex cursor-grab snap-center flex-col items-start justify-between rounded border dark:border-white border-neutral-700 bg-white hover:bg-neutral-300 active:cursor-grabbing ${className}`}

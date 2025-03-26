@@ -1,4 +1,3 @@
-// tabsConfig.ts (or similar)
 import { IconKey } from "@/components/menutabs";
 
 export const DayOffTabsConfig = [

@@ -1,4 +1,3 @@
-// app/api/expenses/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import cloudinary from "@/utils/cloudinary";

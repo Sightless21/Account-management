@@ -5,6 +5,9 @@ import { ExpenseFields, ExpenseTypeInputs } from "./ExpenseTypeInputs"
 
 interface ExpenseTypeAccordionProps {
   control: Control<Expense>
+  currencySymbol: string;
+  useForeignCurrency: boolean;
+  country?: string;
 }
 interface ExpenseTypeDefinition {
   type: keyof Expense["expenses"]
@@ -13,25 +16,30 @@ interface ExpenseTypeDefinition {
     name: ExpenseFields[keyof ExpenseFields]
     label: string;
     inputType: "number" | "text" | "textarea";
+    isCurrency?: boolean; // เพิ่ม property นี้
   }[];
 }
 
-export function ExpenseTypeAccordion({ control }: ExpenseTypeAccordionProps) {
+export function ExpenseTypeAccordion({ 
+  control, 
+  currencySymbol, 
+  useForeignCurrency, 
+  country}: ExpenseTypeAccordionProps) {
   const expenseTypes: ExpenseTypeDefinition[] = [
     {
       type: "fuel",
       label: "Fuel",
       fields: [
-        { name: "liters", label: "Number of Liters", inputType: "number" },
-        { name: "totalCost", label: "Total Cost", inputType: "number" },
+        { name: "liters", label: "Number of Liters", inputType: "number" ,isCurrency: false },
+        { name: "totalCost", label: "Total Cost", inputType: "number", isCurrency: true },
       ],
     },
     {
       type: "accommodation",
       label: "Accommodation",
       fields: [
-        { name: "nights", label: "Number of Nights", inputType: "number" },
-        { name: "totalCost", label: "Total Cost", inputType: "number" },
+        { name: "nights", label: "Number of Nights", inputType: "number" ,isCurrency: false },
+        { name: "totalCost", label: "Total Cost", inputType: "number" , isCurrency: true },
       ],
     },
     {
@@ -40,19 +48,19 @@ export function ExpenseTypeAccordion({ control }: ExpenseTypeAccordionProps) {
       fields: [
         { name: "origin", label: "Origin", inputType: "text" },
         { name: "destination", label: "Destination", inputType: "text" },
-        { name: "totalCost", label: "Total Cost", inputType: "number" },
+        { name: "totalCost", label: "Total Cost", inputType: "number", isCurrency: true },
       ],
     },
     {
       type: "perDiem",
       label: "Per Diem",
-      fields: [{ name: "amount", label: "Amount", inputType: "number" }],
+      fields: [{ name: "amount", label: "Amount", inputType: "number" , isCurrency: true }],
     },
     {
       type: "medicalExpenses",
       label: "Medical Expenses",
       fields: [
-        { name: "amount", label: "Amount", inputType: "number" },
+        { name: "amount", label: "Amount", inputType: "number" , isCurrency: true },
         { name: "description", label: "Description of Treatment", inputType: "textarea" },
       ],
     },
@@ -60,7 +68,7 @@ export function ExpenseTypeAccordion({ control }: ExpenseTypeAccordionProps) {
       type: "otherExpenses",
       label: "Other Expenses",
       fields: [
-        { name: "amount", label: "Amount", inputType: "number" },
+        { name: "amount", label: "Amount", inputType: "number" , isCurrency: true },
         { name: "description", label: "Description of Expense", inputType: "textarea" },
       ],
     },
@@ -72,10 +80,13 @@ export function ExpenseTypeAccordion({ control }: ExpenseTypeAccordionProps) {
         <AccordionItem key={expenseType.type} value={expenseType.type}>
           <AccordionTrigger>{expenseType.label}</AccordionTrigger>
           <AccordionContent>
-            <ExpenseTypeInputs
+          <ExpenseTypeInputs
               control={control}
               type={expenseType.type as keyof Expense["expenses"]}
               fields={expenseType.fields}
+              currencySymbol={currencySymbol}
+              useForeignCurrency={useForeignCurrency}
+              country={country}
             />
           </AccordionContent>
         </AccordionItem>

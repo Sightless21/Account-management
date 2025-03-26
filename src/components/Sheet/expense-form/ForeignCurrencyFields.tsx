@@ -47,7 +47,6 @@ export function ForeignCurrencyFields({ control }: ForeignCurrencyFieldsProps) {
                 <SelectContent>
                   <SelectItem value="japan">Japan</SelectItem>
                   <SelectItem value="thailand">Thailand</SelectItem>
-                  {/* Add more countries as needed */}
                 </SelectContent>
               </Select>
               <FormMessage />

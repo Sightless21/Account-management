@@ -3,6 +3,7 @@ import type { Expense } from "@/schema/expenseFormSchema"
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { CurrencyInput } from "@/components/ui/currency-input"
 
 export type ExpenseFields = {
   fuel: "liters" | "totalCost"
@@ -30,15 +31,23 @@ interface ExpenseTypeInputsProps {
     name: ExpenseFields[keyof ExpenseFields]
     label: string
     inputType: "number" | "text" | "textarea"
+    isCurrency?: boolean; // เพิ่ม property นี้
   }[]
+  currencySymbol: string;
+  useForeignCurrency: boolean;
+  country?: string;
 }
 
-export function ExpenseTypeInputs({ control, type, fields }: ExpenseTypeInputsProps) {
+export function ExpenseTypeInputs({ 
+  control,
+  type,
+  fields,
+  currencySymbol 
+}: ExpenseTypeInputsProps) {
   return (
     <div className="space-y-4">
       {fields.map((field) => {
-        // Use type assertion to ensure the field name matches the schema
-        const fieldName = `expenses.${type}.${field.name}` as ExpenseTypeFields<typeof type>
+        const fieldName = `expenses.${type}.${field.name}` as ExpenseTypeFields<typeof type>;
 
         return (
           <FormField
@@ -56,16 +65,35 @@ export function ExpenseTypeInputs({ control, type, fields }: ExpenseTypeInputsPr
                         value={formField.value as string || ''}
                       />
                     </div>
+                  ) : field.inputType === "number" ? (
+                    <div className="w-[530px] m-2">
+                      {field.isCurrency ? (
+                        <CurrencyInput
+                          value={formField.value as number || 0}
+                          onValueChange={(value) => formField.onChange(value)}
+                          currencySymbol={currencySymbol}
+                          className="w-full"
+                        />
+                      ) : (
+                        <Input
+                          type="number"
+                          value={formField.value as number || 0}
+                          onChange={(e) =>
+                            formField.onChange(e.target.value ? Number.parseFloat(e.target.value) : 0)
+                          }
+                          onBlur={formField.onBlur}
+                          name={formField.name}
+                          ref={formField.ref}
+                          className="w-full"
+                        />
+                      )}
+                    </div>
                   ) : (
                     <Input
                       className="w-[530px] m-2"
                       type={field.inputType}
-                      value={formField.value as string | number || ''}
-                      onChange={(e) =>
-                        field.inputType === "number"
-                          ? formField.onChange(e.target.value ? Number.parseFloat(e.target.value) : '')
-                          : formField.onChange(e.target.value)
-                      }
+                      value={formField.value as string || ''}
+                      onChange={formField.onChange}
                       onBlur={formField.onBlur}
                       name={formField.name}
                       ref={formField.ref}
@@ -76,8 +104,8 @@ export function ExpenseTypeInputs({ control, type, fields }: ExpenseTypeInputsPr
               </FormItem>
             )}
           />
-        )
+        );
       })}
     </div>
-  )
+  );
 }

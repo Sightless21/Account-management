@@ -24,7 +24,12 @@ export function normalizeExpense(partialExpense: Partial<Expense>): Expense {
     updatedAt: new Date().toISOString(),
   };
 
-  const merged = { ...base, ...partialExpense };
+  const merged = {
+    ...base,
+    ...partialExpense,
+    attachmentUrl: partialExpense.attachmentUrl ?? "",
+    attachmentPublicId: partialExpense.attachmentPublicId ?? "", 
+  };
 
   if (partialExpense.expenses) {
     merged.expenses = {

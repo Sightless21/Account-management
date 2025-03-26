@@ -30,6 +30,7 @@ interface ExpenseClaimFormProps {
   expenseId?: string;
   trigger?: React.ReactNode;
   onSubmitSuccess?: () => void;
+
 }
 
 export function ExpenseClaimForm({
@@ -40,26 +41,26 @@ export function ExpenseClaimForm({
   onSubmitSuccess,
 }: ExpenseClaimFormProps) {
   const { data: session } = useSession();
-  const { data: user } = useUserData(session?.user.id ?? ""); 
+  const { data: user } = useUserData(session?.user.id ?? "");
   const [open, setOpen] = useState(false);
 
-  const { mutateAsync: createExpenseMutation , isPending: isPendingCreate } = useCreateExpense();
-  const { mutateAsync: updateExpenseMutation , isPending: isPendingUpdate } = useUpdateExpense();
+  const { mutateAsync: createExpenseMutation, isPending: isPendingCreate } = useCreateExpense();
+  const { mutateAsync: updateExpenseMutation, isPending: isPendingUpdate } = useUpdateExpense();
 
-  
+
   const baseDefaultValues: Partial<Expense> = {
     employeeName: user ? `${user.firstName} ${user.lastName}` : "",
     expenses: {
       fuel: { liters: 0, totalCost: 0 },
       accommodation: { nights: 0, totalCost: 0 },
       transportation: { origin: "", destination: "", totalCost: 0 },
-      perDiem: { amount: 0 }, 
+      perDiem: { amount: 0 },
       medicalExpenses: { amount: 0, description: "" },
       otherExpenses: { amount: 0, description: "" },
     },
   };
 
-  
+
   const defaultFormValues = normalizeExpense({
     ...baseDefaultValues,
     ...defaultValues,
@@ -112,6 +113,18 @@ export function ExpenseClaimForm({
     </Button>
   );
 
+  const useForeignCurrency = form.watch("useForeignCurrency");
+  const country = form.watch("country");
+
+  const getCurrencySymbol = () => {
+    if (!useForeignCurrency) return "฿"; // ค่าเริ่มต้นเป็นบาท
+    switch (country) {
+      case "japan": return "¥";
+      case "thailand": return "฿";
+      default: return "฿";
+    }
+  };
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>{trigger || defaultTrigger}</SheetTrigger>
@@ -124,7 +137,12 @@ export function ExpenseClaimForm({
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <BasicInfoFields control={form.control} />
             <ForeignCurrencyFields control={form.control} />
-            <ExpenseTypeAccordion control={form.control} />
+            <ExpenseTypeAccordion
+              control={form.control}
+              currencySymbol={getCurrencySymbol()}
+              useForeignCurrency={useForeignCurrency}
+              country={country}
+            />
             <Button type="submit" disabled={isPending}>
               {isPending ? (
                 <>

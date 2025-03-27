@@ -21,7 +21,9 @@ export default function ExpenseTable({ userRole }: ExpenseTableProps) {
   if (isLoading) return <p>Loading expenses...</p>;
   if (error) return <p>Error loading expenses: {error instanceof Error ? error.message : "Unknown error"}</p>;
 
-  const handleDelete = (expense: Expense) => {
+  const handleDelete = (expense: Expense | null ) => {
+    if (!expense) return;
+
     toast.promise(deleteExpenseMutation({ id: expense.id }), {
       loading: "Deleting expense...",
       success: "Expense deleted successfully!",
@@ -29,7 +31,9 @@ export default function ExpenseTable({ userRole }: ExpenseTableProps) {
     });
   };
 
-  const handleAccepted = (expense: Expense) => {
+  const handleAccepted = (expense: Expense | null) => {
+
+    if (!expense) return;
     toast.promise(
       updateExpenseMutation({ id: expense.id, data: { status: "Accepted" } }),
       {
@@ -40,7 +44,9 @@ export default function ExpenseTable({ userRole }: ExpenseTableProps) {
     );
   };
 
-  const handleDeclined = (expense: Expense) => {
+  const handleDeclined = (expense: Expense | null) => {
+    if (!expense) return;
+
     toast.promise(
       updateExpenseMutation({ id: expense.id, data: { status: "Declined" } }),
       {
@@ -51,7 +57,9 @@ export default function ExpenseTable({ userRole }: ExpenseTableProps) {
     );
   };
 
-  const handleReset = (expense: Expense) => {
+  const handleReset = (expense: Expense | null) => {
+    if (!expense) return;
+    
     toast.promise(
       updateExpenseMutation({ id: expense.id, data: { status: "Pending" } }),
       {

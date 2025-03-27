@@ -21,8 +21,8 @@ const statusColor: Record<ExpenseStatus, string> = {
 };
 
 const exchangeRates: Record<string, number> = {
-  JPY: 0.25, // 1 JPY = 0.25 THB
-  THB: 1,    // 1 THB = 1 THB
+  JAPAN: 0.25, // 1 JPY = 0.25 THB
+  THAILAND: 1,    // 1 THB = 1 THB
 };
 
 type ApprovalButtonsProps = {
@@ -97,32 +97,47 @@ export const getColumns = (
       accessorFn: (row) => {
         const { expenses, useForeignCurrency, country } = row;
         if (!expenses) return 0;
-
+    
+        // คำนวณยอดรวมจาก expenses
         const totalCost = Object.values(expenses).reduce((sum, expense) => {
           if (expense && "totalCost" in expense) return sum + (expense.totalCost || 0);
           if (expense && "amount" in expense) return sum + (expense.amount || 0);
           return sum;
         }, 0);
-
-        const currency = useForeignCurrency && country ? country.toUpperCase() : "THB";
-        const rate = exchangeRates[currency] || 1;
+    
+        // ถ้าไม่ใช้สกุลเงินต่างประเทศ ให้ถือว่าเป็น THB โดยตรง
+        if (!useForeignCurrency) {
+          return totalCost;
+        }
+    
+        // ถ้าใช้สกุลเงินต่างประเทศ แปลงตาม country
+        const currency = country?.toUpperCase() || "THB";
+        const rate = exchangeRates[currency] || 1; // อัตราแลกเปลี่ยน ถ้าไม่พบใช้ 1
         return totalCost * rate;
       },
       cell: ({ row }) => {
         const { expenses, useForeignCurrency, country } = row.original;
         if (!expenses) return "0 THB";
-
+    
+        // คำนวณยอดรวมจาก expenses
         const totalCost = Object.values(expenses).reduce((sum, expense) => {
           if (expense && "totalCost" in expense) return sum + (expense.totalCost || 0);
           if (expense && "amount" in expense) return sum + (expense.amount || 0);
           return sum;
         }, 0);
-
-        const currency = useForeignCurrency && country ? country.toUpperCase() : "THB";
+    
+        // ถ้าไม่ใช้สกุลเงินต่างประเทศ แสดงเป็น THB โดยตรง
+        if (!useForeignCurrency) {
+          return `${totalCost.toLocaleString()} THB`;
+        }
+    
+        // ถ้าใช้สกุลเงินต่างประเทศ แปลงเป็น THB
+        const currency = country?.toUpperCase() || "THB";
         const rate = exchangeRates[currency] || 1;
         const convertedTotal = totalCost * rate;
-
-        return `${convertedTotal.toLocaleString()} THB`;
+    
+        // แสดงผลเป็น THB พร้อมระบุสกุลเงินต้นทาง
+        return `${convertedTotal.toLocaleString()} THB `;
       },
       enableSorting: true,
       meta: { title: "Total" },

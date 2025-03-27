@@ -33,7 +33,10 @@ export function ExpenseDialog({ expense, onClose, trigger, open }: ExpenseDialog
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const hasContent = (obj: Record<string, any> | undefined) => {
     if (!obj) return false;
-    return Object.keys(obj).length > 0 && Object.values(obj).some((value) => value !== null && value !== undefined);
+    const hasData = Object.keys(obj).length > 0 && Object.values(obj).some((value) => value !== null && value !== undefined);
+    if (!hasData) return false;
+    // ตรวจสอบว่า totalCost หรือ amount มากกว่า 0 หรือไม่
+    return ("totalCost" in obj && obj.totalCost > 0) || ("amount" in obj && obj.amount > 0);
   };
 
   const calculateTotal = () => {

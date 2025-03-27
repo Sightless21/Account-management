@@ -45,8 +45,8 @@ export function ForeignCurrencyFields({ control }: ForeignCurrencyFieldsProps) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="japan">Japan</SelectItem>
-                  <SelectItem value="thailand">Thailand</SelectItem>
+                  <SelectItem value="JPY">JPY</SelectItem>
+                  <SelectItem value="THB">THB</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />

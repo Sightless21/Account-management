@@ -119,8 +119,8 @@ export function ExpenseClaimForm({
   const getCurrencySymbol = () => {
     if (!useForeignCurrency) return "฿"; // ค่าเริ่มต้นเป็นบาท
     switch (country) {
-      case "japan": return "¥";
-      case "thailand": return "฿";
+      case "JPY": return "¥";
+      case "THB": return "฿";
       default: return "฿";
     }
   };

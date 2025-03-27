@@ -20,11 +20,6 @@ const statusColor: Record<ExpenseStatus, string> = {
   [ExpenseStatus.Declined]: "bg-red-500 text-white",
 };
 
-const exchangeRates: Record<string, number> = {
-  JAPAN: 0.25, // 1 JPY = 0.25 THB
-  THAILAND: 1,    // 1 THB = 1 THB
-};
-
 type ApprovalButtonsProps = {
   row: Row<Expense>;
   onAccepted?: (data: Expense) => void;
@@ -76,7 +71,8 @@ export const getColumns = (
     onReject?: (data: Expense) => void;
     onReset?: (data: Expense) => void;
     onSetSelectedExpense: (expense: Expense | null) => void;
-  }
+  },
+  exchangeRates: Record<string, number>
 ): ColumnDef<Expense>[] => {
   const baseColumns: ColumnDef<Expense>[] = [
     {
@@ -95,49 +91,48 @@ export const getColumns = (
       id: "Total",
       header: ({ column }) => <DataTableColumnHeader column={column} title="Total" />,
       accessorFn: (row) => {
-        const { expenses, useForeignCurrency, country } = row;
+        const { expenses, country } = row;
         if (!expenses) return 0;
-    
-        // คำนวณยอดรวมจาก expenses
+
         const totalCost = Object.values(expenses).reduce((sum, expense) => {
           if (expense && "totalCost" in expense) return sum + (expense.totalCost || 0);
           if (expense && "amount" in expense) return sum + (expense.amount || 0);
           return sum;
         }, 0);
-    
-        // ถ้าไม่ใช้สกุลเงินต่างประเทศ ให้ถือว่าเป็น THB โดยตรง
-        if (!useForeignCurrency) {
+
+        if (!country || country.toUpperCase() === "THB") {
+          // console.log(`No conversion needed: totalCost=${totalCost} THB`);
           return totalCost;
         }
-    
-        // ถ้าใช้สกุลเงินต่างประเทศ แปลงตาม country
-        const currency = country?.toUpperCase() || "THB";
-        const rate = exchangeRates[currency] || 1; // อัตราแลกเปลี่ยน ถ้าไม่พบใช้ 1
-        return totalCost * rate;
+
+        const currency = country.toUpperCase();
+        const rate = exchangeRates[currency.toLowerCase()] || 1;
+        const convertedTotal = totalCost * (1 / rate);
+        // console.log(`Converting ${totalCost} ${currency} to THB with rate ${rate}, result=${convertedTotal}`); 
+        return convertedTotal;
       },
       cell: ({ row }) => {
         const { expenses, useForeignCurrency, country } = row.original;
         if (!expenses) return "0 THB";
-    
-        // คำนวณยอดรวมจาก expenses
+
         const totalCost = Object.values(expenses).reduce((sum, expense) => {
           if (expense && "totalCost" in expense) return sum + (expense.totalCost || 0);
           if (expense && "amount" in expense) return sum + (expense.amount || 0);
           return sum;
         }, 0);
-    
-        // ถ้าไม่ใช้สกุลเงินต่างประเทศ แสดงเป็น THB โดยตรง
-        if (!useForeignCurrency) {
+
+        // console.log(`Row data: useForeignCurrency=${useForeignCurrency}, country=${country}, totalCost=${totalCost}`);
+
+        if (!country || country.toUpperCase() === "THB" || !useForeignCurrency) {
+          // console.log(`No conversion needed: totalCost=${totalCost} THB`);
           return `${totalCost.toLocaleString()} THB`;
         }
-    
-        // ถ้าใช้สกุลเงินต่างประเทศ แปลงเป็น THB
-        const currency = country?.toUpperCase() || "THB";
-        const rate = exchangeRates[currency] || 1;
-        const convertedTotal = totalCost * rate;
-    
-        // แสดงผลเป็น THB พร้อมระบุสกุลเงินต้นทาง
-        return `${convertedTotal.toLocaleString()} THB `;
+
+        const currency = country.toUpperCase();
+        const rate = exchangeRates[currency.toLowerCase()] || 1;
+        const convertedTotal = totalCost * (1 / rate);
+        // console.log(`Converting ${totalCost} ${currency} to THB with rate ${rate}, result=${convertedTotal}`);
+        return `${convertedTotal.toLocaleString()} THB`; // แสดงเฉพาะ THB
       },
       enableSorting: true,
       meta: { title: "Total" },

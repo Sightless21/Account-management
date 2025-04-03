@@ -123,7 +123,7 @@ export default function DashboardItem() {
       }).length ?? 0,
     },
     carReservations: {
-      total: carReservations?.filter(c => c.tripStatus === "ONGOING").length ?? 0,
+      total: carReservations?.filter(c => c.tripStatus === "PENDING").length ?? 0,
       today: carReservations?.filter(c => formatDate(c.createdAt) === today).length ?? 0,
     },
     tasks: {

@@ -51,11 +51,31 @@ export default function CarReservationTable({userRole}: CarReservationTableProps
       error: "Failed to update car reservation",
     });
   }
+  const handlePending = (data: CarReservationType) => {
+    console.log("Pending car reservation (before update):", data);
+    const newData = { ...data, tripStatus: "PENDING" as TripStatus };
+    toast.promise(updateCarReservation(newData),{
+      loading: "Updating car reservation...",
+      success: "Car reservation updated successfully",
+      error: "Failed to update car reservation",
+    });
+  }
+  const handleApproved = (data: CarReservationType) => {
+    console.log("Approved car reservation (before update):", data);
+    const newData = { ...data, tripStatus: "APPROVED" as TripStatus };
+    toast.promise(updateCarReservation(newData),{
+      loading: "Updating car reservation...",
+      success: "Car reservation updated successfully",
+      error: "Failed to update car reservation",
+    });
+  }
 
   const columns = getColumns(userRole,{
     onApprove: handleAccepted,
     onReject: handleDeclined,
     onReset: handleReset,
+    onPending: handlePending,
+    onApproved: handleApproved,
   });
 
   return (
@@ -72,6 +92,8 @@ export default function CarReservationTable({userRole}: CarReservationTableProps
           { value: "ONGOING", label: "Ongoing" },
           { value: "COMPLETED", label: "Completed" },
           { value: "CANCELLED", label: "Cancelled" },
+          { value: "PENDING", label: "Pending" },
+          { value: "APPROVED", label: "Approved" },
         ]}
         toolbarAdditionalControls={
           <Button

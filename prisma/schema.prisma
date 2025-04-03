@@ -232,6 +232,8 @@ enum CarAvailability {
 }
 
 enum TripStatus {
+  PENDING // รอการอนุมัติ
+  APPROVED // อนุมัติแล้ว
   ONGOING // กำลังเดินทาง
   COMPLETED // สิ้นสุดการเดินทาง
   CANCELLED // ยกเลิก

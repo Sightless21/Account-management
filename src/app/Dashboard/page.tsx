@@ -34,7 +34,6 @@ export default function Page() {
         <CardContent className="p-2 overflow-x-hidden">
           <DashboardItem />
         </CardContent>
-
       </CardContent>
     </Card>
   );

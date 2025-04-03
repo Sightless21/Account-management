@@ -27,7 +27,7 @@ export const formCarReservationSchema = z.object({
     required_error: "Please select an end time",
   }),
   carId: z.string().min(1, "Car ID is required").nullable(),
-  tripStatus: z.enum(["ONGOING", "COMPLETED", "CANCELLED"]).optional(),
+  tripStatus: z.enum(["ONGOING", "COMPLETED", "CANCELLED", "PENDING", "APPROVED"]).optional().default("PENDING"),
   car: formCarSchema,
 })
 

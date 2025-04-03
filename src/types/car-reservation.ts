@@ -1,5 +1,5 @@
 export type CarType = "SEDAN" | "SUV" | "VAN"
-export type TripStatus = "ONGOING" | "COMPLETED" | "CANCELLED"
+export type TripStatus = "ONGOING" | "COMPLETED" | "CANCELLED" | "PENDING" | "APPROVED"
 export interface ReservationType {
   cars:         Car[];
   reservations: CarReservationType[];

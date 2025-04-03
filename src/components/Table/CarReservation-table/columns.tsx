@@ -2,7 +2,7 @@
 
 import { ColumnDef, Row } from "@tanstack/react-table";
 import { CarReservationType, TripStatus } from "@/types/car-reservation";
-import { CheckCircle, MoveRight, RotateCcw, XCircle } from "lucide-react";
+import { CheckCircle, MoveRight, RotateCcw, XCircle , CheckCheck } from "lucide-react";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { DataTableColumnHeader } from "../ColumnHeader";
@@ -13,27 +13,31 @@ import { Button } from "@/components/ui/button";
 
 const tripStatusColor: Record<TripStatus, string> = {
   ONGOING: "bg-yellow-500 text-white",
-  COMPLETED: "bg-green-500 text-white",
+  COMPLETED: "bg-gray-500 text-white",
   CANCELLED: "bg-red-500 text-white",
+  PENDING: "bg-blue-500 text-white",
+  APPROVED: "bg-green-500 text-white",
 };
 
 interface ApprovalButtonsProps {
   row: Row<CarReservationType>
   onAccepted?: (data: CarReservationType) => void
+  onApproved?: (data: CarReservationType) => void
+  onPending?: (data: CarReservationType) => void
   onDeclined?: (data: CarReservationType) => void
   onReset?: (data: CarReservationType) => void
 }
 
-const ApprovalButtons = ({ row, onAccepted, onDeclined, onReset }: ApprovalButtonsProps) => (
+const ApprovalButtons = ({ row, onAccepted, onDeclined, onReset , onApproved , onPending}: ApprovalButtonsProps) => (
   <div className="flex gap-3">
     {onAccepted && (
       <Button
         variant={"outline"}
         size="icon"
         onClick={() => onAccepted(row.original)}
-        className="h-8 w-8 text-green-500"
+        className="h-8 w-8 text-gray-500"
       >
-        <CheckCircle className="h-4 w-4" />
+        <CheckCheck className="h-4 w-4" />
       </Button>
     )}
     {onDeclined && (
@@ -56,6 +60,26 @@ const ApprovalButtons = ({ row, onAccepted, onDeclined, onReset }: ApprovalButto
         <RotateCcw className="h-4 w-4" />
       </Button>
     )}
+    { onPending && (
+      <Button
+        variant={"outline"}
+        size="icon"
+        onClick={() => onPending(row.original)}
+        className="h-8 w-8 text-blue-500"
+      >
+        <MoveRight className="h-4 w-4" />
+      </Button>
+    )}
+    { onApproved && (
+      <Button
+        variant={"outline"}
+        size="icon"
+        onClick={() => onApproved(row.original)}
+        className="h-8 w-8 text-green-500"
+      >
+        <CheckCircle className="h-4 w-4" />
+      </Button>
+    )}
   </div>
 )
 
@@ -64,6 +88,8 @@ export const getColumns = (role: Role,
     onApprove?: (data: CarReservationType) => void
     onReject?: (data: CarReservationType) => void
     onReset?: (data: CarReservationType) => void
+    onPending?: (data: CarReservationType) => void
+    onApproved?: (data: CarReservationType) => void
   }
 ): ColumnDef<CarReservationType>[] => {
   const baseColumns: ColumnDef<CarReservationType>[] = [
@@ -175,13 +201,15 @@ export const getColumns = (role: Role,
 
   const approvalColumn: ColumnDef<CarReservationType> = {
     id: "approval",
-    header: "Accepted/Declined",
+    header: "Status Approval",
     cell: ({ row }) => (
       <ApprovalButtons
         row={row}
         onAccepted={handlers.onApprove}
         onDeclined={handlers.onReject}
         onReset={handlers.onReset}
+        onPending={handlers.onPending}
+        onApproved={handlers.onApproved}
       />
     ),
     meta: { title: "Approval" },

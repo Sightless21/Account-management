@@ -70,7 +70,7 @@ export function CarReservationDialog() {
       destination: "",
       startTime: "08:00",
       endTime: "17:00",
-      tripStatus: "ONGOING",
+      tripStatus: "PENDING",
       date: { from: new Date(), to: new Date() },
       carId: null,
       car: defaultCar,
@@ -87,7 +87,7 @@ export function CarReservationDialog() {
         destination: selectedReservation.destination || "",
         startTime: selectedReservation.startTime || "08:00",
         endTime: selectedReservation.endTime || "17:00",
-        tripStatus: selectedReservation.tripStatus || "ONGOING",
+        tripStatus: selectedReservation.tripStatus || "PENDING",
         date: {
           from: selectedReservation.date?.from
             ? new Date(selectedReservation.date.from)
@@ -118,7 +118,7 @@ export function CarReservationDialog() {
         destination: "",
         startTime: "08:00",
         endTime: "17:00",
-        tripStatus: "ONGOING",
+        tripStatus: "PENDING",
         date: { from: new Date(), to: new Date() },
         carId: null,
         car: defaultCar,
@@ -190,7 +190,7 @@ export function CarReservationDialog() {
         plate: selectedCarValue.plate,
         type: selectedCarValue.type,
       },
-      tripStatus: values.tripStatus || "ONGOING",
+      tripStatus: values.tripStatus || "PENDING",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
